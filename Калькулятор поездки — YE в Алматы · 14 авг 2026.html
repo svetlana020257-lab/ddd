@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!-- saved from url=(0043)file:///C:/Users/vasil/Downloads/smeta.html -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Калькулятор поездки — YE в Алматы · 14 авг 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+<link href="./Калькулятор поездки — YE в Алматы · 14 авг 2026_files/css2" rel="stylesheet">
+<style>
+  :root{--paper:#E7E4DC;--panel:#F3F1EB;--ink:#15120E;--muted:#6C685F;--line:#CDC7BA;--line-soft:#DED9CD;--stamp:#A5301C}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;line-height:1.5;padding:clamp(14px,3vw,40px);
+    background-image:radial-gradient(circle at 12% 18%,rgba(0,0,0,.028) 0,transparent 42%),radial-gradient(circle at 88% 76%,rgba(0,0,0,.03) 0,transparent 46%)}
+  .wrap{max-width:900px;margin:0 auto}
+  .mono{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+
+  .hero{background:var(--ink);color:var(--paper);border-radius:6px;overflow:hidden;position:relative;padding:clamp(22px,5vw,44px)}
+  .hero::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 2px,transparent 2px 9px)}
+  .hero .top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;position:relative;z-index:1}
+  .hero .kick{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:#B9B2A4}
+  .stamp{border:2px solid var(--stamp);color:var(--stamp);font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:6px 12px;border-radius:4px;transform:rotate(3deg)}
+  .hero h1{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(46px,12vw,116px);line-height:.9;text-transform:uppercase;margin:clamp(14px,3vw,24px) 0 4px;position:relative;z-index:1}
+  .hero h1 small{display:block;font-size:.34em;color:#B9B2A4}
+  .hero .facts{display:flex;flex-wrap:wrap;margin-top:clamp(16px,3vw,24px);border-top:1px solid rgba(255,255,255,.16);position:relative;z-index:1}
+  .hero .facts div{flex:1 1 150px;padding:14px 18px 4px 0}
+  .hero .facts dt{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#948E81;margin-bottom:4px}
+  .hero .facts dd{font-size:15px;font-weight:600}
+
+  section{margin-top:clamp(24px,4vw,38px)}
+  .s-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+  .s-num{font-family:"Anton",sans-serif;font-size:20px;color:var(--stamp)}
+  .s-head h2{font-family:"Anton",sans-serif;font-weight:400;font-size:clamp(22px,4vw,30px);text-transform:uppercase}
+  .s-head p{color:var(--muted);font-size:13.5px;margin-left:auto}
+
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:18px}
+  .blocksub{display:flex;justify-content:space-between;align-items:baseline;margin-top:16px;padding-top:13px;border-top:1px dashed var(--line)}
+  .blocksub .lab{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .blocksub .val{font-family:"Anton",sans-serif;font-size:26px}
+  .blocksub .val .cur{font-size:.5em;color:var(--stamp);margin-left:2px}
+
+  /* TICKETS */
+  .tkgrid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+  svg.map{width:100%;height:auto;display:block;cursor:pointer;touch-action:manipulation}
+  svg.map .zone{transition:opacity .12s}
+  svg.map .zone:hover{opacity:.82}
+  svg.map .sel{stroke:var(--ink);stroke-width:3.5}
+  svg.map text{font-family:"IBM Plex Sans";pointer-events:none;font-weight:600}
+  .legend{display:grid;grid-template-columns:1fr;gap:5px;margin-top:6px}
+  .legend div{display:flex;align-items:center;gap:8px;font-size:12px}
+  .legend .sw{width:13px;height:13px;border-radius:3px;flex:none;border:1px solid rgba(0,0,0,.15)}
+  .legend .lp{font-family:"IBM Plex Mono",monospace;margin-left:auto;color:var(--muted)}
+  .legend div.act{font-weight:700}
+  .legend div.act .lp{color:var(--stamp)}
+  .picked{font-family:"IBM Plex Mono",monospace;font-size:12px;margin-top:10px;color:var(--muted)}
+  .picked b{color:var(--stamp)}
+
+  label.fl{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  select,input[type=number]{width:100%;font-family:"IBM Plex Sans";font-size:14px;padding:10px 11px;background:var(--paper);border:1px solid var(--line);border-radius:5px;color:var(--ink)}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{flex:1;min-width:64px;font-family:"IBM Plex Sans";font-size:13px;font-weight:600;padding:9px 8px;background:var(--paper);border:1px solid var(--line);border-radius:5px;cursor:pointer;color:var(--ink);transition:.12s}
+  .seg button:hover{border-color:var(--muted)}
+  .seg button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+  /* FLIGHT */
+  .leg{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft)}
+  .leg:last-of-type{border-bottom:0}
+  .leg .day{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);width:62px;flex:none}
+  .leg .time{font-family:"Anton",sans-serif;font-size:18px}
+  .leg .arrow{flex:1;height:1px;background:var(--line);position:relative}
+  .leg .arrow::after{content:"✈";position:absolute;right:-2px;top:-9px;color:var(--stamp);font-size:12px}
+  .leg .dur{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+  .leg .code{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted)}
+
+  /* HOTELS selectable */
+  .loc-tier{margin-bottom:18px}
+  .loc-bar{display:flex;align-items:center;gap:12px;margin-bottom:11px;padding-bottom:8px;border-bottom:2px solid var(--ink)}
+  .loc-bar h3{font-family:"IBM Plex Sans";font-weight:700;font-size:14px;text-transform:uppercase}
+  .loc-bar .rng{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)}
+  .hotel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px 14px 18px;margin-bottom:9px;display:grid;grid-template-columns:1fr auto;gap:5px 16px;align-items:start;cursor:pointer;transition:.12s;position:relative}
+  .hotel:hover{border-color:var(--muted)}
+  .hotel.sel{border-color:var(--stamp);box-shadow:inset 4px 0 0 var(--stamp)}
+  .hotel.sel .pickmark{opacity:1}
+  .pickmark{position:absolute;top:12px;right:14px;font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--stamp);opacity:0;transition:.12s}
+  .hotel .name{font-size:15px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .stars{color:var(--stamp);font-size:12px;letter-spacing:1px}
+  .cls{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:2px 7px}
+  .hotel .addr{grid-column:1/2;color:var(--muted);font-size:12.5px}
+  .hotel .meta{grid-column:1/2;display:flex;flex-wrap:wrap;gap:5px 16px;font-size:12px;margin-top:2px}
+  .hotel .meta b{font-family:"IBM Plex Mono",monospace}
+  .price{grid-column:2/3;grid-row:1/2;text-align:right;padding-right:52px}
+  .price .num{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:14px;white-space:nowrap}
+  .price .lab{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .book{grid-column:2/3;align-self:end;justify-self:end;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--stamp);padding-bottom:2px}
+  .book:hover{color:var(--stamp)}
+  .meter{grid-column:1/3;margin-top:9px}
+  .meter .track{position:relative;height:6px;background:var(--line-soft);border-radius:3px}
+  .meter .dot{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;background:var(--stamp);transform:translate(-50%,-50%);border:2px solid var(--panel)}
+  .meter .stadium{position:absolute;left:0;top:50%;width:9px;height:9px;background:var(--ink);transform:translate(-50%,-50%) rotate(45deg)}
+  .meter .scale{display:flex;justify-content:space-between;font-family:"IBM Plex Mono",monospace;font-size:9px;color:var(--muted);margin-top:5px}
+  .hotelctl{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+
+  /* CALCULATOR total */
+  .result{background:var(--ink);color:var(--paper);border-radius:8px;padding:20px;position:relative;overflow:hidden}
+  .result::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(135deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px)}
+  .result h3{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#B9B2A4;margin-bottom:14px;position:relative;z-index:1}
+  .setrow{display:flex;gap:18px;flex-wrap:wrap;position:relative;z-index:1;margin-bottom:16px}
+  .setrow .cell{flex:1;min-width:130px}
+  .setrow label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#948E81;display:block;margin-bottom:6px}
+  .setrow .seg button{background:#2A251E;border-color:#3A342B;color:var(--paper)}
+  .setrow .seg button.on{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+  .setrow input{background:#2A251E;border-color:#3A342B;color:var(--paper)}
+  .rrows{list-style:none;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,.14)}
+  .rrows li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .rrows li span:first-child{color:#B9B2A4}
+  .rrows li b{font-family:"IBM Plex Mono",monospace;font-weight:500}
+  .grand{position:relative;z-index:1;margin-top:16px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+  .grand .lab{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#B9B2A4}
+  .grand .big{font-family:"Anton",sans-serif;font-size:clamp(38px,8vw,56px);line-height:.9}
+  .grand .big .cur{font-size:.42em;color:var(--stamp);margin-left:3px}
+  .grand .per{font-family:"IBM Plex Mono",monospace;font-size:12px;color:#B9B2A4;text-align:right}
+
+  .notes{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--stamp);border-radius:6px;padding:18px 20px}
+  .notes ul{list-style:none}
+  .notes li{position:relative;padding:8px 0 8px 22px;font-size:13.5px;border-bottom:1px solid var(--line-soft)}
+  .notes li:last-child{border-bottom:0}
+  .notes li::before{content:"→";position:absolute;left:0;color:var(--stamp);font-family:"IBM Plex Mono",monospace}
+  .notes b{font-weight:600}
+  .cap{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);margin-top:8px}
+  footer{margin-top:30px;padding-top:16px;border-top:1px solid var(--line);font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media (max-width:720px){.tkgrid{grid-template-columns:1fr}.hero .facts div{flex-basis:130px}.s-head p{margin-left:0;flex-basis:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="top"><span class="kick">Калькулятор поездки · Новосибирск → Алматы</span><span class="stamp">интерактив</span></div>
+    <h1>YE<br>в Алматы<small>Kanye West · Центральный стадион</small></h1>
+    <dl class="facts">
+      <div><dt>Дата</dt><dd>14 августа 2026, 21:00</dd></div>
+      <div><dt>Перелёт</dt><dd>S7 · OVB ↔ ALA</dd></div>
+      <div><dt>Формат</dt><dd>1 ночь · 14–15 авг</dd></div>
+      <div><dt>Курс</dt><dd class="mono">100 ₸ ≈ 16,7 ₽</dd></div>
+    </dl>
+  </header>
+
+  <!-- 01 БИЛЕТЫ -->
+  <section>
+    <div class="s-head"><span class="s-num">01</span><h2>Билеты</h2><p>Кликни сектор на схеме — цены по категориям справа.</p></div>
+    <div class="box">
+      <div class="tkgrid">
+        <div>
+          <svg class="map" id="map" viewBox="0 0 600 470" role="img" aria-label="Схема стадиона"><polygon points="303.664826722898,116.03343314450748 342.85325511074603,120.66787165990507 379.42136613858264,26.752259362322008 306.79214552643765,18.062687145951543" class="zone" fill="#DCD8CC" stroke="#E7E4DC" stroke-width="2" data-kzt="120000" style="cursor: pointer;"></polygon><polygon points="349.8241697825555,122.35906230986869 385.1765617579652,135.8087267241425 457.86056112476217,55.141362607767206 392.34079466366956,29.923241831003793" class="zone" fill="#BDB6A5" stroke="#E7E4DC" stroke-width="2" data-kzt="180000" style="cursor: pointer;"></polygon><polygon points="391.106375958493,139.02556250003317 419.1621930803127,159.97390595099188 520.8472645088463,100.45107365810979 468.8504834430737,61.1729296875622" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="423.4704552801663,164.40150055405266 441.48339869214016,190.79795322902524 562.215898909433,158.2461623044223 528.8319104525749,108.75281353884874" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="443.74838616977,196.00290285064295 449.95522346717746,225.26359604690285 577.917014159169,222.86924258794284 566.413675701307,168.00544284495555" class="zone" fill="#6F6A5B" stroke="#E7E4DC" stroke-width="2" data-kzt="260000" style="cursor: pointer;"></polygon><polygon points="449.95522346717746,230.73640395309715 443.74838616977,259.99709714935705 566.413675701307,287.99455715504445 577.917014159169,233.13075741205716" class="zone" fill="#6F6A5B" stroke="#E7E4DC" stroke-width="2" data-kzt="260000" style="cursor: pointer;"></polygon><polygon points="441.48339869214016,265.2020467709748 423.4704552801663,291.5984994459473 528.8319104525749,347.2471864611513 562.215898909433,297.75383769557766" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="419.1621930803127,296.0260940490081 391.106375958493,316.9744374999668 468.8504834430737,394.8270703124378 520.8472645088463,355.5489263418902" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="385.1765617579652,320.1912732758575 349.8241697825555,333.6409376901313 392.34079466366956,426.0767581689962 457.86056112476217,400.8586373922328" class="zone" fill="#BDB6A5" stroke="#E7E4DC" stroke-width="2" data-kzt="180000" style="cursor: pointer;"></polygon><polygon points="342.85325511074603,335.3321283400949 303.664826722898,339.9665668554925 306.79214552643765,437.93731285404846 379.42136613858264,429.247740637678" class="zone" fill="#DCD8CC" stroke="#E7E4DC" stroke-width="2" data-kzt="120000" style="cursor: pointer;"></polygon><polygon points="296.33517327710206,339.9665668554925 257.14674488925397,335.3321283400949 220.5786338614174,429.247740637678 293.2078544735624,437.93731285404846" class="zone" fill="#DCD8CC" stroke="#E7E4DC" stroke-width="2" data-kzt="120000" style="cursor: pointer;"></polygon><polygon points="250.17583021744449,333.6409376901313 214.82343824203485,320.1912732758575 142.13943887523791,400.8586373922328 207.65920533633044,426.0767581689962" class="zone" fill="#BDB6A5" stroke="#E7E4DC" stroke-width="2" data-kzt="180000" style="cursor: pointer;"></polygon><polygon points="208.893624041507,316.9744374999668 180.83780691968727,296.02609404900807 79.15273549115372,355.5489263418902 131.14951655692627,394.82707031243774" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="176.52954471983372,291.59849944594737 158.51660130785987,265.2020467709748 37.78410109056699,297.7538376955778 71.16808954742521,347.24718646115133" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="156.25161383023,259.99709714935705 150.04477653282254,230.7364039530972 22.0829858408311,233.13075741205725 33.586324298692944,287.99455715504445" class="zone" fill="#6F6A5B" stroke="#E7E4DC" stroke-width="2" data-kzt="260000" style="cursor: pointer;"></polygon><polygon points="150.04477653282254,225.26359604690282 156.25161383023,196.00290285064295 33.586324298692944,168.00544284495555 22.0829858408311,222.8692425879428" class="zone" fill="#6F6A5B" stroke="#E7E4DC" stroke-width="2" data-kzt="260000" style="cursor: pointer;"></polygon><polygon points="158.51660130785984,190.79795322902527 176.52954471983372,164.40150055405266 71.16808954742518,108.75281353884873 37.78410109056688,158.24616230442237" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="180.8378069196873,159.97390595099188 208.89362404150694,139.0255625000332 131.14951655692622,61.17292968756223 79.1527354911538,100.45107365810978" class="zone" fill="#A49C88" stroke="#E7E4DC" stroke-width="2" data-kzt="220000" style="cursor: pointer;"></polygon><polygon points="214.82343824203483,135.8087267241425 250.17583021744446,122.3590623098687 207.65920533633036,29.92324183100382 142.13943887523786,55.14136260776718" class="zone" fill="#BDB6A5" stroke="#E7E4DC" stroke-width="2" data-kzt="180000" style="cursor: pointer;"></polygon><polygon points="257.14674488925397,120.66787165990507 296.33517327710194,116.03343314450748 293.2078544735623,18.062687145951543 220.57863386141736,26.752259362322008" class="zone" fill="#DCD8CC" stroke="#E7E4DC" stroke-width="2" data-kzt="120000" style="cursor: pointer;"></polygon><ellipse cx="300" cy="228" rx="146" ry="108" class="zone sel" fill="#8A8270" stroke="#E7E4DC" stroke-width="2" data-kzt="250000" style="cursor: pointer;"></ellipse><text x="300" y="136" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#F3F1EB">Bronze</text><ellipse cx="300" cy="228" rx="112" ry="84" class="zone" fill="#4E4A40" stroke="#E7E4DC" stroke-width="2" data-kzt="280000" style="cursor: pointer;"></ellipse><text x="300" y="162" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#E7E4DC">Silver</text><ellipse cx="300" cy="228" rx="78" ry="58" class="zone" fill="#A5301C" stroke="#E7E4DC" stroke-width="2" data-kzt="350000" style="cursor: pointer;"></ellipse><text x="300" y="190" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#F3F1EB">Gold</text><ellipse cx="300" cy="228" rx="46" ry="32" fill="#15120E"></ellipse><text x="300" y="228" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#E7E4DC">СЦЕНА</text></svg>
+        </div>
+        <div>
+          <div class="legend" id="legend"><div data-kzt="350000" style="cursor: pointer;"><span class="sw" style="background:#A5301C"></span><span>Gold · у сцены</span><span class="lp">350 000 ₸</span></div><div data-kzt="280000" style="cursor: pointer;"><span class="sw" style="background:#4E4A40"></span><span>Silver · премиум</span><span class="lp">280 000 ₸</span></div><div data-kzt="260000" style="cursor: pointer;"><span class="sw" style="background:#6F6A5B"></span><span>Сектор (у сцены)</span><span class="lp">260 000 ₸</span></div><div data-kzt="250000" class="act" style="cursor: pointer;"><span class="sw" style="background:#8A8270"></span><span>Bronze</span><span class="lp">250 000 ₸</span></div><div data-kzt="220000" style="cursor: pointer;"><span class="sw" style="background:#A49C88"></span><span>Сектор (боковой)</span><span class="lp">220 000 ₸</span></div><div data-kzt="180000" style="cursor: pointer;"><span class="sw" style="background:#BDB6A5"></span><span>Сектор</span><span class="lp">180 000 ₸</span></div><div data-kzt="150000" style="cursor: pointer;"><span class="sw" style="background:#CFC9BB"></span><span>Дальний сектор</span><span class="lp">150 000 ₸</span></div><div data-kzt="120000" style="cursor: pointer;"><span class="sw" style="background:#DCD8CC"></span><span>Дальний · минимум</span><span class="lp">120 000 ₸</span></div></div>
+          <div class="picked" id="picked">Выбрано: <b>250 000 ₸</b> · Bronze ≈ 41 750 ₽/чел</div>
+        </div>
+      </div>
+      <div class="blocksub"><span class="lab" id="tkLab">Билеты × 2</span><span class="val mono" id="tkSub">83 500<span class="cur">₽</span></span></div>
+    </div>
+  </section>
+
+  <!-- 02 ПЕРЕЛЁТ -->
+  <section>
+    <div class="s-head"><span class="s-num">02</span><h2>Перелёт</h2><p>S7 · Новосибирск ↔ Алматы, туда-обратно.</p></div>
+    <div class="box">
+      <div class="leg"><span class="day">14 авг</span><span class="time">02:55</span><span class="code">OVB</span><span class="arrow"></span><span class="dur">2ч 30м</span><span class="time">03:25</span><span class="code">ALA</span></div>
+      <div class="leg"><span class="day">15 авг</span><span class="time">15:50</span><span class="code">ALA</span><span class="arrow"></span><span class="dur">2ч 20м</span><span class="time">20:10</span><span class="code">OVB</span></div>
+      <div style="margin-top:14px"><label class="fl">Багаж</label>
+        <div class="seg" id="bag">
+          <button data-v="0" class="on">Ручная кладь 10 кг · 72 985 ₽/чел</button>
+          <button data-v="1">+ багаж 23 кг · 92 405 ₽/чел</button>
+        </div>
+      </div>
+      <div class="blocksub"><span class="lab" id="flLab">Перелёт × 2</span><span class="val mono" id="flSub">145 970<span class="cur">₽</span></span></div>
+    </div>
+  </section>
+
+  <!-- 03 ОТЕЛЬ -->
+  <section>
+    <div class="s-head"><span class="s-num">03</span><h2>Отель</h2><p>Выбери отель — по близости к стадиону. ◆ стадион, ● отель.</p></div>
+    <div class="box">
+      <div id="hotels"><div class="loc-tier"><div class="loc-bar"><span>🚶</span><h3>Пешком до стадиона</h3><span class="rng">до 1 км</span></div><div class="hotel sel" data-idx="0"><div class="name">Rahat Palace <span class="stars">★★★★★</span> <span class="cls">Люкс</span></div><div class="price"><div class="num">~9 000–16 000 ₽</div><div class="lab">за ночь*</div></div><span class="pickmark">✓ выбрано</span><div class="addr">ул. Сатпаева, 29/6 — практически у стадиона. Бассейн, спа, 3 ресторана.</div><div class="meta"><span>🚶 <b>~8–10 мин</b></span><span>📍 <b>~0,65 км</b></span></div><div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:13%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div><a class="book" href="https://travel.yandex.ru/hotels/almaty/rahat-palace-hotel/?adults=2&amp;checkinDate=2026-08-14&amp;checkoutDate=2026-08-15&amp;roomCount=1" target="_blank" rel="noopener">Забронировать →</a></div></div><div class="loc-tier"><div class="loc-bar"><span>🚕</span><h3>Рядом · 5–10 мин на такси</h3><span class="rng">1–3 км</span></div><div class="hotel" data-idx="1"><div class="name">Ramada by Wyndham <span class="stars">★★★★</span> <span class="cls">Комфорт</span></div><div class="price"><div class="num">~7 000–10 000 ₽</div><div class="lab">за ночь*</div></div><span class="pickmark">✓ выбрано</span><div class="addr">ул. Байтурсынова, 27/1. Бассейн, спа, шаттл из аэропорта включён.</div><div class="meta"><span>🚕 <b>~5 мин</b></span><span>📍 <b>~1,5 км</b></span></div><div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:30%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div><a class="book" href="https://travel.yandex.ru/hotels/almaty/ramada/?adults=2&amp;checkinDate=2026-08-14&amp;checkoutDate=2026-08-15&amp;roomCount=1" target="_blank" rel="noopener">Забронировать →</a></div><div class="hotel" data-idx="2"><div class="name">Park Dedeman Almaty <span class="stars">★★★★</span> <span class="cls">Комфорт</span></div><div class="price"><div class="num">~6 500–9 500 ₽</div><div class="lab">за ночь*</div></div><span class="pickmark">✓ выбрано</span><div class="addr">ул. Тимирязева, 67а, у Атакента. Крытый бассейн, сауна, зал.</div><div class="meta"><span>🚕 <b>~7–10 мин</b></span><span>📍 <b>~2,5 км</b></span></div><div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:50%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div><a class="book" href="https://travel.yandex.ru/hotels/almaty/park-dedeman-almaty/?adults=2&amp;checkinDate=2026-08-14&amp;checkoutDate=2026-08-15&amp;roomCount=1" target="_blank" rel="noopener">Забронировать →</a></div><div class="hotel" data-idx="3"><div class="name">Renion Park Hotel <span class="stars">★★★★</span> <span class="cls">Комфорт</span></div><div class="price"><div class="num">~8 000–11 000 ₽</div><div class="lab">за ночь*</div></div><span class="pickmark">✓ выбрано</span><div class="addr">Центральная часть Алматы. Спокойный вариант с хорошими отзывами.</div><div class="meta"><span>🚕 <b>~10 мин</b></span><span>📍 <b>~2,7 км</b></span></div><div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:55%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div><a class="book" href="https://travel.yandex.ru/hotels/almaty/renion-park-hotel/?adults=2&amp;checkinDate=2026-08-14&amp;checkoutDate=2026-08-15&amp;roomCount=1" target="_blank" rel="noopener">Забронировать →</a></div></div><div class="loc-tier"><div class="loc-bar"><span>🚗</span><h3>Чуть дальше · транспорт</h3><span class="rng">3+ км</span></div><div class="hotel" data-idx="4"><div class="name">Grand Mildom <span class="stars">★★★★</span> <span class="cls">Бутик</span></div><div class="price"><div class="num">~6 500–12 500 ₽</div><div class="lab">за ночь*</div></div><span class="pickmark">✓ выбрано</span><div class="addr">Район Медеу, ближе к горам. Бутик-формат, спа.</div><div class="meta"><span>🚗 <b>~15 мин</b></span><span>📍 <b>~4 км</b></span></div><div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:80%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div><a class="book" href="https://travel.yandex.ru/hotels/almaty/grand-mildom/?adults=2&amp;checkinDate=2026-08-14&amp;checkoutDate=2026-08-15&amp;roomCount=1" target="_blank" rel="noopener">Забронировать →</a></div></div></div>
+      <div class="hotelctl">
+        <div><label class="fl">Цена ночи, ₽ (можно свою)</label><input type="number" id="night" step="500" min="0"></div>
+        <div><label class="fl">Ночей</label><input type="number" id="nights" value="1" min="1" max="10"></div>
+      </div>
+      <div class="blocksub"><span class="lab" id="htLab">Отель · 1 ноч. (Rahat Palace)</span><span class="val mono" id="htSub">14 000<span class="cur">₽</span></span></div>
+      <p class="cap">* Обычная ночь. В ночь концерта дороже — впишите точную цену из брони.</p>
+    </div>
+  </section>
+
+  <!-- 04 КАЛЬКУЛЯТОР -->
+  <section>
+    <div class="s-head"><span class="s-num">04</span><h2>Калькулятор</h2><p>Свод всех блоков + такси, питание, буфер.</p></div>
+    <div class="result">
+      <h3>Примерная стоимость поездки</h3>
+      <div class="setrow">
+        <div class="cell"><label>Сколько человек</label>
+          <div class="seg" id="people"><button data-v="1">1</button><button data-v="2" class="on">2</button></div>
+        </div>
+        <div class="cell"><label>Курс ₸ → ₽ (за 1 ₸)</label><input type="number" id="rate" value="0.167" step="0.001" min="0"></div>
+      </div>
+      <ul class="rrows" id="rrows"><li><span>Билеты × 2</span><b>83 500 ₽</b></li><li><span>Перелёт (ручная кладь) × 2</span><b>145 970 ₽</b></li><li><span>Отель · 1 ноч.</span><b>14 000 ₽</b></li><li><span>Такси / трансфер</span><b>6 000 ₽</b></li><li><span>Питание × 2</span><b>8 000 ₽</b></li><li><span>Буфер</span><b>6 000 ₽</b></li></ul>
+      <div class="grand">
+        <div><div class="lab">Итого</div><div class="big mono" id="grand">263 470<span class="cur">₽</span></div></div>
+        <div class="per" id="perPerson">≈ 131 735 ₽ / человек</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 NOTES -->
+  <section>
+    <div class="s-head"><span class="s-num">05</span><h2>На что заложить запас</h2></div>
+    <div class="notes"><ul>
+      <li><b>Ранний заезд.</b> Прилёт 14 авг в 03:25, check-in обычно 14:00–15:00. Либо доплата за ранний заезд, либо бронь с 13 августа (поставьте «Ночей: 2»).</li>
+      <li><b>Отели в ночь концерта дороже</b> — впишите реальную цену ночи в блоке «Отель».</li>
+      <li><b>Такси после концерта</b> — с наценкой. Rahat Palace хорош тем, что от стадиона можно уйти пешком.</li>
+      <li><b>Обратный вылет</b> 15 авг в 15:50 → Новосибирск 20:10, времени после концерта с запасом.</li>
+    </ul></div>
+  </section>
+
+  <footer><span>Калькулятор · Новосибирск ↔ Алматы · YE 14.08.2026</span><span>цены — с афиши · оценка ориентировочная</span></footer>
+</div>
+
+<script>
+var TIERS=[
+  {kzt:350000,name:"Gold · у сцены",color:"#A5301C"},
+  {kzt:280000,name:"Silver · премиум",color:"#4E4A40"},
+  {kzt:260000,name:"Сектор (у сцены)",color:"#6F6A5B"},
+  {kzt:250000,name:"Bronze",color:"#8A8270"},
+  {kzt:220000,name:"Сектор (боковой)",color:"#A49C88"},
+  {kzt:180000,name:"Сектор",color:"#BDB6A5"},
+  {kzt:150000,name:"Дальний сектор",color:"#CFC9BB"},
+  {kzt:120000,name:"Дальний · минимум",color:"#DCD8CC"}
+];
+var HOTELS=[
+  {name:"Rahat Palace",stars:"★★★★★",cls:"Люкс",tier:"walk",addr:"ул. Сатпаева, 29/6 — практически у стадиона. Бассейн, спа, 3 ресторана.",foot:"🚶 <b>~8–10 мин</b>",dist:"~0,65 км",pos:13,range:"~9 000–16 000 ₽",night:14000,url:"rahat-palace-hotel"},
+  {name:"Ramada by Wyndham",stars:"★★★★",cls:"Комфорт",tier:"taxi",addr:"ул. Байтурсынова, 27/1. Бассейн, спа, шаттл из аэропорта включён.",foot:"🚕 <b>~5 мин</b>",dist:"~1,5 км",pos:30,range:"~7 000–10 000 ₽",night:8500,url:"ramada"},
+  {name:"Park Dedeman Almaty",stars:"★★★★",cls:"Комфорт",tier:"taxi",addr:"ул. Тимирязева, 67а, у Атакента. Крытый бассейн, сауна, зал.",foot:"🚕 <b>~7–10 мин</b>",dist:"~2,5 км",pos:50,range:"~6 500–9 500 ₽",night:8000,url:"park-dedeman-almaty"},
+  {name:"Renion Park Hotel",stars:"★★★★",cls:"Комфорт",tier:"taxi",addr:"Центральная часть Алматы. Спокойный вариант с хорошими отзывами.",foot:"🚕 <b>~10 мин</b>",dist:"~2,7 км",pos:55,range:"~8 000–11 000 ₽",night:9500,url:"renion-park-hotel"},
+  {name:"Grand Mildom",stars:"★★★★",cls:"Бутик",tier:"far",addr:"Район Медеу, ближе к горам. Бутик-формат, спа.",foot:"🚗 <b>~15 мин</b>",dist:"~4 км",pos:80,range:"~6 500–12 500 ₽",night:9500,url:"grand-mildom"}
+];
+var FLIGHT_NOBAG=72985,FLIGHT_BAG=92405,FOOD_PP=4000,TAXI=6000,BUFFER=6000;
+var state={kzt:250000,people:2,bag:0,hotelIdx:0,night:14000,nights:1,rate:0.167};
+
+function fmt(n){n=Math.round(n);return n.toLocaleString("ru-RU").replace(/[,\u00A0]/g," ");}
+function colorFor(k){for(var i=0;i<TIERS.length;i++)if(TIERS[i].kzt===k)return TIERS[i].color;return"#ccc";}
+function pt(cx,cy,rx,ry,d){var a=d*Math.PI/180;return[cx+rx*Math.cos(a),cy+ry*Math.sin(a)];}
+
+// ----- STADIUM -----
+var SVG="http://www.w3.org/2000/svg",map=document.getElementById("map"),cx=300,cy=228;
+function zone(el,kzt){el.setAttribute("class","zone");el.setAttribute("fill",colorFor(kzt));el.setAttribute("stroke","#E7E4DC");el.setAttribute("stroke-width","2");el.setAttribute("data-kzt",kzt);el.style.cursor="pointer";el.addEventListener("click",function(){selectTicket(kzt);});map.appendChild(el);}
+function txt(x,y,s,c,fs){var t=document.createElementNS(SVG,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("text-anchor","middle");t.setAttribute("dominant-baseline","middle");t.setAttribute("font-size",fs||11);t.setAttribute("fill",c||"#15120E");t.textContent=s;map.appendChild(t);}
+var N=20,orx=278,ory=210,irx=150,iry=112,gap=1.4;
+for(var i=0;i<N;i++){
+  var a0=-90+i*(360/N)+gap,a1=-90+(i+1)*(360/N)-gap,mid=(a0+a1)/2,w=Math.abs(Math.cos(mid*Math.PI/180));
+  var pr=(w>0.9?260:w>0.68?220:w>0.42?180:w>0.18?150:120)*1000;
+  var q1=pt(cx,cy,irx,iry,a0),q2=pt(cx,cy,irx,iry,a1),q3=pt(cx,cy,orx,ory,a1),q4=pt(cx,cy,orx,ory,a0);
+  var pg=document.createElementNS(SVG,"polygon");
+  pg.setAttribute("points",q1[0]+","+q1[1]+" "+q2[0]+","+q2[1]+" "+q3[0]+","+q3[1]+" "+q4[0]+","+q4[1]);
+  zone(pg,pr);
+}
+function ell(rx,ry){var e=document.createElementNS(SVG,"ellipse");e.setAttribute("cx",cx);e.setAttribute("cy",cy);e.setAttribute("rx",rx);e.setAttribute("ry",ry);return e;}
+zone(ell(146,108),250000);txt(cx,cy-92,"Bronze","#F3F1EB");
+zone(ell(112,84),280000);txt(cx,cy-66,"Silver","#E7E4DC");
+zone(ell(78,58),350000);txt(cx,cy-38,"Gold","#F3F1EB");
+var sc=ell(46,32);sc.setAttribute("fill","#15120E");map.appendChild(sc);
+txt(cx,cy,"СЦЕНА","#E7E4DC",12);
+
+// ----- LEGEND -----
+var legend=document.getElementById("legend");
+TIERS.forEach(function(t){var d=document.createElement("div");d.setAttribute("data-kzt",t.kzt);d.innerHTML='<span class="sw" style="background:'+t.color+'"></span><span>'+t.name+'</span><span class="lp">'+fmt(t.kzt)+' ₸</span>';d.addEventListener("click",function(){selectTicket(t.kzt);});d.style.cursor="pointer";legend.appendChild(d);});
+
+// ----- HOTELS -----
+var tiersMeta={walk:{ic:"🚶",title:"Пешком до стадиона",rng:"до 1 км"},taxi:{ic:"🚕",title:"Рядом · 5–10 мин на такси",rng:"1–3 км"},far:{ic:"🚗",title:"Чуть дальше · транспорт",rng:"3+ км"}};
+var hc=document.getElementById("hotels");
+["walk","taxi","far"].forEach(function(tk){
+  var m=tiersMeta[tk],wrap=document.createElement("div");wrap.className="loc-tier";
+  wrap.innerHTML='<div class="loc-bar"><span>'+m.ic+'</span><h3>'+m.title+'</h3><span class="rng">'+m.rng+'</span></div>';
+  HOTELS.forEach(function(h,idx){
+    if(h.tier!==tk)return;
+    var el=document.createElement("div");el.className="hotel";el.setAttribute("data-idx",idx);
+    el.innerHTML=
+      '<div class="name">'+h.name+' <span class="stars">'+h.stars+'</span> <span class="cls">'+h.cls+'</span></div>'+
+      '<div class="price"><div class="num">'+h.range+'</div><div class="lab">за ночь*</div></div>'+
+      '<span class="pickmark">✓ выбрано</span>'+
+      '<div class="addr">'+h.addr+'</div>'+
+      '<div class="meta"><span>'+h.foot+'</span><span>📍 <b>'+h.dist+'</b></span></div>'+
+      '<div class="meter"><div class="track"><span class="stadium"></span><span class="dot" style="left:'+h.pos+'%"></span></div><div class="scale"><span>стадион</span><span>2,5 км</span><span>5 км</span></div></div>'+
+      '<a class="book" href="https://travel.yandex.ru/hotels/almaty/'+h.url+'/?adults=2&checkinDate=2026-08-14&checkoutDate=2026-08-15&roomCount=1" target="_blank" rel="noopener">Забронировать →</a>';
+    el.addEventListener("click",function(e){ if(e.target.closest(".book"))return; selectHotel(idx); });
+    wrap.appendChild(el);
+  });
+  hc.appendChild(wrap);
+});
+
+// ----- CONTROLS -----
+var nightInp=document.getElementById("night"),nightsInp=document.getElementById("nights"),rateInp=document.getElementById("rate");
+nightInp.addEventListener("input",function(){state.night=parseFloat(this.value)||0;render();});
+nightsInp.addEventListener("input",function(){state.nights=Math.max(1,parseInt(this.value,10)||1);render();});
+rateInp.addEventListener("input",function(){state.rate=parseFloat(this.value)||0;render();});
+document.querySelectorAll("#people button").forEach(function(b){b.addEventListener("click",function(){state.people=parseInt(this.dataset.v,10);seg("people",this);render();});});
+document.querySelectorAll("#bag button").forEach(function(b){b.addEventListener("click",function(){state.bag=parseInt(this.dataset.v,10);seg("bag",this);render();});});
+function seg(id,btn){document.querySelectorAll("#"+id+" button").forEach(function(x){x.classList.remove("on");});btn.classList.add("on");}
+
+function selectTicket(k){state.kzt=k;
+  document.querySelectorAll("#map .zone").forEach(function(z){z.classList.toggle("sel",parseInt(z.getAttribute("data-kzt"),10)===k);});
+  document.querySelectorAll("#legend div").forEach(function(d){d.classList.toggle("act",parseInt(d.getAttribute("data-kzt"),10)===k);});
+  render();
+}
+function selectHotel(i){state.hotelIdx=i;state.night=HOTELS[i].night;nightInp.value=state.night;
+  document.querySelectorAll(".hotel").forEach(function(h){h.classList.toggle("sel",parseInt(h.getAttribute("data-idx"),10)===i);});
+  render();
+}
+
+// ----- RENDER -----
+function render(){
+  var flightPP=state.bag?FLIGHT_BAG:FLIGHT_NOBAG;
+  var air=flightPP*state.people, tix=state.kzt*state.rate*state.people, hotel=state.night*state.nights;
+  var taxi=TAXI, food=FOOD_PP*state.people, buffer=BUFFER, total=air+tix+hotel+taxi+food+buffer;
+  var ti=TIERS.find(function(t){return t.kzt===state.kzt;});
+
+  document.getElementById("picked").innerHTML="Выбрано: <b>"+fmt(state.kzt)+" ₸</b> · "+ti.name+" ≈ "+fmt(state.kzt*state.rate)+" ₽/чел";
+  document.getElementById("tkLab").textContent="Билеты × "+state.people;
+  document.getElementById("tkSub").innerHTML=fmt(tix)+'<span class="cur">₽</span>';
+  document.getElementById("flLab").textContent="Перелёт × "+state.people;
+  document.getElementById("flSub").innerHTML=fmt(air)+'<span class="cur">₽</span>';
+  document.getElementById("htLab").textContent="Отель · "+state.nights+" ноч. ("+HOTELS[state.hotelIdx].name+")";
+  document.getElementById("htSub").innerHTML=fmt(hotel)+'<span class="cur">₽</span>';
+
+  var rows=[
+    ["Билеты × "+state.people,tix],
+    ["Перелёт ("+(state.bag?"с багажом":"ручная кладь")+") × "+state.people,air],
+    ["Отель · "+state.nights+" ноч.",hotel],
+    ["Такси / трансфер",taxi],
+    ["Питание × "+state.people,food],
+    ["Буфер",buffer]
+  ];
+  var ul=document.getElementById("rrows");ul.innerHTML="";
+  rows.forEach(function(r){var li=document.createElement("li");li.innerHTML="<span>"+r[0]+"</span><b>"+fmt(r[1])+" ₽</b>";ul.appendChild(li);});
+  document.getElementById("grand").innerHTML=fmt(total)+'<span class="cur">₽</span>';
+  document.getElementById("perPerson").innerHTML=state.people>1?("≈ "+fmt(total/state.people)+" ₽ / человек"):"";
+}
+
+nightInp.value=state.night;
+selectTicket(state.kzt);
+selectHotel(0);
+render();
+</script>
+
+
+</body></html>
