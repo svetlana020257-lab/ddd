@@ -62,12 +62,18 @@ input:focus-visible,button:focus-visible,.design input:focus-visible+span{outlin
 .link .actions .btn{font-size:12px;padding:11px 12px}
 .next{font:inherit;font-weight:800;font-size:13px;color:var(--pink);background:none;border:0;padding:0;cursor:pointer;align-self:flex-start}
 .next[hidden]{display:none}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tabs a{font-weight:800;font-size:13px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;border:1.5px solid transparent}
+.tabs a:hover{color:var(--pink)}
+.tabs a[aria-current]{color:var(--pink);border-color:var(--pink)}
+@media (max-width:600px){.tabs{margin-left:0;order:3}}
 </style></head><body>
 <div class="wrap">
 <header>
   <span class="tiles" aria-hidden="true"><i style="background:#7A2E92"></i><i style="background:#F7841E"></i><i style="background:#7C7CFF"></i><i style="background:#E23C80"></i><i style="background:#FFD92B"></i><i style="background:#7A2E92"></i></span>
   <h1>Сертификаты Art Mosaic</h1>
-  <p>Заполните поля — сертификат обновится справа. Можно скачать PDF для печати или отправить клиенту ссылку-открытку.</p>
+  <nav class="tabs"><a aria-current="page" href="index.html">Сертификаты</a><a href="priglashenie.html">Приглашения</a><a href="katalog.html">Каталог</a></nav>
+  <p>Заполните поля — сертификат обновится справа. PDF одной страницей удобно переслать в мессенджер, двусторонний — для печати. Или отправьте клиенту ссылку-открытку.</p>
 </header>
 <div class="grid">
 <form class="panel" id="form" autocomplete="off">
@@ -83,7 +89,10 @@ input:focus-visible,button:focus-visible,.design input:focus-visible+span{outlin
   <label class="f"><span class="lab">Номер сертификата</span><input type="text" id="num" maxlength="12"></label>
   <div class="actions">
     <button class="btn" type="button" id="mklink">Ссылка для клиента</button>
-    <button class="btn ghost" type="submit" id="pdf">Скачать PDF</button>
+  </div>
+  <div class="actions">
+    <button class="btn ghost" type="submit" id="pdf">PDF одной страницей</button>
+    <button class="btn ghost" type="button" id="pdf2">PDF для печати (2 стороны)</button>
   </div>
   <div class="link" id="linkbox" hidden>
     <span class="lab">Ссылка-открытка</span>
@@ -136,9 +145,15 @@ $('next').addEventListener('click',()=>{$('num').value=nextNum();$('who').value=
 $('form').addEventListener('submit',async e=>{
   e.preventDefault();if(!valid())return;
   $('pdf').disabled=true;msg('Собираю PDF…');
-  try{await draw();AM.download(fileBase()+'.pdf',AM.pdf($('cf'),$('cb')));issued();msg('PDF скачан.','ok');}
+  try{await draw();AM.download(fileBase()+'.pdf',AM.pdfOne($('cf'),$('cb')));issued();msg('PDF скачан — одна страница, можно пересылать.','ok');}
   catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}
   finally{$('pdf').disabled=false}
+});
+$('pdf2').addEventListener('click',async()=>{
+  if(!valid())return;$('pdf2').disabled=true;msg('Собираю PDF…');
+  try{await draw();AM.download(fileBase()+' (печать).pdf',AM.pdf($('cf'),$('cb')));issued();msg('PDF для печати скачан.','ok');}
+  catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}
+  finally{$('pdf2').disabled=false}
 });
 $('mklink').addEventListener('click',()=>{
   if(!valid())return;

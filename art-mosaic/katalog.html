@@ -1,0 +1,143 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Мастер-классы Art Mosaic</title>
+<meta property="og:title" content="Мастер-классы мастерской Art Mosaic">
+<meta property="og:description" content="Что можно собрать из стекла, цемента и керамики — и сколько это стоит.">
+<meta property="og:image" content="img/t_f_logo_cap.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;800&display=swap">
+<style>
+/* Catalog: header with certificate sum, category sections of cards, sticky contact bar */
+:root{--bg:#FFF6FA;--panel:#FFFFFF;--ink:#2B0F3D;--muted:#8A6F86;--line:#F0DCE7;--pink:#E23C80;--violet:#7A2E92;--lav:#7C7CFF;--sun:#FFD92B;--orange:#F7841E;--ok:#21865A;--okbg:#E6F5EC;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px}
+.hero{position:relative;overflow:hidden;background:#FDE7F0 url(img/bg.jpg) center/cover}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,246,250,.55),rgba(255,246,250,.92) 70%,var(--bg))}
+.hero .in{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:36px 16px 26px;display:flex;flex-direction:column;gap:12px}
+.brand{font-family:var(--display);font-weight:800;font-size:12px;letter-spacing:.2em;color:var(--violet)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,6vw,44px);line-height:1.08;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h1 b{color:var(--pink)}
+.lead{margin:0;color:var(--muted);font-weight:600;max-width:60ch;line-height:1.5}
+.sumbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:4px}
+.sumbar label{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:6px 6px 6px 14px;font-weight:700;color:var(--muted);font-size:13px}
+.sumbar input{font:inherit;font-family:var(--display);font-weight:800;font-size:18px;color:var(--pink);border:0;background:transparent;width:7ch;padding:6px 4px}
+.sumbar input:focus-visible{outline:2px solid var(--pink);border-radius:8px}
+.toggle{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13.5px;color:var(--ink);cursor:pointer;user-select:none}
+.toggle input{width:18px;height:18px;accent-color:var(--pink)}
+main{max-width:980px;margin:0 auto;padding:6px 16px 110px;display:flex;flex-direction:column;gap:30px}
+section h2{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+section h2 i{display:inline-grid;grid-template-columns:repeat(2,7px);gap:2px;transform:rotate(-8deg)}
+section h2 i b{width:7px;height:7px;border-radius:2px;display:block}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+@media (max-width:560px){.cards{grid-template-columns:1fr 1fr;gap:9px}.card{padding:10px;gap:7px;border-radius:14px}.card h3{font-size:14px}.card p{font-size:12px}.price strong{font-size:15px}.badge{font-size:11px;padding:3px 8px;white-space:normal}.sw{height:38px}}
+.card{background:var(--panel);border:1.5px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card.dim{opacity:.55}
+.sw{height:52px;border-radius:10px;overflow:hidden}
+.sw svg{width:100%;height:100%;display:block}
+.card h3{margin:0;font-size:15.5px;font-weight:800;line-height:1.3}
+.card p{margin:-4px 0 0;font-size:13px;color:var(--muted);font-weight:600;line-height:1.4}
+.price{margin-top:auto;display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.price strong{font-family:var(--display);font-weight:800;font-size:17px;color:var(--violet);font-variant-numeric:tabular-nums}
+.badge{font-size:12px;font-weight:800;border-radius:999px;padding:4px 10px;white-space:nowrap}
+.badge.ok{background:var(--okbg);color:var(--ok)}
+.badge.add{background:#FFF1E3;color:#B4560A}
+.empty{color:var(--muted);font-weight:600}
+.empty[hidden],section[hidden],.card[hidden],.badge[hidden]{display:none}
+.note{font-size:12.5px;color:var(--muted);line-height:1.5}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.bar .in{max-width:980px;margin:0 auto;padding:10px 16px calc(10px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.bar .addr{font-size:12.5px;color:var(--muted);font-weight:600;flex:1 1 200px;line-height:1.4}
+.bar .addr b{color:var(--ink)}
+.call{font-family:var(--display);font-weight:800;font-size:13px;text-decoration:none;color:#fff;background:var(--pink);border-radius:12px;padding:13px 18px;white-space:nowrap}
+.call:focus-visible,.back:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+.bar .in{flex-wrap:nowrap}
+@media (max-width:560px){.bar .addr{font-size:11.5px}.call{padding:11px 12px;font-size:12px}}
+.back{font-weight:800;font-size:13px;color:var(--violet);text-decoration:none}
+</style></head><body>
+<header class="hero"><div class="in">
+  <div class="brand">ART MOSAIC · МОЗАИЧНАЯ МАСТЕРСКАЯ</div>
+  <h1 id="title">Что можно <b>собрать</b> в Art Mosaic</h1>
+  <p class="lead" id="lead">Все мастер-классы и цены. Материалы и инструменты даём, опыт не нужен — работу забираете домой.</p>
+  <div class="sumbar">
+    <label>Сумма сертификата <input type="number" id="sum" min="0" step="100" inputmode="numeric" placeholder="—"> ₽</label>
+    <label class="toggle" style="border:0;background:none;padding:0"><input type="checkbox" id="fit"> Только то, что входит в сумму</label>
+  </div>
+</div></header>
+<main id="main"></main>
+<div class="bar"><div class="in">
+  <div class="addr"><b>Запишитесь заранее</b><br>Комсомольский пр-т, 24, 8 этаж, офис 815</div>
+  <a class="call" href="tel:+79130029552">+7 913 002-95-52</a>
+</div></div>
+<script>
+// Цены — из «Сверка_прайса_АртМозаик», столбец «Цена в новом прайсе». Обновлять здесь.
+// p — цена, h — цена за час, from — «от» (цена может быть выше)
+const CATS=[
+ {t:'Детские мастер-классы',c:['#E23C80','#FFD92B','#7C7CFF','#F7841E'],items:[
+  {n:'Мозаика в формочке',d:'Для детей от 6 лет',p:2000},
+  {n:'Звезда на подставке',d:'Мозаика линиями',p:2000},
+  {n:'Тукан, фламинго или чайка',d:'Фигурка на подставке',p:2500},
+  {n:'Семейный оберег',p:2500},
+  {n:'Ёлочные игрушки',d:'3 штуки, сезонный',p:2500}]},
+ {t:'Для дома',c:['#7A2E92','#7C7CFF','#F27AAA','#FFD92B'],items:[
+  {n:'Ключница «Кот» или «Такса»',d:'20 см',p:2500},
+  {n:'Ключница «Домик»',p:3000,from:1},
+  {n:'Карандашница',p:2500,from:1},
+  {n:'Фоторамка',d:'Под фото 10×15',p:2500},
+  {n:'Подсвечник S',d:'На 20 часов горения',p:2000},
+  {n:'Подсвечник L',d:'На 40 часов горения',p:2500},
+  {n:'Кормушка для птиц',p:2500},
+  {n:'Подставка под горячее',d:'Пиксельная мозаика',p:3000},
+  {n:'Мозаика в массиве дерева',p:3000},
+  {n:'Поднос круглый',d:'24 см',p:4000},
+  {n:'Поднос бамбуковый',d:'35×23 см',p:6000}]},
+ {t:'Картины',c:['#F7841E','#E23C80','#7A2E92','#FFD92B'],items:[
+  {n:'Цветные цементы',d:'20×20 см',p:2500},
+  {n:'Пиксель-арт на цементе',p:2500},
+  {n:'Экомозаика из битой посуды',d:'Тренкадис, 20×20 см',p:2500},
+  {n:'Цветные цементы в рамке',d:'Формат А4',p:3500},
+  {n:'Римская мозаика',d:'15×15 см',p:4000},
+  {n:'Ботаника',d:'Формат А4, рама входит',p:4500},
+  {n:'Стрекоза',d:'Интерьерная форма',p:6000}]},
+ {t:'Стекло',c:['#7C7CFF','#E23C80','#FFD92B','#7A2E92'],items:[
+  {n:'Фьюзинг',d:'Спекание стекла',p:2000,from:1},
+  {n:'Тиффани',d:'Паяный витраж',h:800}]},
+ {t:'Своя работа по часам',c:['#FFD92B','#F7841E','#7C7CFF','#E23C80'],items:[
+  {n:'Мозаичное панно',d:'Своя идея, работа с мастером',h:500}]},
+ {t:'Праздники',c:['#E23C80','#7A2E92','#F7841E','#7C7CFF'],items:[
+  {n:'Детский день рождения',d:'Праздник в мастерской',p:12000},
+  {n:'Взрослый праздник',d:'Девичник, юбилей',p:14000},
+  {n:'Абонемент «Юный мозаичист»',d:'Для детей',p:6000}]}
+];
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/\s/g,' ');
+// мозаичная плашка: нерегулярные плитки в цветах раздела
+function swatch(cols,seed){
+  let x=seed*9301+49297;const r=()=>(x=(x*9301+49297)%233280)/233280;
+  let out='',cx=0;
+  while(cx<240){const w=10+r()*26;let cy=0;while(cy<64){const h=8+r()*24,c=r()<.62?cols[(r()*cols.length)|0]:['#FBE3EE','#F6D3E3','#EFE4FB'][(r()*3)|0];
+    out+=r()<.18?`<path d="M${cx+1} ${cy+1}h${w-2}L${cx+1} ${cy+h-1}z" fill="${c}"/>`:`<rect x="${cx+1}" y="${cy+1}" width="${w-2}" height="${h-2}" rx="2" fill="${c}"/>`;cy+=h}cx+=w}
+  return `<svg viewBox="0 0 240 64" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="240" height="64" fill="#FFF"/>${out}</svg>`;
+}
+let seed=1;
+const html=CATS.map((cat,ci)=>`<section data-c="${ci}"><h2><i><b style="background:${cat.c[0]}"></b><b style="background:${cat.c[1]}"></b><b style="background:${cat.c[2]}"></b><b style="background:${cat.c[3]}"></b></i>${cat.t}</h2><div class="cards">${
+  cat.items.map(it=>`<article class="card" data-p="${it.p||0}" data-h="${it.h||0}"><div class="sw">${swatch(cat.c,seed++)}</div><h3>${it.n}</h3>${it.d?`<p>${it.d}</p>`:''}<div class="price"><strong>${it.h?fmt(it.h)+' ₽/час':(it.from?'от ':'')+fmt(it.p)+' ₽'}</strong><span class="badge" hidden></span></div></article>`).join('')
+}</div></section>`).join('')+`<p class="empty" id="empty" hidden>На эту сумму пока ничего не нашлось — снимите галочку, чтобы увидеть всё. Разницу можно доплатить на месте.</p><p class="note">Цены актуальны на октябрь 2026 года. Точную стоимость и свободные даты подскажем по телефону.</p>`;
+$('main').innerHTML=html;
+const q=new URLSearchParams(location.search),s0=parseInt(q.get('s')||'',10);
+if(s0>0){$('sum').value=s0;$('fit').checked=false;$('title').innerHTML=`Что можно выбрать на <b>${fmt(s0)} ₽</b>`;
+  $('lead').textContent='Всё, что отмечено зелёным, полностью входит в ваш сертификат. На остальное — небольшая доплата на месте. Материалы и инструменты даём, опыт не нужен.';}
+function update(){
+  const s=parseInt($('sum').value,10)||0,only=$('fit').checked&&s>0;let shown=0;
+  document.querySelectorAll('.card').forEach(c=>{
+    const p=+c.dataset.p,h=+c.dataset.h,b=c.querySelector('.badge');let fits=true;
+    if(!s){b.hidden=true;c.hidden=false;c.classList.remove('dim');shown++;return}
+    if(h){const hrs=Math.floor(s/h);fits=hrs>=1;b.className='badge '+(fits?'ok':'add');b.textContent=fits?`≈ ${hrs} ч по сертификату`:`доплата ${fmt(h-s)} ₽`}
+    else{fits=p<=s;b.className='badge '+(fits?'ok':'add');b.textContent=fits?'✓ входит':`доплата ${fmt(p-s)} ₽`}
+    b.hidden=false;c.hidden=only&&!fits;c.classList.toggle('dim',false);if(!c.hidden)shown++;
+  });
+  document.querySelectorAll('section').forEach(sec=>sec.hidden=![...sec.querySelectorAll('.card')].some(c=>!c.hidden));
+  $('empty').hidden=shown>0;
+}
+$('sum').addEventListener('input',update);$('fit').addEventListener('change',update);update();
+</script>
+</body></html>
