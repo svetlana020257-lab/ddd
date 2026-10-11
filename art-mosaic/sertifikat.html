@@ -1,0 +1,169 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
+<title>Сертификат одной стороной · Art Mosaic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;800&display=swap">
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* Layout: form column + live two-sided preview, stacks on phone */
+:root{
+  --bg:#FFF8FB; --panel:#FFFFFF; --ink:#2B0F3D; --muted:#8A6F86; --line:#EFD9E5;
+  --pink:#E23C80; --violet:#7A2E92; --lav:#7C7CFF; --sun:#FFD92B;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1C1022;--panel:#26162E;--ink:#F6E9F2;--muted:#B79BB0;--line:#3D2846;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1C1022;--panel:#26162E;--ink:#F6E9F2;--muted:#B79BB0;--line:#3D2846;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 48px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.tiles{display:grid;grid-template-columns:repeat(3,9px);gap:3px;transform:rotate(-8deg)}
+.tiles i{width:9px;height:9px;border-radius:2px;display:block}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:0;color:var(--muted);flex-basis:100%;font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+label.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lab{font-family:var(--display);font-weight:500;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=number],input[type=date]{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;width:100%;min-width:0}
+input:focus-visible,button:focus-visible,.design input:focus-visible+span{outline:2px solid var(--pink);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer}
+.chip:hover{border-color:var(--pink);color:var(--pink)}
+.design{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.design label{position:relative;cursor:pointer}
+.design input{position:absolute;opacity:0}
+.design img{display:block;width:100%;border-radius:9px;border:2.5px solid transparent;aspect-ratio:794/454;object-fit:cover}
+.design input:checked~img{border-color:var(--pink)}
+.design span{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-top:3px}
+.design input:checked~span{color:var(--pink)}
+.fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fonts button{font-size:20px;color:var(--violet);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:8px 10px;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fonts button[aria-pressed=true]{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.02em;border:0;border-radius:12px;padding:14px 18px;cursor:pointer;background:var(--pink);color:#fff;flex:1 1 auto}
+.btn.ghost{background:transparent;color:var(--violet);border:1.5px solid var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.ghost{color:#D9A9EC}}
+:root[data-theme="dark"] .btn.ghost{color:#D9A9EC}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{font-size:13px;font-weight:700;min-height:18px;color:var(--muted)}
+.msg.ok{color:#2E8B57}.msg.err{color:var(--pink)}
+.prev{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side{display:flex;flex-direction:column;gap:6px}
+.side canvas{width:100%;height:auto;max-width:100%;border-radius:12px;box-shadow:0 1px 0 var(--line),0 12px 30px -18px rgba(122,46,146,.45);background:#fff}
+.hint{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:transform .12s}.btn:active{transform:scale(.98)}}
+
+.link{display:flex;flex-direction:column;gap:8px;padding:14px;border:1.5px dashed var(--line);border-radius:14px}
+.link[hidden]{display:none}
+.link input{font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;min-width:0}
+.link .actions .btn{font-size:12px;padding:11px 12px}
+.next{font:inherit;font-weight:800;font-size:13px;color:var(--pink);background:none;border:0;padding:0;cursor:pointer;align-self:flex-start}
+.next[hidden]{display:none}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tabs a{font-weight:800;font-size:13px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;border:1.5px solid transparent}
+.tabs a:hover{color:var(--pink)}
+.tabs a[aria-current]{color:var(--pink);border-color:var(--pink)}
+@media (max-width:600px){.tabs{margin-left:0;order:3}}
+</style></head><body>
+<div class="wrap">
+<header>
+  <span class="tiles" aria-hidden="true"><i style="background:#7A2E92"></i><i style="background:#F7841E"></i><i style="background:#7C7CFF"></i><i style="background:#E23C80"></i><i style="background:#FFD92B"></i><i style="background:#7A2E92"></i></span>
+  <h1>Сертификаты Art Mosaic</h1>
+  <nav class="tabs"><a href="index.html">Двусторонний</a><a aria-current="page" href="sertifikat.html">Односторонний</a><a href="katalog.html">Каталог</a></nav>
+  <p>Всё на одной стороне: картинка слева, поля справа. Скачайте картинку для мессенджера, PDF одним листом или отправьте ссылку-открытку.</p>
+</header>
+<div class="grid">
+<form class="panel" id="form" autocomplete="off">
+  <div class="f"><span class="lab">Картинка слева</span><div class="design" id="design"></div></div>
+  <label class="f"><span class="lab">Для кого</span><input type="text" id="who" value="Дарье" maxlength="60"></label>
+  <label class="f"><span class="lab">На что</span><input type="text" id="what" value="мозаичный мастер-класс" maxlength="70">
+    <span class="chips" id="presets"></span></label>
+  <div class="row">
+    <label class="f"><span class="lab">Номинал, ₽</span><input type="number" id="sum" value="2500" min="0" step="100" inputmode="numeric"></label>
+    <label class="f"><span class="lab">Действует до</span><input type="date" id="till"></label>
+  </div>
+  <div class="f"><span class="lab">Шрифт подписи</span><div class="fonts" id="fonts"></div></div>
+  <label class="f"><span class="lab">Номер сертификата</span><input type="text" id="num" maxlength="12"></label>
+  <div class="actions">
+    <button class="btn" type="button" id="mklink">Ссылка для клиента</button>
+  </div>
+  <div class="actions">
+    <button class="btn ghost" type="button" id="png">Картинка</button>
+    <button class="btn ghost" type="submit" id="pdf">PDF</button>
+  </div>
+  <div class="link" id="linkbox" hidden>
+    <span class="lab">Ссылка-открытка</span>
+    <input type="text" id="linkout" readonly>
+    <div class="actions">
+      <button class="btn" type="button" id="copy">Скопировать</button>
+      <button class="btn ghost" type="button" id="share" hidden>Отправить…</button>
+      <a class="btn ghost" id="open" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Открыть</a>
+    </div>
+  </div>
+  <div class="msg" id="msg" role="status"></div>
+  <button class="next" type="button" id="next" hidden>Следующий сертификат →</button>
+</form>
+<section class="prev" aria-label="Предпросмотр">
+  <div class="side"><canvas id="ci" width="2481" height="1419"></canvas></div>
+  <p class="hint">Номер берётся следующий за последним выданным в этом браузере. Его можно поправить вручную.</p>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="shared.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const PRESETS=['мозаичный мастер-класс','день рождения в мастерской','курс мозаики','любой мастер-класс','Тиффани'];
+const DES=[['phoenix_phrase','Феникс'],['cake','Торт — на день рождения']];
+$('design').innerHTML=DES.map(([k,t],i)=>`<label><input type="radio" name="design" id="d_${k}" value="${k}" ${i===0?'checked':''}><img src="${AM.thumb('f_'+k)}" alt=""><span>${t}</span></label>`).join('');
+$('presets').innerHTML=PRESETS.map(p=>`<button type="button" class="chip">${p}</button>`).join('');
+$('presets').addEventListener('click',e=>{if(e.target.classList.contains('chip')){$('what').value=e.target.textContent;changed();}});
+const d=new Date();d.setMonth(d.getMonth()+6);$('till').value=d.toISOString().slice(0,10);
+const nextNum=()=>String(parseInt(store.get('am_cert_num')||'0',10)+1).padStart(4,'0');
+$('num').value=nextNum();
+const sd=store.get('am_cert1_design');if(sd&&$('d_'+sd))$('d_'+sd).checked=true;
+let FONT=store.get('am_cert_font')||'caveat';if(!AM.FONTS.find(f=>f[0]===FONT))FONT='caveat';
+$('fonts').innerHTML=AM.FONTS.map(([k,fam,w])=>`<button type="button" data-k="${k}" aria-pressed="${k===FONT}" style="font-family:'${fam}',cursive;font-weight:${w}">Дарье 2 500</button>`).join('');
+$('fonts').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;FONT=b.dataset.k;store.set('am_cert_font',FONT);[...$('fonts').children].forEach(x=>x.setAttribute('aria-pressed',x===b));changed();});
+const design=()=>document.querySelector('input[name=design]:checked').value;
+const data=()=>({one:true,design:design(),who:$('who').value.trim(),what:$('what').value.trim(),sum:$('sum').value,till:$('till').value,num:$('num').value.trim(),font:FONT});
+const images={};
+async function front(){const k='f_'+design();if(!images[k])images[k]=await AM.load(AM.img(k));return images[k]}
+let ready=false;async function draw(){if(!ready)return;AM.drawCert1($('ci'),await front(),data());}
+function changed(){$('linkbox').hidden=true;draw();}
+['who','what','sum','till','num'].forEach(id=>$(id).addEventListener('input',changed));
+$('design').addEventListener('change',()=>{store.set('am_cert1_design',design());changed();});
+const msg=(t,cls='')=>{$('msg').textContent=t;$('msg').className='msg '+cls};
+const fileBase=()=>{const n=$('num').value.trim();const w=$('who').value.trim().replace(/[\\/:*?"<>|]+/g,'').slice(0,30);return `Сертификат ArtMosaic ${n}${w?' — '+w:''}`};
+const valid=()=>{if(!$('who').value.trim()||!$('sum').value){msg('Заполните «Для кого» и номинал.','err');return false}return true};
+function issued(){const n=parseInt($('num').value,10);if(!isNaN(n)&&n>parseInt(store.get('am_cert_num')||'0',10))store.set('am_cert_num',String(n));$('next').hidden=false;}
+$('next').addEventListener('click',()=>{$('num').value=nextNum();$('who').value='';$('linkbox').hidden=true;$('next').hidden=true;msg('');draw();$('who').focus();});
+$('form').addEventListener('submit',async e=>{
+  e.preventDefault();if(!valid())return;$('pdf').disabled=true;msg('Собираю PDF…');
+  try{await draw();AM.download(fileBase()+'.pdf',AM.pdfInvite($('ci')));issued();msg('PDF скачан.','ok');}
+  catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}finally{$('pdf').disabled=false}
+});
+$('png').addEventListener('click',async()=>{
+  if(!valid())return;await draw();
+  const c=document.createElement('canvas');c.width=1600;c.height=Math.round(1600*AM.H/AM.W);
+  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage($('ci'),0,0,c.width,c.height);
+  c.toBlob(b=>{AM.download(fileBase()+'.png',b);issued();msg('Картинка скачана — пересылайте в мессенджер.','ok')},'image/png');
+});
+$('mklink').addEventListener('click',()=>{
+  if(!valid())return;
+  const url=new URL('gift.html',location.href);url.search='?c='+AM.encode(data());
+  $('linkout').value=url.href;$('open').href=url.href;$('linkbox').hidden=false;issued();
+  msg('Ссылка готова — отправьте её клиенту.','ok');$('linkout').select();
+});
+$('copy').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText($('linkout').value);msg('Ссылка скопирована.','ok')}
+  catch(e){$('linkout').select();msg('Выделила ссылку — скопируйте её вручную.','')}
+});
+if(navigator.share){$('share').hidden=false;$('share').addEventListener('click',()=>{navigator.share({title:'Подарочный сертификат Art Mosaic',text:'Для вас подарок 🎁',url:$('linkout').value}).catch(()=>{})});}
+(async()=>{ready=true;await AM.inviteFontsReady();await draw();document.fonts.ready.then(draw);})();
+</script>
+</body></html>

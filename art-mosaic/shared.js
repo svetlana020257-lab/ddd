@@ -29,7 +29,7 @@ const AM = (() => {
   function drawFront(canvas, frontImg) { canvas.getContext('2d').drawImage(frontImg, 0, 0, W, H); }
   // компактная ссылка: JSON -> UTF-8 -> base64url
   function encode(d) {
-    const o = { d: d.design, w: d.who, o: d.what, s: d.sum, t: d.till, n: d.num, f: d.font };
+    const o = { d: d.design, w: d.who, o: d.what, s: d.sum, t: d.till, n: d.num, f: d.font }; if (d.one) o.x = 1;
     const b = new TextEncoder().encode(JSON.stringify(o)); let bin = ''; b.forEach(x => bin += String.fromCharCode(x));
     return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
@@ -38,7 +38,7 @@ const AM = (() => {
       s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '=';
       const bin = atob(s), b = Uint8Array.from(bin, ch => ch.charCodeAt(0));
       const o = JSON.parse(new TextDecoder().decode(b));
-      return { design: o.d, who: o.w, what: o.o, sum: o.s, till: o.t, num: o.n, font: o.f };
+      return { design: o.d, who: o.w, what: o.o, sum: o.s, till: o.t, num: o.n, font: o.f, one: !!o.x };
     } catch (e) { return null; }
   }
   function pdf(frontCanvas, backCanvas) {
@@ -129,6 +129,44 @@ const AM = (() => {
     font(700, 26, HAND); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, 410 * s);
     c.restore();
   }
+  // сертификат одной стороной: слева феникс или торт из плитки, справа плашка с полями (закрывает надпись на исходной картинке)
+  // d = {who, what, sum, till, num, font}
+  function drawCert1(canvas, front, d) {
+    const c = canvas.getContext('2d'), s = S;
+    const INK = '#2B0F3D', PINK = '#E23C80', VIO = '#7A2E92', MUTED = '#9A7C95', LINE = '#E3C6D6';
+    const UNB = 'Unbounded, "Arial Black", sans-serif', MAN = 'Manrope, sans-serif';
+    const F = FONTS.find(f => f[0] === d.font) || FONTS[0], HAND = `'${F[1]}', cursive`, HW = F[2], k = F[3];
+    const font = (wt, px, f) => { c.font = `${wt} ${px * s}px ${f}`; };
+    const ls = v => { try { c.letterSpacing = v; } catch (e) {} };
+    const fit = (t, wt, px, f, maxW) => { do { font(wt, px, f); px -= .5; } while (c.measureText(t).width > maxW * s && px > 8); };
+    const label = (t, x, y) => { font(500, 8, UNB); c.fillStyle = MUTED; ls(`${1.5 * s}px`); c.fillText(t, x * s, y * s); ls('0px'); };
+    const line = (a, b, y) => { c.strokeStyle = LINE; c.lineWidth = 1.2 * s; c.beginPath(); c.moveTo(a * s, y * s); c.lineTo(b * s, y * s); c.stroke(); };
+    const val = (t, x, y, maxW, col) => { if (!t) return; fit(t, HW, 21 * k, HAND, maxW); c.fillStyle = col; c.fillText(t, x * s, y * s); };
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.textBaseline = 'alphabetic'; c.textAlign = 'left';
+    if (front) c.drawImage(front, 0, 0, W, H); else { c.fillStyle = '#FBE3EE'; c.fillRect(0, 0, W, H); }
+    const PX = 366, PY = 24, PW = 410, PH = 406;
+    c.shadowColor = 'rgba(122,46,146,.22)'; c.shadowBlur = 18 * s; c.shadowOffsetY = 4 * s;
+    c.fillStyle = '#FFFBFD'; c.beginPath(); c.roundRect(PX * s, PY * s, PW * s, PH * s, 14 * s); c.fill();
+    c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0;
+    const X = PX + 26, R = PX + PW - 24, MID = X + (R - X) / 2 + 6;
+    font(800, 23, UNB); c.fillStyle = INK; c.fillText('Подарочный', X * s, 66 * s);
+    c.fillStyle = PINK; c.fillText('сертификат', X * s, 93 * s);
+    ['#7A2E92', '#E23C80', '#7C7CFF', '#F7841E', '#FFD92B'].forEach((col, i) => { c.fillStyle = col; c.beginPath(); c.roundRect((X + i * 11) * s, 103 * s, 7 * s, 7 * s, 1.6 * s); c.fill(); });
+    const num = (d.num || '').trim();
+    if (num) { font(500, 8, UNB); c.fillStyle = MUTED; c.textAlign = 'right'; c.fillText('№', (R - 54) * s, 52 * s); c.textAlign = 'left'; line(R - 50, R, 56); val(num, R - 48, 52, 48, VIO); }
+    label('ДЛЯ КОГО', X, 136); line(X, R, 172); val((d.who || '').trim(), X, 166, R - X, VIO);
+    label('НА ЧТО', X, 190); line(X, R, 226); val((d.what || '').trim(), X, 220, R - X, VIO);
+    label('НОМИНАЛ', X, 244); line(X, MID - 14, 280); val(fmtSum(d.sum), X, 274, MID - 14 - X, INK);
+    label('ДЕЙСТВУЕТ ДО', MID, 244); line(MID, R, 280); val(fmtDate(d.till), MID, 274, R - MID, VIO);
+    font(700, 11.5, MAN); c.fillStyle = INK; c.fillText('Запишитесь заранее', X * s, 322 * s);
+    const w1 = c.measureText('Запишитесь заранее ').width;
+    font(600, 11.5, MAN); c.fillStyle = MUTED; c.fillText('по телефону +7 913 002-95-52', X * s + w1, 322 * s);
+    c.fillText('Комсомольский пр-т, 24 · 8 этаж · офис 815', X * s, 339 * s);
+    font(800, 9, UNB); c.fillStyle = INK; ls(`${1 * s}px`); c.fillText('ART MOSAIC', X * s, 404 * s); ls('0px');
+    font(600, 10, MAN); c.fillStyle = MUTED; c.fillText('мозаичная мастерская', X * s, 417 * s);
+    font(700, 26, "'Caveat', cursive"); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, 414 * s);
+    c.restore();
+  }
   function pdfInvite(canvas) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [210, 120], compress: true });
@@ -140,5 +178,5 @@ const AM = (() => {
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  return { W, H, FONTS, DESIGNS, img, thumb, load, fmtSum, fmtDate, fmtLong, when, fontsReady, inviteFontsReady, drawBack, drawFront, drawInvite, pdfInvite, encode, decode, encodeObj, decodeObj, pdf, pdfOne, download };
+  return { W, H, FONTS, DESIGNS, img, thumb, load, fmtSum, fmtDate, fmtLong, when, fontsReady, inviteFontsReady, drawBack, drawFront, drawInvite, drawCert1, pdfInvite, encode, decode, encodeObj, decodeObj, pdf, pdfOne, download };
 })();

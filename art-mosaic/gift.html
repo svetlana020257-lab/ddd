@@ -34,7 +34,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="shared.js"></script>
 <script>
-window.ENV={param:'c',decode:AM.decode,defaultDesign:'phrase',backImg:'back',fonts:AM.fontsReady,drawBack:AM.drawBack,
+window.ENV={param:'c',decode:AM.decode,single:D=>D.one,drawSingle:AM.drawCert1,defaultDesign:'phrase',backImg:'back',fonts:AM.inviteFontsReady,drawBack:AM.drawBack,
   fileName:D=>`Подарочный сертификат Art Mosaic ${D.num||''}`.trim()+'.pdf',
   after:D=>{const n=Math.round(+D.sum||0);if(n){document.getElementById('cat').href='katalog.html?s='+n;document.getElementById('catsub').textContent='Мастер-классы, которые можно выбрать на '+AM.fmtSum(n).replace(/\s/g,'\u00a0');}}};
 </script>

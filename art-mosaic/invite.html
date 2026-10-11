@@ -33,7 +33,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="shared.js"></script>
 <script>
-window.ENV={param:'i',decode:AM.decodeObj,defaultDesign:'cake',single:true,fonts:AM.inviteFontsReady,
+window.ENV={param:'i',decode:AM.decodeObj,defaultDesign:'cake',single:true,drawSingle:AM.drawInvite,fonts:AM.inviteFontsReady,
   fileName:D=>`Приглашение на ДР Art Mosaic${D.name?' — '+D.name:''}`.replace(/[\\/:*?"<>|]+/g,'')+'.pdf'};
 </script>
 <script src="envelope.js"></script>
