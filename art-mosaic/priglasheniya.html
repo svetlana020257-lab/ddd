@@ -1,0 +1,168 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
+<title>Приглашения Art Mosaic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;800&display=swap">
+<link rel="stylesheet" href="fonts.css">
+<style>
+/* Layout: form column + live two-sided preview, stacks on phone */
+:root{
+  --bg:#FFF8FB; --panel:#FFFFFF; --ink:#2B0F3D; --muted:#8A6F86; --line:#EFD9E5;
+  --pink:#E23C80; --violet:#7A2E92; --lav:#7C7CFF; --sun:#FFD92B;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1C1022;--panel:#26162E;--ink:#F6E9F2;--muted:#B79BB0;--line:#3D2846;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1C1022;--panel:#26162E;--ink:#F6E9F2;--muted:#B79BB0;--line:#3D2846;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 48px}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:22px}
+.tiles{display:grid;grid-template-columns:repeat(3,9px);gap:3px;transform:rotate(-8deg)}
+.tiles i{width:9px;height:9px;border-radius:2px;display:block}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(20px,3vw,28px);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:0;color:var(--muted);flex-basis:100%;font-size:14px}
+.grid{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;display:flex;flex-direction:column;gap:16px}
+label.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lab{font-family:var(--display);font-weight:500;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+input[type=text],input[type=number],input[type=date]{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;width:100%;min-width:0}
+input:focus-visible,button:focus-visible,.design input:focus-visible+span{outline:2px solid var(--pink);outline-offset:2px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;cursor:pointer}
+.chip:hover{border-color:var(--pink);color:var(--pink)}
+.design{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.design label{position:relative;cursor:pointer}
+.design input{position:absolute;opacity:0}
+.design img{display:block;width:100%;border-radius:9px;border:2.5px solid transparent;aspect-ratio:794/454;object-fit:cover}
+.design input:checked~img{border-color:var(--pink)}
+.design span{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-top:3px}
+.design input:checked~span{color:var(--pink)}
+.fonts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fonts button{font-size:20px;color:var(--violet);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:8px 10px;cursor:pointer;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fonts button[aria-pressed=true]{border-color:var(--pink);box-shadow:0 0 0 1px var(--pink)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.btn{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.02em;border:0;border-radius:12px;padding:14px 18px;cursor:pointer;background:var(--pink);color:#fff;flex:1 1 auto}
+.btn.ghost{background:transparent;color:var(--violet);border:1.5px solid var(--line)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.ghost{color:#D9A9EC}}
+:root[data-theme="dark"] .btn.ghost{color:#D9A9EC}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{font-size:13px;font-weight:700;min-height:18px;color:var(--muted)}
+.msg.ok{color:#2E8B57}.msg.err{color:var(--pink)}
+.prev{display:flex;flex-direction:column;gap:14px;min-width:0}
+.side{display:flex;flex-direction:column;gap:6px}
+.side canvas{width:100%;height:auto;max-width:100%;border-radius:12px;box-shadow:0 1px 0 var(--line),0 12px 30px -18px rgba(122,46,146,.45);background:#fff}
+.hint{font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.btn{transition:transform .12s}.btn:active{transform:scale(.98)}}
+
+.link{display:flex;flex-direction:column;gap:8px;padding:14px;border:1.5px dashed var(--line);border-radius:14px}
+.link[hidden]{display:none}
+.link input{font:inherit;font-size:12.5px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;width:100%;min-width:0}
+.link .actions .btn{font-size:12px;padding:11px 12px}
+.next{font:inherit;font-weight:800;font-size:13px;color:var(--pink);background:none;border:0;padding:0;cursor:pointer;align-self:flex-start}
+.next[hidden]{display:none}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+.tabs a{font-weight:800;font-size:13px;color:var(--muted);text-decoration:none;padding:7px 12px;border-radius:999px;border:1.5px solid transparent}
+.tabs a:hover{color:var(--pink)}
+.tabs a[aria-current]{color:var(--pink);border-color:var(--pink)}
+@media (max-width:600px){.tabs{margin-left:0;order:3}}
+textarea{font:inherit;font-weight:600;line-height:1.5;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;width:100%;min-width:0;resize:vertical;min-height:84px}
+textarea:focus-visible,input[type=time]:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+input[type=time]{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:11px 10px;width:100%;min-width:0}
+.row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
+@media (max-width:420px){.row3{grid-template-columns:1fr 1fr}.row3>:first-child{grid-column:1/-1}}
+.sub{font-size:12px;color:var(--muted);font-weight:600}
+details{border-top:1px solid var(--line);padding-top:12px}
+details summary{cursor:pointer;font-weight:800;font-size:13px;color:var(--violet)}
+details[open] summary{margin-bottom:12px}
+details .f+.f{margin-top:12px}
+</style></head><body>
+<div class="wrap">
+<header>
+  <span class="tiles" aria-hidden="true"><i style="background:#7A2E92"></i><i style="background:#F7841E"></i><i style="background:#7C7CFF"></i><i style="background:#E23C80"></i><i style="background:#FFD92B"></i><i style="background:#7A2E92"></i></span>
+  <h1>Приглашение на день рождения</h1>
+  <p>Поставьте дату и время — адрес и всё остальное уже на месте. Имя именинника по желанию: без него приглашение универсальное.</p>
+</header>
+<div class="grid">
+<form class="panel" id="form" autocomplete="off">
+  <div class="row3">
+    <label class="f"><span class="lab">Дата</span><input type="date" id="date"></label>
+    <label class="f"><span class="lab">Начало</span><input type="time" id="t1" value="13:00"></label>
+    <label class="f"><span class="lab">Конец</span><input type="time" id="t2" value="15:00"></label>
+  </div>
+  <label class="f"><span class="lab">Именинник</span><input type="text" id="name" maxlength="24" placeholder="необязательно, например: Гордей">
+    <span class="sub">Будет «Гордей ждёт тебя в гости!». Пусто — «Ждём тебя в гости!»</span></label>
+  <details>
+    <summary>Что взять с собой и лицевая сторона</summary>
+    <label class="f"><span class="lab">Возьмите с собой</span><textarea id="bring" rows="3"></textarea><span class="sub">По строке на пункт, до трёх. Запоминается.</span></label>
+    <label class="f"><span class="lab">Не нужно</span><textarea id="skip" rows="3"></textarea></label>
+    <div class="f"><span class="lab">Лицевая сторона</span><div class="design" id="design"></div></div>
+  </details>
+  <div class="actions">
+    <button class="btn" type="button" id="png">Картинка для телефона</button>
+    <button class="btn ghost" type="submit" id="pdf">PDF</button>
+  </div>
+  <div class="actions"><button class="btn ghost" type="button" id="mklink">Ссылка-открытка с конвертом</button></div>
+  <div class="link" id="linkbox" hidden>
+    <span class="lab">Ссылка-открытка</span>
+    <input type="text" id="linkout" readonly>
+    <div class="actions">
+      <button class="btn" type="button" id="copy">Скопировать</button>
+      <button class="btn ghost" type="button" id="share" hidden>Отправить…</button>
+      <a class="btn ghost" id="open" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Открыть</a>
+    </div>
+  </div>
+  <div class="msg" id="msg" role="status"></div>
+</form>
+<section class="prev" aria-label="Предпросмотр">
+  <div class="side"><span class="lab">Лицо</span><canvas id="cf" width="2481" height="1419"></canvas></div>
+  <div class="side"><span class="lab">Оборот</span><canvas id="cb" width="2481" height="1419"></canvas></div>
+  <p class="hint">Картинка — лицо и оборот одним файлом, удобно переслать в мессенджер. Одну ссылку можно разослать всем гостям.</p>
+</section>
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="shared.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const DEF={bring:'хорошее настроение\nудобную одежду, которую не жалко',skip:'материалы и инструменты — всё дадим\nфартуки и защитные очки — есть у нас'};
+$('bring').value=store.get('am_inv_bring')??DEF.bring;$('skip').value=store.get('am_inv_skip')??DEF.skip;
+$('design').innerHTML=AM.DESIGNS.map(([k,t])=>`<label><input type="radio" name="design" id="d_${k}" value="${k}"><img src="${AM.thumb('f_'+k)}" alt=""><span>${t}</span></label>`).join('');
+const sd=store.get('am_inv_design');($('d_'+sd)||$('d_cake')).checked=true;
+const d=new Date();d.setDate(d.getDate()+7);$('date').value=d.toISOString().slice(0,10);
+const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,3);
+const design=()=>document.querySelector('input[name=design]:checked').value;
+const data=()=>({design:design(),name:$('name').value.trim(),date:$('date').value,t1:$('t1').value,t2:$('t2').value,bring:lines($('bring').value),skip:lines($('skip').value)});
+const images={};
+async function front(){const k='f_'+design();if(!images[k])images[k]=await AM.load(AM.img(k));return images[k]}
+async function draw(){if(!images.bg)return;AM.drawFront($('cf'),await front());AM.drawInvite($('cb'),images.bg,data());}
+let raf=0;function changed(){$('linkbox').hidden=true;if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw()});}
+['name','date','t1','t2'].forEach(id=>$(id).addEventListener('input',changed));
+$('bring').addEventListener('input',()=>{store.set('am_inv_bring',$('bring').value);changed()});
+$('skip').addEventListener('input',()=>{store.set('am_inv_skip',$('skip').value);changed()});
+$('design').addEventListener('change',()=>{store.set('am_inv_design',design());changed()});
+const msg=(t,cls='')=>{$('msg').textContent=t;$('msg').className='msg '+cls};
+const valid=()=>{if(!$('date').value||!$('t1').value){msg('Поставьте дату и время.','err');return false}return true};
+const fileBase=()=>(`Приглашение на ДР ${AM.fmtLong($('date').value)}`+($('name').value.trim()?' — '+$('name').value.trim():'')).replace(/[\\/:*?"<>|]+/g,'');
+$('png').addEventListener('click',async()=>{
+  if(!valid())return;await draw();
+  const w=1080,h=Math.round(w*AM.H/AM.W),g=24,c=document.createElement('canvas');c.width=w;c.height=h*2+g;
+  const x=c.getContext('2d');x.fillStyle='#FFF2F7';x.fillRect(0,0,w,c.height);x.imageSmoothingQuality='high';x.drawImage($('cf'),0,0,w,h);x.drawImage($('cb'),0,h+g,w,h);
+  c.toBlob(b=>{AM.download(fileBase()+'.png',b);msg('Картинка скачана — пересылайте в мессенджер.','ok')},'image/png');
+});
+$('form').addEventListener('submit',async e=>{
+  e.preventDefault();if(!valid())return;$('pdf').disabled=true;
+  try{await draw();AM.download(fileBase()+'.pdf',AM.pdfOne($('cf'),$('cb')));msg('PDF скачан.','ok');}
+  catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}finally{$('pdf').disabled=false}
+});
+$('mklink').addEventListener('click',()=>{
+  if(!valid())return;const url=new URL('invite.html',location.href);url.search='?i='+AM.encodeObj(data());
+  $('linkout').value=url.href;$('open').href=url.href;$('linkbox').hidden=false;msg('Ссылка готова.','ok');$('linkout').select();
+});
+$('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('linkout').value);msg('Ссылка скопирована.','ok')}catch(e){$('linkout').select();msg('Выделила ссылку — скопируйте вручную.')}});
+if(navigator.share){$('share').hidden=false;$('share').addEventListener('click',()=>{navigator.share({title:'Приглашение на день рождения',url:$('linkout').value}).catch(()=>{})});}
+(async()=>{images.bg=await AM.load(AM.img('bg'));await AM.inviteFontsReady();await draw();document.fonts.ready.then(draw);})();
+</script>
+</body></html>
