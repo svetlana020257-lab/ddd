@@ -72,7 +72,6 @@ textarea:focus-visible,input[type=time]:focus-visible{outline:2px solid var(--pi
 input[type=time]{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:11px 10px;width:100%;min-width:0}
 .row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
 @media (max-width:420px){.row3{grid-template-columns:1fr 1fr}.row3>:first-child{grid-column:1/-1}}
-.card1{max-width:480px}
 .sub{font-size:12px;color:var(--muted);font-weight:600}
 details{border-top:1px solid var(--line);padding-top:12px}
 details summary{cursor:pointer;font-weight:800;font-size:13px;color:var(--violet)}
@@ -94,12 +93,7 @@ details .f+.f{margin-top:12px}
   </div>
   <label class="f"><span class="lab">Именинник</span><input type="text" id="name" maxlength="24" placeholder="необязательно, например: Гордей">
     <span class="sub">Будет «Гордей ждёт тебя в гости!». Пусто — «Ждём тебя в гости!»</span></label>
-  <details>
-    <summary>Что взять с собой и картинка сверху</summary>
-    <label class="f"><span class="lab">Возьмите с собой</span><textarea id="bring" rows="3"></textarea><span class="sub">По строке на пункт, до трёх. Запоминается.</span></label>
-    <label class="f"><span class="lab">Не нужно</span><textarea id="skip" rows="3"></textarea></label>
-    <div class="f"><span class="lab">Картинка сверху</span><div class="design" id="design"></div></div>
-  </details>
+  <label class="f"><span class="lab">Приписка</span><textarea id="note" rows="2" maxlength="120"></textarea><span class="sub">Что взять с собой и что не нужно. Запоминается.</span></label>
   <div class="actions">
     <button class="btn" type="button" id="png">Картинка для телефона</button>
     <button class="btn ghost" type="submit" id="pdf">PDF</button>
@@ -117,8 +111,8 @@ details .f+.f{margin-top:12px}
   <div class="msg" id="msg" role="status"></div>
 </form>
 <section class="prev" aria-label="Предпросмотр">
-  <div class="side card1"><canvas id="ci" width="1800" height="2700"></canvas></div>
-  <p class="hint">Одностороннее приглашение: картинку удобно переслать в мессенджер, PDF — распечатать. Одну ссылку можно разослать всем гостям.</p>
+  <div class="side card1"><canvas id="ci" width="2481" height="1419"></canvas></div>
+  <p class="hint">Приглашение одной стороной: картинку удобно переслать в мессенджер, PDF — распечатать. Одну ссылку можно разослать всем гостям.</p>
 </section>
 </div>
 </div>
@@ -127,29 +121,23 @@ details .f+.f{margin-top:12px}
 <script>
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
-const DEF={bring:'хорошее настроение\nудобную одежду, которую не жалко',skip:'материалы и инструменты — всё дадим\nфартуки и защитные очки — есть у нас'};
-$('bring').value=store.get('am_inv_bring')??DEF.bring;$('skip').value=store.get('am_inv_skip')??DEF.skip;
-$('design').innerHTML=AM.DESIGNS.map(([k,t])=>`<label><input type="radio" name="design" id="d_${k}" value="${k}"><img src="${AM.thumb('f_'+k)}" alt=""><span>${t}</span></label>`).join('');
-const sd=store.get('am_inv_design');($('d_'+sd)||$('d_cake')).checked=true;
+const DEF='Материалы, инструменты и фартуки дадим — с собой только хорошее настроение!';
+$('note').value=store.get('am_inv_note')??DEF;
 const d=new Date();d.setDate(d.getDate()+7);$('date').value=d.toISOString().slice(0,10);
-const lines=v=>v.split('\n').map(x=>x.trim()).filter(Boolean).slice(0,3);
-const design=()=>document.querySelector('input[name=design]:checked').value;
-const data=()=>({design:design(),name:$('name').value.trim(),date:$('date').value,t1:$('t1').value,t2:$('t2').value,bring:lines($('bring').value),skip:lines($('skip').value)});
+const data=()=>({name:$('name').value.trim(),date:$('date').value,t1:$('t1').value,t2:$('t2').value,note:$('note').value.trim()});
 const images={};
-async function front(){const k='f_'+design();if(!images[k])images[k]=await AM.load(AM.img(k));return images[k]}
+async function front(){const k='f_cake';if(!images[k])images[k]=await AM.load(AM.img(k));return images[k]}
 let ready=false;async function draw(){if(!ready)return;AM.drawInvite($('ci'),await front(),data());}
 let raf=0;function changed(){$('linkbox').hidden=true;if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw()});}
 ['name','date','t1','t2'].forEach(id=>$(id).addEventListener('input',changed));
-$('bring').addEventListener('input',()=>{store.set('am_inv_bring',$('bring').value);changed()});
-$('skip').addEventListener('input',()=>{store.set('am_inv_skip',$('skip').value);changed()});
-$('design').addEventListener('change',()=>{store.set('am_inv_design',design());changed()});
+$('note').addEventListener('input',()=>{store.set('am_inv_note',$('note').value);changed()});
 const msg=(t,cls='')=>{$('msg').textContent=t;$('msg').className='msg '+cls};
 const valid=()=>{if(!$('date').value||!$('t1').value){msg('Поставьте дату и время.','err');return false}return true};
 const fileBase=()=>(`Приглашение на ДР ${AM.fmtLong($('date').value)}`+($('name').value.trim()?' — '+$('name').value.trim():'')).replace(/[\\/:*?"<>|]+/g,'');
 $('png').addEventListener('click',async()=>{
   if(!valid())return;await draw();
-  const c=document.createElement('canvas');c.width=1080;c.height=1620;
-  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage($('ci'),0,0,1080,1620);
+  const c=document.createElement('canvas');c.width=1600;c.height=Math.round(1600*AM.H/AM.W);
+  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage($('ci'),0,0,c.width,c.height);
   c.toBlob(b=>{AM.download(fileBase()+'.png',b);msg('Картинка скачана — пересылайте в мессенджер.','ok')},'image/png');
 });
 $('form').addEventListener('submit',async e=>{
