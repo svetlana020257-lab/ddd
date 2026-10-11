@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;800&display=swap">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="envelope.css">
+<style>.flip.single{aspect-ratio:2/3;max-width:440px;cursor:default}.result:has(.single){width:min(94vw,440px)}</style>
 </head><body>
 <div class="bgtiles" aria-hidden="true"></div>
 <canvas id="confetti"></canvas>
@@ -22,18 +23,17 @@
   <div class="tap" id="tap">Нажмите на конверт</div>
 
   <section class="result" id="result" hidden>
-    <button class="flip" id="flip" aria-label="Перевернуть приглашение">
-      <span class="inner"><span class="face a"><canvas id="cf" width="2481" height="1419"></canvas></span><span class="face b"><canvas id="cb" width="2481" height="1419"></canvas></span></span>
-    </button>
-    <div class="hint" id="fliphint">Нажмите на приглашение, чтобы перевернуть</div>
-    <div class="btns"><button class="btn" id="pdf">Скачать PDF</button><button class="btn ghost" id="turn">Перевернуть</button></div>
+    <div class="flip single" id="flip"><span class="inner"><span class="face a"><canvas id="ci" width="1800" height="2700"></canvas></span></span></div>
+    <div class="hint" id="fliphint"></div>
+    <div class="hint" id="fliphint"></div>
+    <div class="btns"><button class="btn" id="pdf">Скачать PDF</button></div>
     <div class="info">Мастерская Art Mosaic · <b>+7 913 002-95-52</b><br>Комсомольский пр-т, 24 · 8 этаж · офис 815</div>
   </section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="shared.js"></script>
 <script>
-window.ENV={param:'i',decode:AM.decodeObj,defaultDesign:'cake',backImg:'bg',fonts:AM.inviteFontsReady,drawBack:AM.drawInvite,
+window.ENV={param:'i',decode:AM.decodeObj,defaultDesign:'cake',single:true,fonts:AM.inviteFontsReady,
   fileName:D=>`Приглашение на ДР Art Mosaic${D.name?' — '+D.name:''}`.replace(/[\\/:*?"<>|]+/g,'')+'.pdf'};
 </script>
 <script src="envelope.js"></script>

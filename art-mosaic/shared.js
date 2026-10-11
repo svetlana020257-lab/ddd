@@ -91,53 +91,67 @@ const AM = (() => {
     try { await Promise.all(['800 20px Unbounded', '500 20px Unbounded', '700 20px Manrope', '600 20px Manrope'].map(f => document.fonts.load(f, 'Приглашение ART 0123'))); } catch (e) {}
     return fontsReady();
   }
-  // оборот приглашения на ДР. d = {name, date, t1, t2, bring:[], skip:[]}; tiles — img/bg.jpg для мозаичной кромки
-  function drawInvite(canvas, tiles, d) {
-    const c = canvas.getContext('2d'), s = S;
+  // одностороннее приглашение на ДР, вертикальное 2:3. d = {name, date, t1, t2, bring:[], skip:[]}; front — картинка лица (торт и т.п.)
+  const IW = 1800, IH = 2700;
+  function drawInvite(canvas, front, d) {
+    const c = canvas.getContext('2d'), s = IW / 600;
     const INK = '#2B0F3D', PINK = '#E23C80', VIO = '#7A2E92', MUTED = '#9A7C95', LINE = '#E3C6D6';
     const UNB = 'Unbounded, "Arial Black", sans-serif', MAN = 'Manrope, sans-serif', HAND = "'Caveat', cursive";
     const font = (wt, px, f) => { c.font = `${wt} ${px * s}px ${f}`; };
     const ls = v => { try { c.letterSpacing = v; } catch (e) {} };
     const fit = (t, wt, px, f, maxW) => { do { font(wt, px, f); px -= .5; } while (c.measureText(t).width > maxW * s && px > 8); };
-    const sq = (x, y, col) => { c.fillStyle = col; c.beginPath(); c.roundRect(x * s, y * s, 7 * s, 7 * s, 1.6 * s); c.fill(); };
-    const label = (t, x, y) => { font(500, 8.5, UNB); c.fillStyle = MUTED; ls(`${1.6 * s}px`); c.fillText(t, x * s, y * s); ls('0px'); };
+    const sq = (x, y, col, z = 8) => { c.fillStyle = col; c.beginPath(); c.roundRect(x * s, y * s, z * s, z * s, 2 * s); c.fill(); };
+    const label = (t, x, y) => { font(500, 10, UNB); c.fillStyle = MUTED; ls(`${2 * s}px`); c.fillText(t, x * s, y * s); ls('0px'); };
     c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-    c.fillStyle = '#FFFBFD'; c.fillRect(0, 0, W, H);
-    if (tiles) { const sw = Math.round(tiles.height * 58 / 454); c.drawImage(tiles, 0, 0, sw, tiles.height, 0, 0, 58 * s, H); }
-    const X = 98, R = 750, M = 430;
-    font(800, 28, UNB); c.fillStyle = INK; c.fillText('Приглашение', X * s, 62 * s);
-    font(800, 17, UNB); c.fillStyle = PINK; c.fillText('на день рождения', X * s, 87 * s);
-    ['#7A2E92', '#E23C80', '#7C7CFF', '#F7841E', '#FFD92B'].forEach((col, i) => sq(X + i * 12, 97, col));
+    c.fillStyle = '#FFFBFD'; c.fillRect(0, 0, IW, IH);
+    const fh = 600 * 1419 / 2481; // ≈343
+    if (front) c.drawImage(front, 0, 0, IW, fh * s);
+    const X = 44, R = 556, M = 306; let y = fh + 62;
+    font(800, 36, UNB); c.fillStyle = INK; c.fillText('Приглашение', X * s, y * s);
+    font(800, 22, UNB); c.fillStyle = PINK; c.fillText('на день рождения', X * s, (y + 32) * s);
+    font(700, 30, HAND); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, (y + 32) * s); c.textAlign = 'left';
+    ['#7A2E92', '#E23C80', '#7C7CFF', '#F7841E', '#FFD92B'].forEach((col, i) => sq(X + i * 14, y + 46, col));
+    y += 112;
     const name = (d.name || '').trim(), hi = name ? `${name} ждёт тебя в гости!` : 'Ждём тебя в гости!';
-    fit(hi, 700, 33, HAND, R - X); c.fillStyle = VIO; c.fillText(hi, X * s, 145 * s);
-    font(600, 12.5, MAN); c.fillStyle = INK;
-    c.fillText('Будем собирать мозаику из настоящего стекла — каждый гость', X * s, 168 * s);
-    c.fillText('унесёт домой свою работу. Опыт не нужен!', X * s, 185 * s);
+    fit(hi, 700, 42, HAND, R - X); c.fillStyle = VIO; c.fillText(hi, X * s, y * s);
+    y += 30; font(600, 15, MAN); c.fillStyle = INK;
+    wrap(c, 'Будем собирать мозаику из настоящего стекла — каждый гость унесёт домой свою работу. Опыт не нужен!', (R - X) * s)
+      .forEach((l, i) => c.fillText(l, X * s, (y + i * 22) * s));
+    y += 76;
     const list = (title, items, x, cols) => {
-      label(title, x, 216);
+      label(title, x, y); let yy = y + 26;
       (items || []).filter(Boolean).slice(0, 3).forEach((t, i) => {
-        sq(x, 226 + i * 19, cols[i % cols.length]); fit(t, 600, 12, MAN, M - X - 30); c.fillStyle = INK; c.fillText(t, (x + 14) * s, (233 + i * 19) * s);
+        font(600, 14, MAN); const ls_ = wrap(c, t, (M - X - 36) * s);
+        sq(x, yy - 10, cols[i % cols.length]); c.fillStyle = INK;
+        ls_.forEach((l, j) => c.fillText(l, (x + 16) * s, (yy + j * 19) * s)); yy += ls_.length * 19 + 8;
       });
+      return yy;
     };
-    list('ВОЗЬМИТЕ С СОБОЙ', d.bring, X, ['#E23C80', '#F7841E', '#FFD92B']);
-    list('НЕ НУЖНО', d.skip, M, ['#7C7CFF', '#7A2E92', '#7C7CFF']);
-    label('КОГДА', X, 310); label('ГДЕ', M, 310);
-    c.strokeStyle = LINE; c.lineWidth = 1.2 * s;
-    [[X, 400], [M, R]].forEach(([a, b]) => { c.beginPath(); c.moveTo(a * s, 352 * s); c.lineTo(b * s, 352 * s); c.stroke(); });
+    const yb = Math.max(list('ВОЗЬМИТЕ С СОБОЙ', d.bring, X, ['#E23C80', '#F7841E', '#FFD92B']), list('НЕ НУЖНО', d.skip, M, ['#7C7CFF', '#7A2E92', '#7C7CFF']));
+    y = Math.max(yb + 22, 676);
+    label('КОГДА', X, y);
+    c.strokeStyle = LINE; c.lineWidth = 1.4 * s;
     const day = fmtLong(d.date), tm = d.t1 ? (d.t2 ? `${d.t1}–${d.t2}` : `в ${d.t1}`) : '';
-    if (day) { fit(day, 700, 30, HAND, 300 - X); c.fillStyle = VIO; c.fillText(day, X * s, 343 * s); }
-    if (tm) { fit(tm, 700, 30, HAND, 400 - 290); c.fillStyle = VIO; c.textAlign = 'right'; c.fillText(tm, 400 * s, 343 * s); c.textAlign = 'left'; }
-    font(700, 12.5, MAN); c.fillStyle = INK; c.fillText('Комсомольский пр-т, 24', M * s, 330 * s);
-    font(600, 11, MAN); c.fillStyle = MUTED; c.fillText('8 этаж · офис 815', M * s, 345 * s);
-    font(800, 9.5, UNB); c.fillStyle = INK; ls(`${1 * s}px`); c.fillText('ART MOSAIC', X * s, 418 * s); ls('0px');
-    font(600, 10, MAN); c.fillStyle = MUTED; c.fillText('мозаичная мастерская · +7 913 002-95-52', X * s, 433 * s);
-    font(700, 28, HAND); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, 430 * s);
+    const wn = [day, tm].filter(Boolean).join(', ');
+    if (wn) { fit(wn, 700, 44, HAND, R - X); c.fillStyle = VIO; c.fillText(wn, X * s, (y + 46) * s); }
+    c.beginPath(); c.moveTo(X * s, (y + 58) * s); c.lineTo(R * s, (y + 58) * s); c.stroke();
+    // низ: адрес в розовой полосе, как в старых макетах мастерской
+    const yb2 = 900 - 84;
+    c.fillStyle = '#E23C80'; c.fillRect(0, yb2 * s, IW, IH - yb2 * s);
+    font(800, 11, UNB); c.fillStyle = '#FFD3E5'; ls(`${1.6 * s}px`); c.fillText('ГДЕ', X * s, (yb2 + 26) * s); ls('0px');
+    font(700, 17, MAN); c.fillStyle = '#FFFFFF'; c.fillText('Комсомольский пр-т, 24, 8 этаж, офис 815', X * s, (yb2 + 50) * s);
+    font(600, 13.5, MAN); c.fillStyle = '#FFE3EF'; c.fillText('ART MOSAIC · мозаичная мастерская · +7 913 002-95-52', X * s, (yb2 + 70) * s);
     c.restore();
+  }
+  function pdfInvite(canvas) {
+    const { jsPDF } = window.jspdf, w = 148, h = 222;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: [w, h], compress: true });
+    doc.addImage(canvas.toDataURL('image/jpeg', .92), 'JPEG', 0, 0, w, h); return doc.output('blob');
   }
   function download(filename, blob) {
     const url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
-  return { W, H, FONTS, DESIGNS, img, thumb, load, fmtSum, fmtDate, fmtLong, when, fontsReady, inviteFontsReady, drawBack, drawFront, drawInvite, encode, decode, encodeObj, decodeObj, pdf, pdfOne, download };
+  return { W, H, FONTS, DESIGNS, img, thumb, load, fmtSum, fmtDate, fmtLong, when, fontsReady, inviteFontsReady, drawBack, drawFront, drawInvite, pdfInvite, IW, IH, encode, decode, encodeObj, decodeObj, pdf, pdfOne, download };
 })();

@@ -9,16 +9,21 @@ if(!D){
 async function start(){
   const key='f_'+(AM.DESIGNS.find(d=>d[0]===D.design)?D.design:CFG.defaultDesign);
   $('envimg').src=AM.img(key);
-  const [fr,bk]=await Promise.all([AM.load(AM.img(key)),AM.load(AM.img(CFG.backImg)),CFG.fonts()]);
-  AM.drawFront($('cf'),fr);CFG.drawBack($('cb'),bk,D);
-  document.fonts.ready.then(()=>CFG.drawBack($('cb'),bk,D));
+  if(CFG.single){
+    await CFG.fonts();const fr=await AM.load(AM.img(key));
+    AM.drawInvite($('ci'),fr,D);document.fonts.ready.then(()=>AM.drawInvite($('ci'),fr,D));
+  }else{
+    const [fr,bk]=await Promise.all([AM.load(AM.img(key)),AM.load(AM.img(CFG.backImg)),CFG.fonts()]);
+    AM.drawFront($('cf'),fr);CFG.drawBack($('cb'),bk,D);
+    document.fonts.ready.then(()=>CFG.drawBack($('cb'),bk,D));
+    $('flip').addEventListener('click',()=>$('flip').classList.toggle('turned'));
+    $('turn').addEventListener('click',()=>$('flip').classList.toggle('turned'));
+  }
   if(CFG.after)CFG.after(D);
   let opened=false;
   $('env').addEventListener('click',()=>{if(opened)return;opened=true;openEnv();});
-  $('flip').addEventListener('click',()=>$('flip').classList.toggle('turned'));
-  $('turn').addEventListener('click',()=>$('flip').classList.toggle('turned'));
   $('pdf').addEventListener('click',()=>{
-    try{AM.download(CFG.fileName(D),AM.pdfOne($('cf'),$('cb')))}catch(e){console.error(e);$('fliphint').textContent='Не получилось сохранить PDF: '+e.message}
+    try{AM.download(CFG.fileName(D),CFG.single?AM.pdfInvite($('ci')):AM.pdfOne($('cf'),$('cb')))}catch(e){console.error(e);$('fliphint').textContent='Не получилось сохранить PDF: '+e.message}
   });
 }
 

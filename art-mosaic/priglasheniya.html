@@ -72,6 +72,7 @@ textarea:focus-visible,input[type=time]:focus-visible{outline:2px solid var(--pi
 input[type=time]{font:inherit;font-weight:700;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:11px;padding:11px 10px;width:100%;min-width:0}
 .row3{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:10px}
 @media (max-width:420px){.row3{grid-template-columns:1fr 1fr}.row3>:first-child{grid-column:1/-1}}
+.card1{max-width:480px}
 .sub{font-size:12px;color:var(--muted);font-weight:600}
 details{border-top:1px solid var(--line);padding-top:12px}
 details summary{cursor:pointer;font-weight:800;font-size:13px;color:var(--violet)}
@@ -94,10 +95,10 @@ details .f+.f{margin-top:12px}
   <label class="f"><span class="lab">Именинник</span><input type="text" id="name" maxlength="24" placeholder="необязательно, например: Гордей">
     <span class="sub">Будет «Гордей ждёт тебя в гости!». Пусто — «Ждём тебя в гости!»</span></label>
   <details>
-    <summary>Что взять с собой и лицевая сторона</summary>
+    <summary>Что взять с собой и картинка сверху</summary>
     <label class="f"><span class="lab">Возьмите с собой</span><textarea id="bring" rows="3"></textarea><span class="sub">По строке на пункт, до трёх. Запоминается.</span></label>
     <label class="f"><span class="lab">Не нужно</span><textarea id="skip" rows="3"></textarea></label>
-    <div class="f"><span class="lab">Лицевая сторона</span><div class="design" id="design"></div></div>
+    <div class="f"><span class="lab">Картинка сверху</span><div class="design" id="design"></div></div>
   </details>
   <div class="actions">
     <button class="btn" type="button" id="png">Картинка для телефона</button>
@@ -116,9 +117,8 @@ details .f+.f{margin-top:12px}
   <div class="msg" id="msg" role="status"></div>
 </form>
 <section class="prev" aria-label="Предпросмотр">
-  <div class="side"><span class="lab">Лицо</span><canvas id="cf" width="2481" height="1419"></canvas></div>
-  <div class="side"><span class="lab">Оборот</span><canvas id="cb" width="2481" height="1419"></canvas></div>
-  <p class="hint">Картинка — лицо и оборот одним файлом, удобно переслать в мессенджер. Одну ссылку можно разослать всем гостям.</p>
+  <div class="side card1"><canvas id="ci" width="1800" height="2700"></canvas></div>
+  <p class="hint">Одностороннее приглашение: картинку удобно переслать в мессенджер, PDF — распечатать. Одну ссылку можно разослать всем гостям.</p>
 </section>
 </div>
 </div>
@@ -137,7 +137,7 @@ const design=()=>document.querySelector('input[name=design]:checked').value;
 const data=()=>({design:design(),name:$('name').value.trim(),date:$('date').value,t1:$('t1').value,t2:$('t2').value,bring:lines($('bring').value),skip:lines($('skip').value)});
 const images={};
 async function front(){const k='f_'+design();if(!images[k])images[k]=await AM.load(AM.img(k));return images[k]}
-async function draw(){if(!images.bg)return;AM.drawFront($('cf'),await front());AM.drawInvite($('cb'),images.bg,data());}
+let ready=false;async function draw(){if(!ready)return;AM.drawInvite($('ci'),await front(),data());}
 let raf=0;function changed(){$('linkbox').hidden=true;if(!raf)raf=requestAnimationFrame(()=>{raf=0;draw()});}
 ['name','date','t1','t2'].forEach(id=>$(id).addEventListener('input',changed));
 $('bring').addEventListener('input',()=>{store.set('am_inv_bring',$('bring').value);changed()});
@@ -148,13 +148,13 @@ const valid=()=>{if(!$('date').value||!$('t1').value){msg('Поставьте д
 const fileBase=()=>(`Приглашение на ДР ${AM.fmtLong($('date').value)}`+($('name').value.trim()?' — '+$('name').value.trim():'')).replace(/[\\/:*?"<>|]+/g,'');
 $('png').addEventListener('click',async()=>{
   if(!valid())return;await draw();
-  const w=1080,h=Math.round(w*AM.H/AM.W),g=24,c=document.createElement('canvas');c.width=w;c.height=h*2+g;
-  const x=c.getContext('2d');x.fillStyle='#FFF2F7';x.fillRect(0,0,w,c.height);x.imageSmoothingQuality='high';x.drawImage($('cf'),0,0,w,h);x.drawImage($('cb'),0,h+g,w,h);
+  const c=document.createElement('canvas');c.width=1080;c.height=1620;
+  const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage($('ci'),0,0,1080,1620);
   c.toBlob(b=>{AM.download(fileBase()+'.png',b);msg('Картинка скачана — пересылайте в мессенджер.','ok')},'image/png');
 });
 $('form').addEventListener('submit',async e=>{
   e.preventDefault();if(!valid())return;$('pdf').disabled=true;
-  try{await draw();AM.download(fileBase()+'.pdf',AM.pdfOne($('cf'),$('cb')));msg('PDF скачан.','ok');}
+  try{await draw();AM.download(fileBase()+'.pdf',AM.pdfInvite($('ci')));msg('PDF скачан.','ok');}
   catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}finally{$('pdf').disabled=false}
 });
 $('mklink').addEventListener('click',()=>{
@@ -163,6 +163,6 @@ $('mklink').addEventListener('click',()=>{
 });
 $('copy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('linkout').value);msg('Ссылка скопирована.','ok')}catch(e){$('linkout').select();msg('Выделила ссылку — скопируйте вручную.')}});
 if(navigator.share){$('share').hidden=false;$('share').addEventListener('click',()=>{navigator.share({title:'Приглашение на день рождения',url:$('linkout').value}).catch(()=>{})});}
-(async()=>{images.bg=await AM.load(AM.img('bg'));await AM.inviteFontsReady();await draw();document.fonts.ready.then(draw);})();
+(async()=>{ready=true;await AM.inviteFontsReady();await draw();document.fonts.ready.then(draw);})();
 </script>
 </body></html>
