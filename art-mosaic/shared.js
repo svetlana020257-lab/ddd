@@ -164,7 +164,7 @@ const AM = (() => {
     c.fillText('Комсомольский пр-т, 24 · 8 этаж · офис 815', X * s, 339 * s);
     font(800, 9, UNB); c.fillStyle = INK; ls(`${1 * s}px`); c.fillText('ART MOSAIC', X * s, 404 * s); ls('0px');
     font(600, 10, MAN); c.fillStyle = MUTED; c.fillText('мозаичная мастерская', X * s, 417 * s);
-    font(700, 26, "'Caveat', cursive"); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, 414 * s);
+    if (d.design !== 'brand') { font(700, 26, "'Caveat', cursive"); c.fillStyle = PINK; c.textAlign = 'right'; c.fillText('Всё сложится!', R * s, 414 * s); }
     c.restore();
   }
   function pdfInvite(canvas) {

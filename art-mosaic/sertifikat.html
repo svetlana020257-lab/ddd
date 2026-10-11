@@ -118,7 +118,7 @@ input:focus-visible,button:focus-visible,.design input:focus-visible+span{outlin
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const PRESETS=['мозаичный мастер-класс','день рождения в мастерской','курс мозаики','любой мастер-класс','Тиффани'];
-const DES=[['phoenix_phrase','Феникс'],['cake','Торт — на день рождения']];
+const DES=[['phoenix_phrase','Феникс'],['brand','ART MOSAIC'],['cake','Торт — на день рождения']];
 $('design').innerHTML=DES.map(([k,t],i)=>`<label><input type="radio" name="design" id="d_${k}" value="${k}" ${i===0?'checked':''}><img src="${AM.thumb('f_'+k)}" alt=""><span>${t}</span></label>`).join('');
 $('presets').innerHTML=PRESETS.map(p=>`<button type="button" class="chip">${p}</button>`).join('');
 $('presets').addEventListener('click',e=>{if(e.target.classList.contains('chip')){$('what').value=e.target.textContent;changed();}});

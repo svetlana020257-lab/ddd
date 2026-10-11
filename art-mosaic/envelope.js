@@ -7,7 +7,7 @@ if(!D){
 } else start();
 
 async function start(){
-  const key='f_'+(AM.DESIGNS.find(d=>d[0]===D.design)?D.design:CFG.defaultDesign);
+  const key='f_'+(AM.DESIGNS.find(d=>d[0]===D.design)||D.design==='brand'?D.design:CFG.defaultDesign);
   $('envimg').src=AM.img(key);
   const single=typeof CFG.single==='function'?CFG.single(D):!!CFG.single;
   if(single){
