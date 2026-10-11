@@ -1,0 +1,347 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Art Mosaic — мозаичная мастерская в Новосибирске</title>
+<meta name="description" content="Мастер-классы по мозаике из стекла для взрослых и детей, дни рождения и подарочные сертификаты. Комсомольский пр-т, 24. Всё сложится!">
+<meta property="og:title" content="Art Mosaic — мозаичная мастерская">
+<meta property="og:description" content="Мастер-классы по мозаике из стекла, праздники и подарочные сертификаты в Новосибирске.">
+<meta property="og:image" content="../img/t_f_phoenix_phrase.jpg">
+<meta name="theme-color" content="#E23C80">
+<link rel="preload" as="image" href="phoenix.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;700;800&display=swap">
+<style>
+/* Layout: loader overlay, sticky header, hero, sections (studio, catalog, parties, certificates, request form, contacts), footer */
+:root{--bg:#FFF6FA;--panel:#FFFFFF;--ink:#2B0F3D;--muted:#7E6479;--line:#F0DCE7;--pink:#E23C80;--pink2:#C92A6E;--soft:#FBE3EE;--violet:#7A2E92;--lav:#7C7CFF;--sun:#FFD92B;--orange:#F7841E;
+  --display:"Unbounded","Arial Black",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px}
+:focus-visible{outline:2.5px solid var(--violet);outline-offset:3px;border-radius:6px}
+
+/* loader */
+#loader{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;transition:opacity .6s ease,visibility .6s}
+#loader::before{content:"";position:absolute;inset:0;background:url(../img/bg.jpg) center/cover;opacity:.35}
+#loader.done{opacity:0;visibility:hidden}
+#loader .in{position:relative;display:flex;flex-direction:column;align-items:center;gap:14px}
+#lc{width:min(62vmin,340px);height:auto;aspect-ratio:435/640}
+#loader .name{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.32em;color:var(--violet);opacity:0;transition:opacity .5s}
+#loader .name.on{opacity:1}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:rgba(255,246,250,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;gap:18px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.06em;white-space:nowrap}
+.brand img{width:30px;height:auto}
+nav.main{display:flex;gap:4px;margin-left:auto}
+nav.main a{text-decoration:none;font-weight:700;font-size:14px;color:var(--muted);padding:8px 10px;border-radius:10px}
+nav.main a:hover{color:var(--pink)}
+.cta{font-family:var(--display);font-weight:800;font-size:13px;letter-spacing:.02em;text-decoration:none;border:0;cursor:pointer;background:var(--pink);color:#fff;border-radius:14px;padding:13px 20px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.cta:hover{background:var(--pink2)}
+.cta.ghost{background:#fff;color:var(--violet);border:1.5px solid var(--line)}
+.cta.ghost:hover{border-color:var(--pink);color:var(--pink)}
+header .cta{padding:10px 16px}
+@media (max-width:900px){nav.main{display:none}header .cta{margin-left:auto}}
+
+/* hero */
+.hero{position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:url(../img/bg.jpg) center/cover;opacity:.55;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 30%,#000 75%);mask-image:linear-gradient(90deg,transparent 0,transparent 30%,#000 75%)}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;padding-block:56px 64px}
+.kicker{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet);margin:0 0 14px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(32px,5.4vw,60px);line-height:1.04;letter-spacing:-.015em;margin:0;text-wrap:balance}
+h1 b{color:var(--pink)}
+.lead{font-size:clamp(16px,1.6vw,18.5px);color:var(--muted);font-weight:600;max-width:46ch;margin:18px 0 26px}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.hero .ph{justify-self:center;width:min(100%,400px);filter:drop-shadow(0 30px 40px rgba(226,60,128,.22))}
+@media (max-width:760px){.hero .wrap{grid-template-columns:1fr;padding-block:28px 40px}.hero .ph{order:-1;width:min(40vw,170px)}.hero::before{-webkit-mask-image:none;mask-image:none;opacity:.25}}
+.perks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:-14px;position:relative;z-index:1}
+.perk{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.35}
+.perk i{flex:none;width:12px;height:12px;border-radius:3px;margin-top:4px;transform:rotate(12deg)}
+.perk span{display:block;font-weight:600;color:var(--muted);font-size:13px;margin-top:2px}
+@media (max-width:900px){.perks{grid-template-columns:1fr 1fr}}
+
+/* sections */
+section.s{padding-block:72px 8px}
+.sh{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(24px,3.4vw,36px);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+h2 b{color:var(--pink)}
+.sub{color:var(--muted);font-weight:600;max-width:52ch;margin:8px 0 0}
+
+/* studio gallery */
+.gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:180px;gap:10px}
+.gal figure{margin:0;border-radius:16px;overflow:hidden;position:relative;background:var(--soft)}
+.gal figure:nth-child(1){grid-column:span 2;grid-row:span 2}
+.gal figure:nth-child(4){grid-column:span 2}
+.gal img{width:100%;height:100%;object-fit:cover}
+.gal .empty{background:url(../img/bg.jpg) center/cover;display:grid;place-items:center}
+.gal .empty:nth-child(2n){background-position:30% 70%}.gal .empty:nth-child(3n){background-position:80% 20%}
+.gal .empty span{background:rgba(255,255,255,.9);border-radius:12px;padding:10px 14px;font-weight:800;font-size:14px;color:var(--muted);text-align:center}
+@media (max-width:700px){.gal{grid-template-columns:1fr 1fr;grid-auto-rows:120px}.gal figure:nth-child(4){grid-column:span 1}.gal figure:nth-child(6){grid-column:span 2}}
+.about{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.about div{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:16px 18px}
+.about b{font-family:var(--display);font-weight:800;font-size:22px;color:var(--pink);display:block}
+.about span{font-weight:600;color:var(--muted);font-size:14px}
+@media (max-width:700px){.about{grid-template-columns:1fr}}
+
+/* catalog */
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.tab{font:inherit;font-weight:800;font-size:13.5px;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;cursor:pointer}
+.tab[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:#fff}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.card[hidden]{display:none}
+.sw{height:56px;border-radius:12px;overflow:hidden}
+.sw svg{width:100%;height:100%;display:block}
+.card h3{margin:0;font-size:16px;font-weight:800;line-height:1.3}
+.card p{margin:-4px 0 0;font-size:13.5px;color:var(--muted);font-weight:600;line-height:1.4}
+.card .row{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.card strong{font-family:var(--display);font-weight:800;font-size:17px;color:var(--violet);font-variant-numeric:tabular-nums}
+.card button{font:inherit;font-weight:800;font-size:13px;color:var(--pink);background:var(--soft);border:0;border-radius:10px;padding:8px 12px;cursor:pointer}
+.card button:hover{background:var(--pink);color:#fff}
+@media (max-width:560px){.cards{grid-template-columns:1fr 1fr;gap:9px}.card{padding:10px;border-radius:14px}.sw{height:52px}.card h3{font-size:14px}.card p{font-size:12px}.card strong{font-size:14.5px}.card .row{flex-direction:column;align-items:stretch}.card button{padding:8px}}
+
+/* parties + certificate */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:800px){.duo{grid-template-columns:1fr}}
+.box{border-radius:22px;padding:26px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.box h3{font-family:var(--display);font-weight:800;font-size:22px;margin:0;line-height:1.15}
+.box p{margin:0;font-weight:600}
+.box ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;font-weight:600}
+.box li{display:flex;gap:10px}
+.box li::before{content:"";flex:none;width:9px;height:9px;border-radius:2px;margin-top:8px;background:currentColor;opacity:.7}
+.box .price{font-family:var(--display);font-weight:800;font-size:15px}
+.party{background:var(--pink);color:#fff}
+.party .cta{background:#fff;color:var(--pink);align-self:flex-start}
+.party .cta:hover{background:var(--ink);color:#fff}
+.party .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.party .opts div{background:rgba(255,255,255,.14);border-radius:14px;padding:12px 14px}
+.party .opts b{display:block;font-weight:800}
+.cert{background:#fff;border:1.5px solid var(--line)}
+.cert img{border-radius:12px;box-shadow:0 18px 30px -20px rgba(122,46,146,.6)}
+.cert .cta{align-self:flex-start}
+
+/* form */
+.req{display:grid;grid-template-columns:.85fr 1.15fr;gap:20px;background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:28px}
+@media (max-width:800px){.req{grid-template-columns:1fr;padding:20px}}
+form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+form .full{grid-column:1/-1}
+@media (max-width:520px){form{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:13px;color:var(--muted)}
+input,select,textarea{font:inherit;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:12px 13px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--pink);outline-offset:1px}
+.formnote{font-size:12.5px;color:var(--muted);font-weight:600;margin:0}
+.or{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+
+/* contacts */
+.contacts{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:800px){.contacts{grid-template-columns:1fr}}
+.contacts .box{background:#fff;border:1.5px solid var(--line)}
+.contacts dl{margin:0;display:grid;gap:12px}
+.contacts dt{font-family:var(--display);font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.contacts dd{margin:2px 0 0;font-weight:800;font-size:17px}
+.contacts dd a{text-decoration:none}
+.contacts dd a:hover{color:var(--pink)}
+.map{min-height:260px;background:url(../img/bg.jpg) center/cover;display:grid;place-items:center;text-decoration:none;border:1.5px solid var(--line)}
+.map span{background:#fff;border-radius:14px;padding:12px 18px;font-weight:800;box-shadow:0 10px 30px -14px rgba(122,46,146,.5)}
+footer{margin-top:72px;padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px;font-weight:600}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;font-weight:700;padding:12px 18px;border-radius:12px;z-index:50;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.on{opacity:1}
+</style></head><body>
+<div id="loader" role="status" aria-label="Загрузка"><div class="in"><canvas id="lc" width="435" height="640"></canvas><div class="name" id="lname">ART MOSAIC</div></div></div>
+
+<header><div class="wrap">
+  <a class="brand" href="#top"><img src="phoenix.webp" alt="">ART MOSAIC</a>
+  <nav class="main" aria-label="Разделы"><a href="#studio">Студия</a><a href="#catalog">Мастер-классы</a><a href="#party">Праздники</a><a href="#cert">Сертификаты</a><a href="#contacts">Контакты</a></nav>
+  <a class="cta" href="#request">Записаться</a>
+</div></header>
+
+<main id="top">
+<section class="hero"><div class="wrap">
+  <div>
+    <p class="kicker">Мозаичная мастерская · Новосибирск</p>
+    <h1>Соберите свою <b>мозаику</b> из стекла</h1>
+    <p class="lead">Мастер-классы для взрослых и детей, дни рождения и подарочные сертификаты. Опыт не нужен — всё сложится!</p>
+    <div class="btns"><a class="cta" href="#request">Записаться на мастер-класс</a><a class="cta ghost" href="#catalog">Смотреть каталог</a></div>
+  </div>
+  <img class="ph" src="phoenix.webp" alt="Феникс, собранный из стеклянных осколков" width="435" height="640">
+</div></section>
+
+<div class="wrap"><div class="perks">
+  <div class="perk"><i style="background:var(--pink)"></i><div>Всё включено<span>стекло, инструменты, фартуки</span></div></div>
+  <div class="perk"><i style="background:var(--lav)"></i><div>Без опыта<span>мастер ведёт от первого кусочка</span></div></div>
+  <div class="perk"><i style="background:var(--orange)"></i><div>Работа ваша<span>забираете домой в тот же день</span></div></div>
+  <div class="perk"><i style="background:var(--sun)"></i><div>Дети от 6 лет<span>и взрослые любого возраста</span></div></div>
+</div></div>
+
+<section class="s" id="studio"><div class="wrap">
+  <div class="sh"><div><h2>Наша <b>студия</b></h2><p class="sub">Мастерская в центре Новосибирска: цветное стекло, керамика, цемент — и мастер, который подскажет на каждом шаге.</p></div></div>
+  <div class="gal" id="gal"></div>
+  <div class="about">
+    <div><b>~30</b><span>работ на выбор: от формочки до витража Тиффани</span></div>
+    <div><b>6+</b><span>лет — с этого возраста можно на детские мастер-классы</span></div>
+    <div><b>от 2 000 ₽</b><span>стоимость мастер-класса, материалы уже внутри</span></div>
+  </div>
+</div></section>
+
+<section class="s" id="catalog"><div class="wrap">
+  <div class="sh"><div><h2>Мастер-<b>классы</b></h2><p class="sub">Выберите, что хочется собрать. Нажмите «Записаться» — заявка заполнится сама.</p></div></div>
+  <div class="tabs" id="tabs" role="group" aria-label="Категории"></div>
+  <div class="cards" id="cards"></div>
+</div></section>
+
+<section class="s"><div class="wrap duo">
+  <div class="box party" id="party">
+    <h3>День рождения в мастерской</h3>
+    <p>Праздник, который запомнится: каждый гость собирает свою мозаику и уносит её домой. Материалы и мастер-класс — на нас.</p>
+    <div class="opts">
+      <div><b>Детский</b><span class="price">12 000 ₽</span></div>
+      <div><b>Взрослый</b><span class="price">14 000 ₽</span></div>
+    </div>
+    <a class="cta" href="#request" data-pick="Детский день рождения">Забронировать дату</a>
+  </div>
+  <div class="box cert" id="cert">
+    <h3>Подарочный сертификат</h3>
+    <img src="../img/t_f_phoenix_phrase.jpg" alt="Подарочный сертификат Art Mosaic" width="400" height="229" loading="lazy">
+    <p>На любую сумму от 2 000 ₽. Пришлём красивую электронную открытку с конвертом или распечатаем.</p>
+    <a class="cta" href="#request" data-pick="Подарочный сертификат">Заказать сертификат</a>
+  </div>
+</div></section>
+
+<section class="s" id="request"><div class="wrap">
+  <div class="req">
+    <div>
+      <h2>Оставьте <b>заявку</b></h2>
+      <p class="sub">Подберём удобное время и ответим на вопросы. Заявка откроется в WhatsApp — останется нажать «Отправить».</p>
+      <div class="or"><a class="cta ghost" href="tel:+79130029552">Позвонить: +7 913 002-95-52</a></div>
+    </div>
+    <form id="form" novalidate>
+      <label>Ваше имя<input id="fname" autocomplete="name" required></label>
+      <label>Телефон<input id="fphone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7" required></label>
+      <label class="full">Что интересует<select id="fwhat"></select></label>
+      <label>Сколько человек<input id="fcount" type="number" min="1" max="30" value="1" inputmode="numeric"></label>
+      <label>Удобные дни<input id="fdays" placeholder="например, выходные"></label>
+      <label class="full">Комментарий<textarea id="fnote" placeholder="Возраст детей, пожелания, вопросы"></textarea></label>
+      <div class="full btns"><button class="cta" type="submit">Отправить в WhatsApp</button></div>
+      <p class="formnote full">Нажимая кнопку, вы соглашаетесь, что мастерская свяжется с вами по указанному телефону.</p>
+    </form>
+  </div>
+</div></section>
+
+<section class="s" id="contacts"><div class="wrap contacts">
+  <div class="box">
+    <h3>Как нас найти</h3>
+    <dl>
+      <div><dt>Адрес</dt><dd>Новосибирск, Комсомольский пр-т, 24<br>8 этаж, офис 815</dd></div>
+      <div><dt>Телефон</dt><dd><a href="tel:+79130029552">+7 913 002-95-52</a></dd></div>
+      <div><dt>Запись</dt><dd style="font-weight:600;font-size:15px">Заранее — по телефону, в WhatsApp или через заявку на сайте</dd></div>
+    </dl>
+  </div>
+  <a class="box map" href="https://yandex.ru/maps/?text=%D0%9D%D0%BE%D0%B2%D0%BE%D1%81%D0%B8%D0%B1%D0%B8%D1%80%D1%81%D0%BA%2C%20%D0%9A%D0%BE%D0%BC%D1%81%D0%BE%D0%BC%D0%BE%D0%BB%D1%8C%D1%81%D0%BA%D0%B8%D0%B9%20%D0%BF%D1%80%D0%BE%D1%81%D0%BF%D0%B5%D0%BA%D1%82%2024" target="_blank" rel="noopener"><span>Открыть на карте →</span></a>
+</div></section>
+</main>
+
+<footer><div class="wrap"><span>© Art Mosaic · мозаичная мастерская</span><span>Всё сложится!</span></div></footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="../catalog-data.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- загрузка: феникс собирается из осколков ---------- */
+(function(){
+  const cv=$('lc'),cx=cv.getContext('2d'),img=new Image();
+  let animDone=false,pageDone=false,start=0,pieces=[];
+  let closed=false;const finish=()=>{if(animDone&&pageDone&&!closed){closed=true;const L=$('loader');L.classList.add('done');setTimeout(()=>L.remove(),700)}};
+  addEventListener('load',()=>{pageDone=true;finish()});
+  setTimeout(()=>{animDone=pageDone=true;finish()},7000); // страховка
+  img.onerror=()=>{animDone=true;finish()};
+  img.onload=()=>{
+    const d=Math.min(devicePixelRatio||1,2),W=435,H=640;cv.width=W*d;cv.height=H*d;cx.scale(d,d);
+    if(reduce){cx.drawImage(img,0,0,W,H);$('lname').classList.add('on');animDone=true;setTimeout(finish,300);return}
+    // альфа-маска, чтобы не тратить осколки на пустоту
+    const t=document.createElement('canvas');t.width=W;t.height=H;const tx=t.getContext('2d');tx.drawImage(img,0,0,W,H);
+    const A=tx.getImageData(0,0,W,H).data,alpha=(x,y)=>A[((Math.min(H-1,Math.max(0,y|0)))*W+Math.min(W-1,Math.max(0,x|0)))*4+3];
+    const cols=11,rows=16,gx=W/cols,gy=H/rows,P=[];
+    for(let j=0;j<=rows;j++){P[j]=[];for(let i=0;i<=cols;i++){const edge=i===0||j===0||i===cols||j===rows;
+      P[j][i]=[i*gx+(edge?0:(Math.random()-.5)*gx*.7),j*gy+(edge?0:(Math.random()-.5)*gy*.7)]}}
+    for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+      const a=P[j][i],b=P[j][i+1],c=P[j+1][i+1],e=P[j+1][i];
+      const tris=Math.random()<.5?[[a,b,c],[a,c,e]]:[[a,b,e],[b,c,e]];
+      for(const tr of tris){
+        const mx=(tr[0][0]+tr[1][0]+tr[2][0])/3,my=(tr[0][1]+tr[1][1]+tr[2][1])/3;
+        let hit=0;for(const q of [[mx,my],...tr])if(alpha(q[0]*.7+mx*.3,q[1]*.7+my*.3)>20)hit++;
+        if(!hit)continue;
+        const ang=Math.random()*Math.PI*2,dist=260+Math.random()*420;
+        pieces.push({tr,mx,my,dx:Math.cos(ang)*dist,dy:Math.sin(ang)*dist-120,rot:(Math.random()-.5)*5,
+          delay:(1-my/H)*420+Math.random()*520,dur:820+Math.random()*380});
+      }
+    }
+    const ease=t=>1-Math.pow(1-t,3);
+    function frame(now){
+      if(!start)start=now;const el=now-start;let all=true;
+      cx.clearRect(0,0,W,H);
+      for(const p of pieces){
+        let k=(el-p.delay)/p.dur;if(k<1)all=false;if(k<=0)continue;k=Math.min(1,k);const e=ease(k);
+        cx.save();cx.globalAlpha=Math.min(1,k*2.2);
+        cx.translate(p.mx+p.dx*(1-e),p.my+p.dy*(1-e));cx.rotate(p.rot*(1-e));cx.translate(-p.mx,-p.my);
+        cx.beginPath();cx.moveTo(p.tr[0][0],p.tr[0][1]);cx.lineTo(p.tr[1][0],p.tr[1][1]);cx.lineTo(p.tr[2][0],p.tr[2][1]);cx.closePath();
+        cx.clip();cx.drawImage(img,0,0,W,H);cx.restore();
+      }
+      if(!all)requestAnimationFrame(frame);
+      else{cx.clearRect(0,0,W,H);cx.drawImage(img,0,0,W,H);$('lname').classList.add('on');setTimeout(()=>{animDone=true;finish()},650)}
+    }
+    requestAnimationFrame(frame);
+  };
+  img.src='phoenix.webp';
+})();
+
+/* ---------- мозаичные плашки вместо фото (пока нет снимков) ---------- */
+function swatch(cols,seed,w=240,h=84,sat=.62){
+  let x=seed*9301+49297;const r=()=>(x=(x*9301+49297)%233280)/233280;let out='',cx=0;
+  while(cx<w){const tw=10+r()*26;let cy=0;while(cy<h){const th=8+r()*24,c=r()<sat?cols[(r()*cols.length)|0]:['#FBE3EE','#F6D3E3','#EFE4FB'][(r()*3)|0];
+    out+=r()<.18?`<path d="M${cx+1} ${cy+1}h${tw-2}L${cx+1} ${cy+th-1}z" fill="${c}"/>`:`<rect x="${cx+1}" y="${cy+1}" width="${tw-2}" height="${th-2}" rx="2" fill="${c}"/>`;cy+=th}cx+=tw}
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="${w}" height="${h}" fill="#FFF"/>${out}</svg>`;
+}
+
+/* ---------- галерея: положите фото в папку site/foto и впишите имена файлов сюда ---------- */
+const PHOTOS=[]; // например: ['1.jpg','2.jpg','3.jpg','4.jpg','5.jpg','6.jpg']
+const PAL=['#E23C80','#7A2E92','#7C7CFF','#F7841E','#FFD92B','#F27AAA'];
+$('gal').innerHTML=[0,1,2,3,4,5].map(i=>PHOTOS[i]
+  ?`<figure><img src="foto/${PHOTOS[i]}" alt="Студия Art Mosaic" loading="lazy"></figure>`
+  :`<figure class="empty"${i?' aria-hidden="true"':''}>${i===0?'<span>Фото студии<br>скоро здесь</span>':''}</figure>`).join('');
+
+/* ---------- каталог ---------- */
+const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/\s/g,' ');
+const CATS=window.CATS||[];let seed=3;
+$('tabs').innerHTML=['Все',...CATS.map(c=>c.t)].map((t,i)=>`<button type="button" class="tab" data-i="${i-1}" aria-pressed="${i===1}">${t}</button>`).join('');
+$('cards').innerHTML=CATS.map((cat,ci)=>cat.items.map(it=>`<article class="card" data-c="${ci}"><div class="sw">${swatch(cat.c,seed++,240,56,.38)}</div><h3>${it.n}</h3>${it.d?`<p>${it.d}</p>`:''}<div class="row"><strong>${it.h?fmt(it.h)+' ₽/час':(it.from?'от ':'')+fmt(it.p)+' ₽'}</strong><button type="button" data-pick="${it.n}">Записаться</button></div></article>`).join('')).join('');
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;
+  [...$('tabs').children].forEach(x=>x.setAttribute('aria-pressed',x===b));
+  filt(b.dataset.i);});
+function filt(i){document.querySelectorAll('#cards .card').forEach(c=>c.hidden=i!=='-1'&&c.dataset.c!==i)}
+filt('0');
+
+/* ---------- заявка → WhatsApp ---------- */
+const opts=['Подскажите, что выбрать','Детский день рождения','Взрослый праздник','Подарочный сертификат',...CATS.flatMap(c=>c.items.map(i=>i.n))];
+$('fwhat').innerHTML=[...new Set(opts)].map(o=>`<option>${o}</option>`).join('');
+document.addEventListener('click',e=>{const b=e.target.closest('[data-pick]');if(!b)return;
+  $('fwhat').value=b.dataset.pick;if(b.tagName==='BUTTON'){$('request').scrollIntoView({behavior:reduce?'auto':'smooth'});setTimeout(()=>$('fname').focus({preventScroll:true}),reduce?0:500)}});
+const toast=t=>{$('toast').textContent=t;$('toast').classList.add('on');setTimeout(()=>$('toast').classList.remove('on'),2600)};
+$('form').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('fname').value.trim(),phone=$('fphone').value.trim();
+  if(!name||phone.replace(/\D/g,'').length<10){toast('Укажите имя и телефон');(!name?$('fname'):$('fphone')).focus();return}
+  const lines=['Здравствуйте! Заявка с сайта Art Mosaic.',`Имя: ${name}`,`Телефон: ${phone}`,`Интересует: ${$('fwhat').value}`,`Человек: ${$('fcount').value||1}`];
+  if($('fdays').value.trim())lines.push(`Удобные дни: ${$('fdays').value.trim()}`);
+  if($('fnote').value.trim())lines.push(`Комментарий: ${$('fnote').value.trim()}`);
+  window.open('https://wa.me/79130029552?text='+encodeURIComponent(lines.join('\n')),'_blank','noopener');
+  toast('Открываем WhatsApp…');
+});
+</script>
+</body></html>
