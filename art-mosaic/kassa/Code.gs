@@ -26,8 +26,8 @@ const DEFAULT_EXPENSE = [
   'Упаковка и сувениры', 'Хозрасходы', 'Прочий расход'
 ];
 const DEFAULT_METHODS = ['Наличные', 'Карта', 'Перевод', 'Расчётный счёт'];
-const PAY_COLS = ['Дата платежа', 'Название', 'Тип', 'Категория', 'Сумма', 'Повтор', 'Способ оплаты', 'Комментарий', 'Статус', 'Оплачено', 'ID'];
-const TASK_COLS = ['Готово', 'Задача', 'Срок', 'Создано', 'Выполнено', 'ID'];
+const PAY_COLS = ['Дата платежа', 'Название', 'Тип', 'Категория', 'Сумма', 'Повтор', 'Способ оплаты', 'Комментарий', 'Статус', 'Оплачено', 'ID', 'Календарь'];
+const TASK_COLS = ['Готово', 'Задача', 'Срок', 'Создано', 'Выполнено', 'ID', 'Календарь'];
 const REPEATS = ['Разово', 'Ежемесячно', 'Еженедельно', 'Ежеквартально', 'Ежегодно'];
 
 const C = {
@@ -113,8 +113,10 @@ function apiPaySave(pin, p) {
       const row = findRowIn_(SH.PAY, 11, p.id);
       if (!row) throw new Error('Платёж не найден — возможно, его удалили в таблице');
       sh.getRange(row, 1, 1, 8).setValues([vals]);
+      syncPayRow_(row);
     } else {
       sh.appendRow(vals.concat(['Ожидает', '', newId_()]));
+      syncPayRow_(sh.getLastRow());
     }
   });
 }
@@ -139,9 +141,13 @@ function apiPayDone(pin, id, d) {
     if (p.repeat === 'Разово') {
       sh.getRange(row, 9, 1, 2).setValues([['Оплачено', toDate_(d.date)]]);
     } else {
+      // оставляем в календаре отметку об оплаченном сроке, а событие платежа переезжает на следующий
+      calSafe_(() => cal_().createAllDayEvent('✅ ' + (p.type === 'Доход' ? '💰 ' : '💳 ') + p.name + ' — ' + rub_(d.amount),
+        dayDate_(p.date), { description: 'Оплачено ' + d.date.split('-').reverse().join('.') }).removeAllReminders());
       sh.getRange(row, 1).setValue(toDate_(nextDate_(p.date, p.repeat)));
       sh.getRange(row, 10).setValue(toDate_(d.date));
     }
+    syncPayRow_(row);
   });
 }
 
@@ -149,7 +155,7 @@ function apiPayDelete(pin, id) {
   auth_(pin);
   return withLock_(() => {
     const row = findRowIn_(SH.PAY, 11, id);
-    if (row) sheet_(SH.PAY).deleteRow(row);
+    if (row) { deleteEventAt_(SH.PAY, row, 12); sheet_(SH.PAY).deleteRow(row); }
   });
 }
 
@@ -165,6 +171,7 @@ function apiTaskSave(pin, t) {
       const row = findRowIn_(SH.TASK, 6, t.id);
       if (!row) throw new Error('Задача не найдена');
       sh.getRange(row, 2, 1, 2).setValues([[text, due]]);
+      syncTaskRow_(row);
     } else {
       // в листе заранее стоят чекбоксы, поэтому пишем в первую строку после последней задачи
       const last = sh.getLastRow();
@@ -174,6 +181,7 @@ function apiTaskSave(pin, t) {
       if (row > sh.getMaxRows()) sh.insertRowsAfter(sh.getMaxRows(), 50);
       sh.getRange(row, 1, 1, 6).setValues([[false, text, due, new Date(), '', newId_()]]);
       sh.getRange(row, 1).insertCheckboxes();
+      syncTaskRow_(row);
     }
   });
 }
@@ -185,6 +193,7 @@ function apiTaskToggle(pin, id, done) {
     if (!row) throw new Error('Задача не найдена');
     sheet_(SH.TASK).getRange(row, 1).setValue(!!done);
     sheet_(SH.TASK).getRange(row, 5).setValue(done ? new Date() : '');
+    syncTaskRow_(row);
   });
 }
 
@@ -192,7 +201,7 @@ function apiTaskDelete(pin, id) {
   auth_(pin);
   return withLock_(() => {
     const row = findRowIn_(SH.TASK, 6, id);
-    if (row) sheet_(SH.TASK).deleteRow(row);
+    if (row) { deleteEventAt_(SH.TASK, row, 7); sheet_(SH.TASK).deleteRow(row); }
   });
 }
 
@@ -629,7 +638,7 @@ function setupPays_(ss) {
   header_(sh.getRange(1, 1, 1, PAY_COLS.length), C.violet);
   sh.setRowHeight(1, 36);
   sh.setFrozenRows(1);
-  [115, 200, 85, 170, 110, 125, 130, 260, 100, 105, 80].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  [115, 200, 85, 170, 110, 125, 130, 260, 100, 105, 80, 80].forEach((w, i) => sh.setColumnWidth(i + 1, w));
   const n = sh.getMaxRows() - 1;
   sh.getRange(2, 1, n, PAY_COLS.length).setFontFamily('Arial').setFontSize(10).setVerticalAlignment('middle');
   sh.getRange(2, 1, n, 1).setNumberFormat('dd.MM.yyyy').setHorizontalAlignment('center').setFontWeight('bold');
@@ -664,7 +673,7 @@ function setupPays_(ss) {
   sh.getRange(2, 9, n, 1).setDataValidation(list(['Ожидает', 'Оплачено']));
   sh.getRange(2, 7, n, 1).setDataValidation(SpreadsheetApp.newDataValidation()
     .requireValueInRange(ss.getSheetByName(SH.CAT).getRange('C2:C30'), true).setAllowInvalid(true).build());
-  if (!sh.isColumnHiddenByUser(11)) sh.hideColumns(11);
+  sh.hideColumns(11, 2);
   sh.getRange('A1').setNote('Повторяющиеся платежи после отметки «Оплачено» в приложении сами переносятся на следующий срок.');
 }
 
@@ -675,7 +684,7 @@ function setupTasks_(ss) {
   header_(sh.getRange(1, 1, 1, TASK_COLS.length), C.pink);
   sh.setRowHeight(1, 36);
   sh.setFrozenRows(1);
-  [70, 420, 110, 130, 130, 80].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  [70, 420, 110, 130, 130, 80, 80].forEach((w, i) => sh.setColumnWidth(i + 1, w));
   const n = sh.getMaxRows() - 1;
   sh.getRange(2, 1, n, TASK_COLS.length).setFontFamily('Arial').setFontSize(10).setVerticalAlignment('middle');
   sh.getRange(2, 1, n, 1).insertCheckboxes().setHorizontalAlignment('center');
@@ -694,7 +703,7 @@ function setupTasks_(ss) {
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(f_('=AND($A2=FALSE,$C2=TODAY())'))
       .setBackground('#FFF4D6').setRanges([sh.getRange(2, 2, n, 2)]).build()
   ]);
-  if (!sh.isColumnHiddenByUser(6)) sh.hideColumns(6);
+  sh.hideColumns(6, 2);
 }
 
 function setupDashboard_(ss) {
@@ -781,4 +790,132 @@ function setupDashboard_(ss) {
     .setPosition(27, 8, 0, 0).build());
 
   sh.setFrozenRows(0);
+}
+
+/* ---------------- Google Календарь ---------------- */
+// Платежи и дела со сроком попадают в отдельный календарь «Art Mosaic · Феня».
+// Им можно поделиться с Галиной: Google Календарь → настройки календаря → «Открыть доступ».
+
+const CAL_NAME = 'Art Mosaic · Феня';
+const CAL_TZ = 'Asia/Novosibirsk';
+
+function cal_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('CAL_ID');
+  let cal = id ? CalendarApp.getCalendarById(id) : null;
+  if (!cal) {
+    cal = CalendarApp.getCalendarsByName(CAL_NAME)[0] || CalendarApp.createCalendar(CAL_NAME, { timeZone: CAL_TZ });
+    try { cal.setColor('#E86A92'); } catch (e) {}
+    props.setProperty('CAL_ID', cal.getId());
+  }
+  return cal;
+}
+
+// Ошибка календаря не должна ломать запись в таблицу
+function calSafe_(fn) {
+  try { return fn(); } catch (e) { console.error('Календарь: ' + e); return null; }
+}
+
+function dayDate_(ds) {                       // 'yyyy-MM-dd' → дата (полдень, чтобы не съехать из-за часовых поясов)
+  const [y, m, d] = ds.split('-').map(Number);
+  return new Date(y, m - 1, d, 12, 0, 0);
+}
+
+function rub_(n) { return String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽'; }
+
+function eventById_(cal, id) {
+  if (!id) return null;
+  try { return cal.getEventById(String(id)); } catch (e) { return null; }
+}
+
+function deleteEventAt_(sheetName, row, col) {
+  calSafe_(() => {
+    const id = sheet_(sheetName).getRange(row, col).getValue();
+    const ev = eventById_(cal_(), id);
+    if (ev) ev.deleteEvent();
+  });
+}
+
+function syncPayRow_(row) {
+  calSafe_(() => {
+    const sh = sheet_(SH.PAY), tz = tz_();
+    const r = sh.getRange(row, 1, 1, 12).getValues()[0];
+    const ds = toDateStr_(r[0], tz), name = String(r[1] || '').trim();
+    const cal = cal_();
+    let ev = eventById_(cal, r[11]);
+    if (!ds || !name) { if (ev) ev.deleteEvent(); sh.getRange(row, 12).setValue(''); return; }
+    const inc = /^дох/i.test(String(r[2])), paid = /оплач/i.test(String(r[8]));
+    const title = (paid ? '✅ ' : '') + (inc ? '💰 ' : '💳 ') + name + (Number(r[4]) ? ' — ' + rub_(r[4]) : '');
+    const desc = [
+      inc ? 'Ожидаем поступление' : 'Платёж',
+      r[3] ? 'Категория: ' + r[3] : '', r[6] ? 'Способ: ' + r[6] : '',
+      r[5] && r[5] !== 'Разово' ? 'Повтор: ' + r[5] : '', r[7] ? '💬 ' + r[7] : '',
+      '', 'Отметить оплату — в приложении или кнопкой у Фени в Telegram'
+    ].filter((x, i, a) => x || (i > 0 && a[i - 1])).join('\n');
+    if (ev) {
+      ev.setTitle(title); ev.setAllDayDate(dayDate_(ds)); ev.setDescription(desc);
+    } else {
+      ev = cal.createAllDayEvent(title, dayDate_(ds), { description: desc });
+      sh.getRange(row, 12).setValue(ev.getId());
+    }
+    ev.removeAllReminders();
+    if (!paid) { ev.addPopupReminder(15 * 60); ev.addPopupReminder(0); }   // накануне в 9:00 и в сам день
+  });
+}
+
+function syncTaskRow_(row) {
+  calSafe_(() => {
+    const sh = sheet_(SH.TASK), tz = tz_();
+    const r = sh.getRange(row, 1, 1, 7).getValues()[0];
+    const text = String(r[1] || '').trim(), ds = toDateStr_(r[2], tz), done = r[0] === true;
+    const cal = cal_();
+    let ev = eventById_(cal, r[6]);
+    if (!text || !ds) { if (ev) ev.deleteEvent(); sh.getRange(row, 7).setValue(''); return; }
+    const title = (done ? '✔ ' : '📝 ') + text;
+    if (ev) {
+      ev.setTitle(title); ev.setAllDayDate(dayDate_(ds));
+    } else {
+      ev = cal.createAllDayEvent(title, dayDate_(ds), { description: 'Дело из списка Фени' });
+      sh.getRange(row, 7).setValue(ev.getId());
+    }
+    ev.removeAllReminders();
+    if (!done) ev.addPopupReminder(15 * 60);
+  });
+}
+
+// Событие со временем (поставка, встреча, МК) — прямо в календарь, без таблицы
+function addCalEvent_(title, ds, startHm, minutes, desc) {
+  const cal = cal_();
+  if (!startHm) return cal.createAllDayEvent(title, dayDate_(ds), { description: desc || '' });
+  const start = Utilities.parseDate(ds + ' ' + startHm, CAL_TZ, 'yyyy-MM-dd HH:mm');
+  const end = new Date(start.getTime() + (minutes || 60) * 60000);
+  const ev = cal.createEvent(title, start, end, { description: desc || '' });
+  ev.removeAllReminders(); ev.addPopupReminder(60); ev.addPopupReminder(24 * 60);
+  return ev;
+}
+
+// События на ближайшие дни — для Фени
+function calEvents_(fromDs, days) {
+  return calSafe_(() => {
+    const from = Utilities.parseDate(fromDs + ' 00:00', CAL_TZ, 'yyyy-MM-dd HH:mm');
+    const to = new Date(from.getTime() + days * 86400000);
+    return cal_().getEvents(from, to).map(e => ({
+      id: e.getId(), title: e.getTitle(), allDay: e.isAllDayEvent(),
+      day: Utilities.formatDate(e.isAllDayEvent() ? e.getAllDayStartDate() : e.getStartTime(), CAL_TZ, 'yyyy-MM-dd'),
+      start: e.isAllDayEvent() ? '' : Utilities.formatDate(e.getStartTime(), CAL_TZ, 'HH:mm'),
+      end: e.isAllDayEvent() ? '' : Utilities.formatDate(e.getEndTime(), CAL_TZ, 'HH:mm')
+    }));
+  }) || [];
+}
+
+// Запустить ОДИН раз из редактора: создаст календарь и перенесёт в него все платежи и дела со сроком
+function setupCalendar() {
+  const ss = SpreadsheetApp.getActive();
+  setupPays_(ss); setupTasks_(ss);                       // добавит колонку «Календарь»
+  const cal = cal_();
+  const pay = sheet_(SH.PAY), task = sheet_(SH.TASK);
+  for (let r = 2; r <= pay.getLastRow(); r++) if (String(pay.getRange(r, 2).getValue()).trim()) syncPayRow_(r);
+  for (let r = 2; r <= task.getLastRow(); r++) if (String(task.getRange(r, 2).getValue()).trim()) syncTaskRow_(r);
+  console.log('Календарь готов: ' + cal.getName());
+  console.log('Поделиться с Галиной: calendar.google.com → слева «' + CAL_NAME + '» → ⋮ → «Настройки и общий доступ» → «Открыть доступ отдельным пользователям» → её почта');
 }

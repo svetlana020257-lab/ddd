@@ -43,7 +43,7 @@ function goalBar_(inc) {
 }
 
 const KB = {
-  keyboard: [['📊 Сегодня', '📈 Месяц'], ['📅 Платежи', '✅ Дела'], ['❓ Помощь']],
+  keyboard: [['📊 Сегодня', '📈 Месяц'], ['📅 Платежи', '✅ Дела'], ['🗓 Календарь', '❓ Помощь']],
   resize_keyboard: true, is_persistent: true
 };
 
@@ -84,9 +84,11 @@ function onMessage_(m) {
   }
   try {
     const lines = text.split(/\n+/).map(l => l.trim()).filter(Boolean);
-    const isItem = l => /^[+\-−–]\s*\d/.test(l) || /^(дело|задача|сделать)[\s:,-]/i.test(l);
+    const isItem = l => /^[+\-−–]\s*\d/.test(l) || /^(дело|задача|сделать)[\s:,-]/i.test(l) || EVENT_RE.test(l);
     if (lines.length > 1 && lines.filter(isItem).length >= 1 && isItem(lines[0])) return addBatch_(chat, lines);
     if (/^(дело|задача|сделать)[\s:,-]/i.test(text)) return addTask_(chat, text);
+    if (EVENT_RE.test(text)) return addEvent_(chat, text);
+    if (/^\/week|^\/cal|^🗓|^календарь$/i.test(text)) return send_(chat, reportWeek_(), KB);
     if (/^[+\-−–]\s*\d/.test(text)) return addOp_(chat, text);
     if (/^\/start|^\/help|помощь$/i.test(text)) return send_(chat, HELP_, KB);
     if (/^\/today|^📊|^сегодня$/i.test(text)) return send_(chat, reportToday_(), KB);
@@ -114,6 +116,9 @@ const HELP_ =
   'Категорию и способ оплаты узнаю по началу слова (мк, праздник, сертиф, аренда, стекло…; нал, карта, перевод). ' +
   'Если не узнаю — предложу выбрать кнопкой. «Вчера» или дата <code>15.11</code> меняют дату.\n\n' +
   '<b>Добавить дело:</b> <code>дело позвонить поставщику завтра</code>\n' +
+  '<b>В календарь:</b> <code>поставка стекла 25.11 14:00</code>, <code>встреча с Олей завтра в 15:30</code>, ' +
+  '<code>мк ваза 28.11 18:00 2ч</code> (слова: поставка, встреча, мк, праздник, созвон, событие).\n' +
+  'Платежи и дела со сроком попадают в календарь сами 🗓\n' +
   'Срок: сегодня, завтра, послезавтра или дата <code>25.11</code>.\n\n' +
   '<b>Кнопки внизу</b> — итоги дня и месяца, платежи (можно отметить оплату) и список дел.\n' +
   'Каждое утро в ' + MORNING_HOUR + ':00 прилетаю со сводкой и напоминаю о платежах ☀️';
@@ -223,6 +228,7 @@ function addBatch_(chat, lines) {
   const saved = [], ask = [], tasks = [], bad = [];
   lines.forEach(line => {
     if (/^(дело|задача|сделать)[\s:,-]/i.test(line)) { const t = taskFrom_(line); if (t) { apiTaskSave(PIN, t); tasks.push(t); } return; }
+    if (EVENT_RE.test(line)) { const ev = eventFrom_(line); if (ev && !ev.error) { addCalEvent_(ev.title, ev.date, ev.start, ev.minutes, ev.desc); tasks.push({ text: '🗓 ' + ev.title + ' — ' + dmy_(ev.date) + (ev.start ? ' ' + ev.start : ''), due: '' }); } else bad.push(line); return; }
     if (!/^[+\-−–]\s*\d/.test(line)) { bad.push(line); return; }
     const op = parseOp_(line, cats);
     if (op.error) { bad.push(line); return; }
@@ -240,7 +246,7 @@ function addBatch_(chat, lines) {
       (o.comment ? ' — ' + esc_(o.comment) : '')).join('\n') +
       '\n\nДоходы ' + money_(t.inc) + ' · расходы ' + money_(t.exp) + '\n<i>' + say_(t.profit >= 0 ? 'inc' : 'exp') + '</i>\n';
   }
-  if (tasks.length) txt += (txt ? '\n' : '') + '📝 <b>Запомнила дела</b>\n' +
+  if (tasks.length) txt += (txt ? '\n' : '') + '📝 <b>Запомнила</b>\n' +
     tasks.map(t => '• ' + esc_(t.text) + (t.due ? ' — ' + dueWord_(t.due) : '')).join('\n') + '\n';
   if (bad.length) txt += (txt ? '\n' : '') + '🙈 Не поняла:\n' + bad.map(l => '• ' + esc_(l)).join('\n') +
     '\n<i>Строка должна начинаться с + или − и суммы, или со слова «дело»</i>\n';
@@ -394,6 +400,14 @@ function onCallback_(q) {
         (p.repeat !== 'Разово' ? '\n↻ В следующий раз напомню к ' + dmy_(nextDate_(p.date, p.repeat)) : ''));
       return sendPays_(chat, msg);
     }
+    if (kind === 'evdel') {
+      const id = CacheService.getScriptCache().get('ev_' + val);
+      const ev = id ? eventById_(cal_(), id) : null;
+      if (!ev) { answer_(q.id, 'Уже нельзя — удалите в календаре'); return; }
+      ev.deleteEvent();
+      answer_(q.id, 'Убрала');
+      return edit_(chat, msg, '↩ Убрала из календаря 🪶');
+    }
     if (kind === 'open') { answer_(q.id, ''); return sendPays_(chat); }
     answer_(q.id, '');
   } catch (err) {
@@ -465,7 +479,10 @@ function botMorning() {
   if (tasks.length) {
     txt += '\n✅ <b>Дела на сегодня</b>\n' + tasks.map(x => (daysFrom_(x.due) < 0 ? '🔴 ' : '• ') + esc_(x.text)).join('\n') + '\n';
   }
-  if (!pays.length && !tasks.length && !t.inc && !t.exp) return; // нечего сообщать
+  const evs = calEvents_(today_(), 1).filter(e => !/^(✅|💳|💰|📝|✔)/.test(e.title));   // платежи и дела уже выше
+  if (evs.length) txt += '\n🗓 <b>Сегодня в календаре</b>\n' +
+    evs.map(e => (e.start ? e.start + ' ' : '• ') + esc_(e.title)).join('\n') + '\n';
+  if (!pays.length && !tasks.length && !evs.length && !t.inc && !t.exp) return; // нечего сообщать
   const ym = today_().slice(0, 7);
   txt += goalBar_(totals_(readOps_().filter(o => o.date.slice(0, 7) === ym)).inc);
   txt += '\n\n<i>Хорошего дня! Всё сложится 💗</i>';
@@ -485,6 +502,7 @@ function setupBot() {
     { command: 'month', description: 'Итоги месяца' },
     { command: 'pays', description: 'Платежи' },
     { command: 'tasks', description: 'Дела' },
+    { command: 'week', description: 'Календарь на неделю' },
     { command: 'help', description: 'Как пользоваться' }
   ] });
   ScriptApp.getProjectTriggers().filter(t => t.getHandlerFunction() === 'botMorning').forEach(t => ScriptApp.deleteTrigger(t));
@@ -572,4 +590,69 @@ function checkBot() {
     : 'Ошибок доставки нет');
   const want = PROXY_URL || WEBAPP_URL;
   console.log(info.url === want ? '✅ Адрес правильный' + (PROXY_URL ? ' (через посредника)' : '') : '⚠️ Адрес не тот — запустите setupBot');
+}
+
+/* ---------------- Календарь ---------------- */
+
+const EVENT_RE = /^(поставка|доставка|встреча|мк|мастер-класс|праздник|созвон|звонок|событие|запись|напомни)[\s:,-]/i;
+const EVENT_ICON = { 'поставка': '🚚', 'доставка': '🚚', 'встреча': '🤝', 'мк': '🎨', 'мастер-класс': '🎨',
+  'праздник': '🎉', 'созвон': '📞', 'звонок': '📞', 'событие': '📌', 'запись': '✍️', 'напомни': '🔔' };
+
+// «поставка стекла 25.11 14:00 1.5ч» → { title, date, start, minutes }
+function eventFrom_(text) {
+  const kind = text.match(EVENT_RE)[1].toLowerCase();
+  const words = text.replace(EVENT_RE, '').trim().split(/\s+/).filter(Boolean);
+  let date = '', start = '', minutes = 60;
+  const rest = [];
+  for (let i = 0; i < words.length; i++) {
+    const raw = words[i], w = raw.toLowerCase().replace(/ё/g, 'е').replace(/[,!?;:)]+$/, '');
+    const d = parseDateWord_(w);
+    if (d && !date) { date = d; continue; }
+    if (/^(в|во|с|на|до|к)$/.test(w) && words[i + 1] && /^\d{1,2}([:.]\d{2})?$/.test(words[i + 1]) && !start) continue;
+    const t = w.match(/^(\d{1,2})[:.](\d{2})$/) || (rest.length || date ? w.match(/^(\d{1,2})()$/) : null);
+    if (t && !start && +t[1] < 24 && (t[2] !== '' || /^(в|во|с|к)$/.test((words[i - 1] || '').toLowerCase()))) {
+      start = ('0' + t[1]).slice(-2) + ':' + (t[2] || '00'); continue;
+    }
+    const dur = w.match(/^(\d+(?:[.,]\d+)?)\s*(ч|час|часа|часов|мин|м)$/);
+    if (dur) { const n = parseFloat(dur[1].replace(',', '.')); minutes = /^м/.test(dur[2]) ? n : n * 60; continue; }
+    rest.push(raw);
+  }
+  if (!date) return { error: 'не нашла дату — добавьте «завтра» или «25.11»' };
+  let title = rest.join(' ').trim();
+  const label = kind === 'мк' ? 'МК' : kind.charAt(0).toUpperCase() + kind.slice(1);
+  title = (EVENT_ICON[kind] || '📌') + ' ' + label + (title ? ' ' + title : '');
+  return { title: title, date: date, start: start, minutes: Math.round(minutes), desc: 'Добавлено через Феню' };
+}
+
+function addEvent_(chat, text) {
+  const ev = eventFrom_(text);
+  if (ev.error) return send_(chat, '🗓 ' + ev.error + '\nПример: <code>поставка стекла 25.11 14:00</code>');
+  const e = addCalEvent_(ev.title, ev.date, ev.start, ev.minutes, ev.desc);
+  const key = Utilities.getUuid().slice(0, 8);
+  CacheService.getScriptCache().put('ev_' + key, e.getId(), 21600);
+  let when = dueWord_(ev.date);
+  if (ev.start) {
+    const endMin = (+ev.start.slice(0, 2)) * 60 + (+ev.start.slice(3)) + ev.minutes;
+    when += ', ' + ev.start + '–' + ('0' + Math.floor(endMin / 60) % 24).slice(-2) + ':' + ('0' + endMin % 60).slice(-2);
+  }
+  send_(chat, '🗓 Записала в календарь:\n<b>' + esc_(ev.title) + '</b>\n' + when +
+    '\n<i>' + (ev.start ? 'напомню за час и накануне 🪶' : 'на весь день') + '</i>',
+    { inline_keyboard: [[{ text: '↩ Убрать из календаря', callback_data: 'evdel:' + key }]] });
+}
+
+function reportWeek_() {
+  const list = calEvents_(today_(), 8);
+  if (!list.length) return '🗓 <b>Ближайшая неделя</b>\n\nВ календаре пусто — можно и полетать 🐣';
+  let txt = '🗓 <b>Ближайшая неделя</b>\n';
+  let cur = '';
+  list.sort((a, b) => (a.day + (a.start || '00:00')).localeCompare(b.day + (b.start || '00:00'))).forEach(e => {
+    if (e.day !== cur) {
+      cur = e.day;
+      const WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+      const wd = WD[new Date(Date.UTC(+cur.slice(0, 4), +cur.slice(5, 7) - 1, +cur.slice(8, 10))).getUTCDay()];
+      txt += '\n<b>' + dueWord_(cur) + (dueWord_(cur) === dmy_(cur) ? '' : ' (' + dmy_(cur) + ')') + ', ' + wd + '</b>\n';
+    }
+    txt += (e.start ? e.start + ' ' : '• ') + esc_(e.title) + '\n';
+  });
+  return txt;
 }
