@@ -192,6 +192,33 @@
   .due.red{background:var(--expbg);color:var(--exp)} .due.amber{background:#FFF4D6;color:#8A6510}
   .toggle-done{width:100%;padding:12px;margin-top:8px;border-radius:12px;color:var(--ink2);font-weight:700;background:#EFEAF4}
 
+  /* календарь */
+  .calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .calhead .title{font-weight:800;font-size:17px}
+  .calhead button{width:38px;height:38px;border-radius:12px;background:#F3EFF7;font-size:20px;font-weight:700}
+  .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cgrid .wd{font-size:11px;font-weight:800;color:var(--mute);text-align:center;padding:2px 0 4px;text-transform:uppercase}
+  .cgrid .wd.we{color:var(--pink)}
+  .cday{aspect-ratio:1/1;border-radius:12px;background:#FAF7FC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:700;font-size:15px;position:relative;border:2px solid transparent}
+  .cday.out{opacity:.35}
+  .cday.today{background:#FFF4D6}
+  .cday.sel{border-color:var(--ink);background:#fff}
+  .cday .dots{display:flex;gap:3px;height:6px}
+  .cday .dots i{width:6px;height:6px;border-radius:50%}
+  .d-exp{background:var(--exp)} .d-inc{background:var(--inc)} .d-task{background:var(--violet)} .d-ev{background:var(--teal)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;color:var(--ink2);font-weight:600}
+  .legend span{display:flex;align-items:center;gap:4px} .legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 8px}
+  .dayhead b{font-size:16px} .dayhead small{color:var(--ink2);font-weight:600}
+  .ditem{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .ditem .tm{font-weight:800;font-size:13px;color:var(--teal);min-width:44px}
+  .ditem .tx{flex:1;min-width:0;font-weight:600;font-size:14px;text-align:left}
+  .ditem .tx small{display:block;font-weight:500;color:var(--ink2);font-size:12px}
+  .ditem .x{width:32px;height:32px;border-radius:10px;background:#F3EFF7;color:var(--ink2);font-weight:800}
+  .dadd{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+  .dadd button{padding:10px 4px;border-radius:12px;background:#fff;font-weight:700;font-size:13px;box-shadow:0 1px 0 var(--line)}
+  .calwarn{font-size:12px;color:#8A6510;background:#FFF4D6;border-radius:10px;padding:8px 10px;margin-top:10px}
+
   /* модальное окно */
   .modal{position:fixed;inset:0;z-index:25;background:rgba(43,36,64,.45);display:flex;align-items:flex-end;justify-content:center}
   .modal .panel{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--bg);border-radius:22px 22px 0 0;
@@ -286,7 +313,22 @@
 
     <!-- ПЛАТЕЖИ -->
     <section id="tab-pay" class="tab">
-      <div class="head-row"><h2>Платежи</h2><button class="add-btn" id="payAdd">＋ Платёж</button></div>
+      <div class="card">
+        <div class="calhead"><button id="calPrev">‹</button><div class="title" id="calTitle"></div><button id="calNext">›</button></div>
+        <div class="cgrid" id="calGrid"></div>
+        <div class="legend">
+          <span><i class="d-exp"></i>оплатить</span><span><i class="d-inc"></i>ждём деньги</span>
+          <span><i class="d-task"></i>дела</span><span><i class="d-ev"></i>события</span>
+        </div>
+        <div id="calWarn"></div>
+      </div>
+      <div class="dayhead"><b id="dayTitle"></b><small id="dayCash"></small></div>
+      <div id="dayList"></div>
+      <div class="dadd">
+        <button id="dAddEv">＋ Событие</button><button id="dAddPay">＋ Платёж</button><button id="dAddTask">＋ Дело</button>
+      </div>
+
+      <div class="head-row" style="margin-top:24px"><h2>Платежи</h2><button class="add-btn" id="payAdd">＋ Платёж</button></div>
       <div class="totals" id="payTotals"></div>
       <div id="payList"></div>
     </section>
@@ -331,7 +373,7 @@
   <nav class="bottom"><div class="in">
     <button data-tab="add" class="on"><span class="ic">＋</span>Добавить</button>
     <button data-tab="log"><span class="ic">☰</span>Журнал</button>
-    <button data-tab="pay"><span class="ic">▦</span>Платежи<span class="badge hidden" id="payBadge"></span></button>
+    <button data-tab="pay"><span class="ic">▦</span>Календарь<span class="badge hidden" id="payBadge"></span></button>
     <button data-tab="task"><span class="ic">✓</span>Дела<span class="badge hidden" id="taskBadge"></span></button>
     <button data-tab="sum"><span class="ic">∑</span>Итоги</button>
   </div></nav>
@@ -365,6 +407,7 @@ const store = {
 const S = {
   ops: [], pays: [], tasks: [], cats: {income:[], expense:[], methods:[]}, url: '#',
   taskDue: '', showDone: false,
+  calMonth: todayStr().slice(0,7), calDay: todayStr(), events: {}, calOk: true,
   type: 'Доход', cat: '', method: store.get('method',''), date: todayStr(),
   editId: null, month: todayStr().slice(0,7), pin: store.get('pin',''), busy: false
 };
@@ -444,7 +487,7 @@ function switchTab(name){
   window.scrollTo({top:0});
   if (name === 'log') renderLog();
   if (name === 'sum') renderSum();
-  if (name === 'pay') renderPays();
+  if (name === 'pay') { renderPays(); renderCal(); loadEvents(S.calMonth); }
   if (name === 'task') renderTasks();
 }
 $$('nav.bottom button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
@@ -734,8 +777,8 @@ function renderPays(){
 }
 $('#payAdd').onclick = () => payForm(null);
 
-function payForm(p){
-  const f = Object.assign({id:'', name:'', type:'Расход', cat:'', amount:'', date:todayStr(), repeat:'Ежемесячно', method:'', comment:''}, p || {});
+function payForm(p, presetDate){
+  const f = Object.assign({id:'', name:'', type:'Расход', cat:'', amount:'', date:presetDate || todayStr(), repeat:'Ежемесячно', method:'', comment:''}, p || {});
   const catsOf = t => t === 'Доход' ? S.cats.income : S.cats.expense;
   openModal(`
     <h3>${p ? 'Платёж' : 'Новый платёж'}</h3>
@@ -907,6 +950,148 @@ function taskForm(t){
   };
 }
 
+/* ---------- календарь ---------- */
+const WD_SHORT = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const EV_KINDS = [['🚚','Поставка'],['🤝','Встреча'],['🎨','МК'],['🎉','Праздник'],['📞','Созвон'],['📌','Другое']];
+
+async function loadEvents(ym, force){
+  if (S.events[ym] && !force) return;
+  try{
+    const r = await call('apiEvents', S.pin, ym);
+    S.events[ym] = r.events || []; S.calOk = r.ok !== false;
+    renderCal();
+  }catch(e){ S.calOk = false; renderCal(); }
+}
+
+function dayItems(ds){
+  return {
+    pays: S.pays.filter(p => p.date === ds && p.status !== 'Оплачено'),
+    tasks: S.tasks.filter(t => t.due === ds),
+    events: (S.events[ds.slice(0,7)] || []).filter(e => e.day === ds).sort((a,b) => (a.start||'').localeCompare(b.start||'')),
+    ops: S.ops.filter(o => o.date === ds)
+  };
+}
+
+function renderCal(){
+  if (!$('#calGrid')) return;
+  const [y, m] = S.calMonth.split('-').map(Number);
+  $('#calTitle').textContent = MONTHS[m-1] + ' ' + y;
+  const first = new Date(y, m-1, 1), shift = (first.getDay() + 6) % 7;
+  const start = new Date(y, m-1, 1 - shift);
+  let html = WD_SHORT.map((w,i) => `<div class="wd${i>4?' we':''}">${w}</div>`).join('');
+  const today = todayStr();
+  for (let i = 0; i < 42; i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (i >= 35 && d.getMonth() !== m-1) break;
+    const it = dayItems(ds);
+    const dots = [];
+    if (it.pays.some(p => p.type==='Расход')) dots.push('d-exp');
+    if (it.pays.some(p => p.type==='Доход')) dots.push('d-inc');
+    if (it.tasks.some(t => !t.done)) dots.push('d-task');
+    if (it.events.length) dots.push('d-ev');
+    html += `<button class="cday${d.getMonth()!==m-1?' out':''}${ds===today?' today':''}${ds===S.calDay?' sel':''}" data-ds="${ds}">
+      ${d.getDate()}<span class="dots">${dots.map(c=>`<i class="${c}"></i>`).join('')}</span></button>`;
+  }
+  $('#calGrid').innerHTML = html;
+  $$('#calGrid .cday').forEach(b => b.onclick = () => {
+    S.calDay = b.dataset.ds;
+    if (S.calDay.slice(0,7) !== S.calMonth){ S.calMonth = S.calDay.slice(0,7); loadEvents(S.calMonth); }
+    renderCal();
+  });
+  $('#calWarn').innerHTML = S.calOk ? '' : '<div class="calwarn">Google Календарь ещё не подключён — платежи и дела видны, а события появятся после запуска setupCalendar в Apps Script.</div>';
+  renderDay();
+}
+
+function renderDay(){
+  const ds = S.calDay, it = dayItems(ds);
+  $('#dayTitle').textContent = dayTitle(ds);
+  const t = totals(it.ops);
+  $('#dayCash').innerHTML = [t.inc ? `<span class="inc-t">+${money(t.inc)}</span>` : '', t.exp ? `<span class="exp-t">−${money(t.exp)}</span>` : ''].filter(Boolean).join(' · ');
+  let html = '';
+  it.events.forEach(e => {
+    html += `<div class="ditem"><span class="tm">${e.start || 'весь день'}</span>
+      <div class="tx">${esc(e.title)}${e.end ? `<small>до ${e.end}</small>` : ''}</div>
+      <button class="x" data-evdel="${esc(e.id)}" title="Убрать">✕</button></div>`;
+  });
+  it.pays.forEach(p => {
+    const inc = p.type === 'Доход';
+    html += `<div class="ditem"><span class="tm" style="color:${inc?'var(--inc)':'var(--exp)'}">${inc?'💰':'💳'}</span>
+      <button class="tx" data-pedit="${esc(p.id)}">${esc(p.name)}<small>${p.amount?money(p.amount):'сумма не указана'}${p.repeat!=='Разово'?' · ↻ '+REP_SHORT[p.repeat]:''}</small></button>
+      <button class="done-btn ${inc?'':'exp'}" data-pdone="${esc(p.id)}" style="width:36px;height:36px">✓</button></div>`;
+  });
+  it.tasks.forEach(tk => {
+    html += `<div class="ditem task ${tk.done?'done':''}" style="padding:10px 12px"><button class="check" data-check="${esc(tk.id)}">${tk.done?'✓':''}</button>
+      <button class="tx" data-tedit="${esc(tk.id)}">${esc(tk.text)}</button></div>`;
+  });
+  if (!html) html = '<div style="text-align:center;color:var(--mute);font-size:14px;padding:14px 0">На этот день ничего нет 🐣</div>';
+  $('#dayList').innerHTML = html;
+  $$('#dayList [data-evdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Убрать событие из календаря?')) return;
+    try{ const r = await call('apiEventDelete', S.pin, b.dataset.evdel, S.calDay.slice(0,7)); S.events[S.calDay.slice(0,7)] = r.events; renderCal(); toast('Убрала из календаря'); }
+    catch(e){ toast(errText(e), true); }
+  });
+  $$('#dayList [data-pedit]').forEach(b => b.onclick = () => payForm(S.pays.find(p => p.id === b.dataset.pedit)));
+  $$('#dayList [data-pdone]').forEach(b => b.onclick = () => payDoneForm(S.pays.find(p => p.id === b.dataset.pdone)));
+  $$('#dayList [data-check]').forEach(b => b.onclick = async () => { await toggleTask(b.dataset.check); renderCal(); });
+  $$('#dayList [data-tedit]').forEach(b => b.onclick = () => taskForm(S.tasks.find(t => t.id === b.dataset.tedit)));
+}
+
+$('#calPrev').onclick = () => { S.calMonth = shiftMonth(S.calMonth, -1); S.calDay = S.calMonth + '-01'; renderCal(); loadEvents(S.calMonth); };
+$('#calNext').onclick = () => { S.calMonth = shiftMonth(S.calMonth, 1); S.calDay = S.calMonth + '-01'; renderCal(); loadEvents(S.calMonth); };
+$('#dAddPay').onclick = () => payForm(null, S.calDay);
+$('#dAddTask').onclick = () => openTaskNew(S.calDay);
+$('#dAddEv').onclick = () => eventForm(S.calDay);
+
+function openTaskNew(ds){
+  openModal(`<h3>Новое дело</h3>
+    <label class="lbl" style="margin-top:12px">Что сделать</label>
+    <textarea class="field" id="ntText" rows="2" placeholder="Например: заказать клей"></textarea>
+    <label class="lbl">Срок</label><input class="field" id="ntDue" type="date" value="${ds}">
+    <button class="primary" id="ntSave" style="background:var(--ink)">Добавить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="ntCancel">Отмена</button></div>`);
+  $('#ntCancel').onclick = closeModal;
+  $('#ntSave').onclick = async () => {
+    if (await run('apiTaskSave', [{text: $('#ntText').value, due: $('#ntDue').value}], 'Дело добавлено', $('#ntSave'))) { closeModal(); renderCal(); }
+  };
+  setTimeout(() => $('#ntText').focus(), 100);
+}
+
+function eventForm(ds){
+  let kind = EV_KINDS[0], minutes = 60;
+  const durs = [[30,'30 мин'],[60,'1 ч'],[120,'2 ч'],[180,'3 ч']];
+  openModal(`<h3>Событие в календарь</h3>
+    <label class="lbl" style="margin-top:12px">Что</label>
+    <div class="chips" id="eKind">${EV_KINDS.map((k,i) => `<button class="chip${i===0?' on':''}" data-k="${i}">${k[0]} ${k[1]}</button>`).join('')}</div>
+    <input class="field" id="eTitle" style="margin-top:10px" placeholder="Например: стекло от «Витраж-Сиб»">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Дата</label><input class="field" id="eDate" type="date" value="${ds}"></div>
+      <div><label class="lbl">Время</label><input class="field" id="eTime" type="time" placeholder="весь день"></div>
+    </div>
+    <label class="lbl">Длительность</label>
+    <div class="chips" id="eDur">${durs.map(d => `<button class="chip${d[0]===60?' on':''}" data-m="${d[0]}">${d[1]}</button>`).join('')}</div>
+    <div class="hint">Без времени — событие на весь день. Напоминание придёт за час и накануне.</div>
+    <label class="lbl">Заметка</label><input class="field" id="eDesc" placeholder="Необязательно">
+    <button class="primary" id="eSave" style="background:var(--teal)">Добавить в календарь</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="eCancel">Отмена</button></div>`);
+  $$('#eKind .chip').forEach(b => b.onclick = () => { kind = EV_KINDS[+b.dataset.k]; $$('#eKind .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  $$('#eDur .chip').forEach(b => b.onclick = () => { minutes = +b.dataset.m; $$('#eDur .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#eCancel').onclick = closeModal;
+  $('#eSave').onclick = async () => {
+    const extra = $('#eTitle').value.trim();
+    const label = kind[1] === 'Другое' ? '' : kind[1];
+    const title = (kind[0] + ' ' + [label, extra].filter(Boolean).join(' ')).trim();
+    if (!extra && kind[1] === 'Другое') { toast('Напишите, что за событие', true); return; }
+    const date = $('#eDate').value || ds;
+    const btn = $('#eSave'); btn.disabled = true; btn.textContent = 'Сохраняю…';
+    try{
+      const r = await call('apiEventAdd', S.pin, {title, date, start: $('#eTime').value, minutes, desc: $('#eDesc').value});
+      S.events[date.slice(0,7)] = r.events; S.calDay = date; S.calMonth = date.slice(0,7);
+      closeModal(); renderCal(); toast('🗓 Добавила в календарь');
+    }catch(e){ toast(errText(e), true); btn.disabled = false; btn.textContent = 'Добавить в календарь'; }
+  };
+}
+
 /* ---------- значки и напоминания ---------- */
 function renderBadges(){
   const urgentPays = pendingPays().filter(p => daysFromToday(p.date) <= 3);
@@ -928,7 +1113,7 @@ function renderBadges(){
 
 function renderAll(){
   setType(S.type); renderMethods(); renderToday();
-  renderLog(); renderSum(); renderPays(); renderTasks(); renderBadges();
+  renderLog(); renderSum(); renderPays(); renderTasks(); renderBadges(); renderCal();
 }
 
 

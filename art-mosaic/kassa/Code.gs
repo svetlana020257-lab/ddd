@@ -919,3 +919,36 @@ function setupCalendar() {
   console.log('Календарь готов: ' + cal.getName());
   console.log('Поделиться с Галиной: calendar.google.com → слева «' + CAL_NAME + '» → ⋮ → «Настройки и общий доступ» → «Открыть доступ отдельным пользователям» → её почта');
 }
+
+/* ---------------- Календарь в приложении ---------------- */
+
+// События месяца из календаря (кроме платежей и дел — они приходят из таблицы)
+function monthEvents_(ym) {
+  const [y, m] = ym.split('-').map(Number);
+  const days = new Date(y, m, 0).getDate();
+  return calEvents_(ym + '-01', days).filter(e => !/^(✅|💳|💰|📝|✔)/.test(e.title));
+}
+
+function calOk_() { return !!calSafe_(() => cal_().getId()); }
+
+function apiEvents(pin, ym) {
+  auth_(pin);
+  return { events: monthEvents_(ym), ok: calOk_() };
+}
+
+function apiEventAdd(pin, e) {
+  auth_(pin);
+  const title = String(e.title || '').trim();
+  if (!title) throw new Error('Напишите название события');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(e.date || '')) throw new Error('Укажите дату');
+  const start = /^\d{2}:\d{2}$/.test(e.start || '') ? e.start : '';
+  addCalEvent_(title, e.date, start, Number(e.minutes) || 60, String(e.desc || '') || 'Добавлено в приложении');
+  return { events: monthEvents_(e.date.slice(0, 7)), ok: true };
+}
+
+function apiEventDelete(pin, id, ym) {
+  auth_(pin);
+  const ev = eventById_(cal_(), id);
+  if (ev) ev.deleteEvent();
+  return { events: monthEvents_(ym), ok: true };
+}
