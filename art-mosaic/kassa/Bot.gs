@@ -116,6 +116,8 @@ const HELP_ =
   'Категорию и способ оплаты узнаю по началу слова (мк, праздник, сертиф, аренда, стекло…; нал, карта, перевод). ' +
   'Если не узнаю — предложу выбрать кнопкой. «Вчера» или дата <code>15.11</code> меняют дату.\n\n' +
   '<b>Добавить дело:</b> <code>дело позвонить поставщику завтра</code>\n' +
+  'Регулярное: <code>дело выгрузить отчёт каждый понедельник</code>, <code>дело оплатить интернет каждое 5 число</code>, ' +
+  '<code>дело полить цветы каждый день</code> (ещё: каждую неделю, ежемесячно, раз в квартал, раз в год).\n' +
   '<b>В календарь:</b> <code>поставка стекла 25.11 14:00</code>, <code>встреча с Олей завтра в 15:30</code>, ' +
   '<code>мк ваза 28.11 18:00 2ч</code> (слова: поставка, встреча, мк, праздник, созвон, событие).\n' +
   'Платежи и дела со сроком попадают в календарь сами 🗓\n' +
@@ -247,7 +249,7 @@ function addBatch_(chat, lines) {
       '\n\nДоходы ' + money_(t.inc) + ' · расходы ' + money_(t.exp) + '\n<i>' + say_(t.profit >= 0 ? 'inc' : 'exp') + '</i>\n';
   }
   if (tasks.length) txt += (txt ? '\n' : '') + '📝 <b>Запомнила</b>\n' +
-    tasks.map(t => '• ' + esc_(t.text) + (t.due ? ' — ' + dueWord_(t.due) : '')).join('\n') + '\n';
+    tasks.map(t => '• ' + esc_(t.text) + (t.due ? ' — ' + dueWord_(t.due) : '') + (t.repeat && t.repeat !== 'Разово' ? ' ↻ ' + REP_WORD[t.repeat] : '')).join('\n') + '\n';
   if (bad.length) txt += (txt ? '\n' : '') + '🙈 Не поняла:\n' + bad.map(l => '• ' + esc_(l)).join('\n') +
     '\n<i>Строка должна начинаться с + или − и суммы, или со слова «дело»</i>\n';
   if (ask.length) txt += (txt ? '\n' : '') + 'Ещё ' + ask.length + ' — спрошу категорию ниже 👇';
@@ -276,9 +278,41 @@ function saveOp_(chat, op, editMsgId) {
 
 /* ---------------- Задачи ---------------- */
 
+// «каждый понедельник», «ежемесячно», «каждое 5 число»… → { repeat, due, rest }
+function parseRepeat_(text) {
+  let t = ' ' + text + ' ', repeat = 'Разово', due = '';
+  const today = today_();
+  const WD = { 'понедельник': 1, 'вторник': 2, 'сред': 3, 'четверг': 4, 'пятниц': 5, 'суббот': 6, 'воскресень': 0 };
+  const cut = re => { const m = t.match(re); if (m) t = t.replace(m[0], ' '); return m; };
+  let m;
+  if ((m = cut(/\s(?:кажд(?:ый|ую|ое)|по)\s+(понедельник|вторник|сред|четверг|пятниц|суббот|воскресень)[а-я]*/i))) {
+    repeat = 'Еженедельно';
+    const want = WD[m[1].toLowerCase()];
+    const d0 = new Date(Date.UTC(+today.slice(0, 4), +today.slice(5, 7) - 1, +today.slice(8, 10)));
+    const add = (want - d0.getUTCDay() + 7) % 7;
+    due = new Date(d0.getTime() + add * 86400000).toISOString().slice(0, 10);
+  } else if ((m = cut(/\s(?:кажд(?:ое|ый)\s+)?(\d{1,2})(?:-?(?:е|го|ое))?\s+(?:число|числа)(?:\s+каждого\s+месяца)?/i))
+          || (m = cut(/\sкажд(?:ое|ый)\s+(\d{1,2})(?:-?(?:е|го|ое))?(?=\s)/i))) {
+    repeat = 'Ежемесячно';
+    const day = Math.min(28, Math.max(1, +m[1]));
+    let y = +today.slice(0, 4), mo = +today.slice(5, 7);
+    if (+today.slice(8, 10) > day) { mo++; if (mo > 12) { mo = 1; y++; } }
+    due = y + '-' + ('0' + mo).slice(-2) + '-' + ('0' + day).slice(-2);
+  } else if (cut(/\s(?:кажд(?:ый|ое)\s+(?:день|утро|вечер)|ежедневно)(?=\s)/i)) repeat = 'Ежедневно';
+  else if (cut(/\s(?:каждую\s+неделю|еженедельно|раз\s+в\s+неделю)(?=\s)/i)) repeat = 'Еженедельно';
+  else if (cut(/\s(?:каждый\s+месяц|ежемесячно|раз\s+в\s+месяц)(?=\s)/i)) repeat = 'Ежемесячно';
+  else if (cut(/\s(?:каждый\s+квартал|ежеквартально|раз\s+в\s+квартал)(?=\s)/i)) repeat = 'Ежеквартально';
+  else if (cut(/\s(?:каждый\s+год|ежегодно|раз\s+в\s+год)(?=\s)/i)) repeat = 'Ежегодно';
+  return { repeat: repeat, due: due, rest: t.replace(/\s+/g, ' ').trim() };
+}
+
+const REP_WORD = { 'Ежедневно': 'каждый день', 'Еженедельно': 'каждую неделю', 'Ежемесячно': 'каждый месяц',
+  'Ежеквартально': 'раз в квартал', 'Ежегодно': 'раз в год' };
+
 function taskFrom_(text) {
-  const words = text.replace(/^(дело|задача|сделать)[\s:,-]+/i, '').split(/\s+/).filter(Boolean);
-  let due = '';
+  const pr = parseRepeat_(text.replace(/^(дело|задача|сделать)[\s:,-]+/i, ''));
+  const words = pr.rest.split(/\s+/).filter(Boolean);
+  let due = pr.due;
   // срок ищем в конце фразы: «… завтра», «… до 25.11»
   for (let k = 0; k < 2 && words.length; k++) {
     const last = words[words.length - 1].toLowerCase().replace(/[,!?;:)]+$/, '');
@@ -288,14 +322,17 @@ function taskFrom_(text) {
     break;
   }
   const t = words.join(' ').trim();
-  return t ? { text: t, due: due } : null;
+  if (pr.repeat !== 'Разово' && !due) due = today_();
+  return t ? { text: t, due: due, repeat: pr.repeat } : null;
 }
 
 function addTask_(chat, text) {
   const t = taskFrom_(text);
   if (!t) return send_(chat, 'А что сделать? 🐣 Например: <code>дело заказать клей завтра</code>');
   apiTaskSave(PIN, t);
-  send_(chat, '📝 Запомнила: ' + esc_(t.text) + (t.due ? ' — <b>' + dueWord_(t.due) + '</b>' : '') + '\n<i>напомню, не забуду 🪶</i>', KB);
+  send_(chat, '📝 Запомнила: ' + esc_(t.text) + (t.due ? ' — <b>' + dueWord_(t.due) + '</b>' : '') +
+    (t.repeat !== 'Разово' ? '\n↻ ' + REP_WORD[t.repeat] + ' — после отметки «сделано» появится следующее' : '') +
+    '\n<i>напомню, не забуду 🪶</i>', KB);
 }
 
 function sendTasks_(chat, editMsgId) {
@@ -310,7 +347,7 @@ function sendTasks_(chat, editMsgId) {
   list.forEach((t, i) => {
     const n = t.due ? daysFrom_(t.due) : null;
     const mark = n === null ? '' : n < 0 ? ' 🔴 ' + dueWord_(t.due) : n === 0 ? ' 🟡 сегодня' : ' · ' + dueWord_(t.due);
-    txt += (i + 1) + '. ' + esc_(t.text) + mark + '\n';
+    txt += (i + 1) + '. ' + esc_(t.text) + (t.repeat !== 'Разово' ? ' ↻' : '') + mark + '\n';
   });
   if (open.length > list.length) txt += '…и ещё ' + (open.length - list.length) + ' в приложении\n';
   txt += '\nСделали? Нажмите номер — вычеркну ✓';
@@ -386,8 +423,8 @@ function onCallback_(q) {
     }
     if (kind === 'task') {
       const t = readTasks_().find(x => x.id === val);
-      apiTaskToggle(PIN, val, true);
-      answer_(q.id, t ? '✓ ' + t.text.slice(0, 40) : 'Готово');
+      const next = apiTaskToggle(PIN, val, true);
+      answer_(q.id, (t ? '✓ ' + t.text.slice(0, 40) : 'Готово') + (next ? ' · ↻ следующее ' + dmy_(next) : ''));
       return sendTasks_(chat, msg);
     }
     if (kind === 'pay') {

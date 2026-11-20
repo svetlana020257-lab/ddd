@@ -347,6 +347,15 @@
         <button class="chip" data-due="1">завтра</button>
         <input type="date" id="taskDue">
       </div>
+      <div class="task-opts" id="taskRep">
+        <span style="font-size:13px;color:var(--mute);font-weight:700">Повтор:</span>
+        <button class="chip on" data-rep="Разово">нет</button>
+        <button class="chip" data-rep="Ежедневно">каждый день</button>
+        <button class="chip" data-rep="Еженедельно">неделя</button>
+        <button class="chip" data-rep="Ежемесячно">месяц</button>
+        <button class="chip" data-rep="Ежеквартально">квартал</button>
+        <button class="chip" data-rep="Ежегодно">год</button>
+      </div>
       <div id="taskList"></div>
     </section>
 
@@ -406,7 +415,7 @@ const store = {
 
 const S = {
   ops: [], pays: [], tasks: [], cats: {income:[], expense:[], methods:[]}, url: '#',
-  taskDue: '', showDone: false,
+  taskDue: '', taskRep: 'Разово', showDone: false,
   calMonth: todayStr().slice(0,7), calDay: todayStr(), events: {}, calOk: true,
   type: 'Доход', cat: '', method: store.get('method',''), date: todayStr(),
   editId: null, month: todayStr().slice(0,7), pin: store.get('pin',''), busy: false
@@ -854,7 +863,8 @@ function payDoneForm(p){
 function nextDateJs(ds, repeat){
   const [y,m,d] = ds.split('-').map(Number);
   let t;
-  if (repeat === 'Еженедельно') t = new Date(Date.UTC(y, m-1, d+7));
+  if (repeat === 'Ежедневно') t = new Date(Date.UTC(y, m-1, d+1));
+  else if (repeat === 'Еженедельно') t = new Date(Date.UTC(y, m-1, d+7));
   else {
     const add = repeat === 'Ежеквартально' ? 3 : repeat === 'Ежегодно' ? 12 : 1;
     const last = new Date(Date.UTC(y, m-1+add+1, 0)).getUTCDate();
@@ -873,11 +883,26 @@ function setTaskDue(v){
 $$('#taskOpts .chip').forEach(c => c.onclick = () => setTaskDue(c.dataset.due === '' ? '' : todayStr(+c.dataset.due)));
 $('#taskDue').onchange = e => setTaskDue(e.target.value);
 
+const TASK_REP = [['Разово','нет'],['Ежедневно','каждый день'],['Еженедельно','неделя'],['Ежемесячно','месяц'],['Ежеквартально','квартал'],['Ежегодно','год']];
+const TASK_REP_LONG = {'Ежедневно':'каждый день','Еженедельно':'каждую неделю','Ежемесячно':'каждый месяц','Ежеквартально':'раз в квартал','Ежегодно':'раз в год'};
+function setTaskRep(v){
+  S.taskRep = v;
+  $$('#taskRep .chip').forEach(c => c.classList.toggle('on', c.dataset.rep === v));
+}
+$$('#taskRep .chip').forEach(c => c.onclick = () => setTaskRep(c.dataset.rep));
+function repChips(id, val){
+  return `<div class="chips" id="${id}">${TASK_REP.map(r => `<button class="chip${r[0]===val?' on':''}" data-rep="${r[0]}">${r[1]}</button>`).join('')}</div>`;
+}
+function bindRep(id, onPick){
+  $$('#'+id+' .chip').forEach(b => b.onclick = () => { $$('#'+id+' .chip').forEach(x => x.classList.toggle('on', x === b)); onPick(b.dataset.rep); });
+}
+
 async function addTask(){
   const text = $('#taskText').value.trim();
   if (!text) { $('#taskText').focus(); return; }
-  const ok = await run('apiTaskSave', [{text, due: S.taskDue}], 'Задача добавлена');
-  if (ok){ $('#taskText').value = ''; setTaskDue(''); }
+  const ok = await run('apiTaskSave', [{text, due: S.taskDue, repeat: S.taskRep}],
+    S.taskRep !== 'Разово' ? 'Регулярное дело добавлено ↻' : 'Задача добавлена');
+  if (ok){ $('#taskText').value = ''; setTaskDue(''); setTaskRep('Разово'); }
 }
 $('#taskAdd').onclick = addTask;
 $('#taskText').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
@@ -890,7 +915,7 @@ function taskHtml(t){
   }
   return `<div class="task ${t.done?'done':''}">
     <button class="check" data-check="${esc(t.id)}">${t.done?'✓':''}</button>
-    <button class="tx" data-tedit="${esc(t.id)}">${esc(t.text)}</button>${due}</div>`;
+    <button class="tx" data-tedit="${esc(t.id)}">${esc(t.text)}${t.repeat && t.repeat!=='Разово' && !t.done ? `<span class="rep">↻ ${TASK_REP_LONG[t.repeat]}</span>` : ''}</button>${due}</div>`;
 }
 
 function renderTasks(){
@@ -925,6 +950,10 @@ async function toggleTask(id){
   try{
     const r = await call('apiTaskToggle', S.pin, id, t.done);
     applyData(r); saveCache();
+    if (t.done && t.repeat && t.repeat !== 'Разово' && t.due){
+      let next = nextDateJs(t.due, t.repeat); while (next <= todayStr()) next = nextDateJs(next, t.repeat);
+      toast('✓ Сделано · ↻ следующее — ' + dueLabel(next));
+    }
   }catch(e){
     t.done = was; renderTasks(); renderBadges();
     toast('Не сохранилось: ' + errText(e), true);
@@ -938,11 +967,14 @@ function taskForm(t){
     <textarea class="field" id="tText" rows="3">${esc(t.text)}</textarea>
     <label class="lbl">Срок</label>
     <input class="field" id="tDue" type="date" value="${t.due||''}">
+    <label class="lbl">Повтор</label>${repChips('tRep', t.repeat || 'Разово')}
     <button class="primary" id="tSave" style="background:var(--ink)">Сохранить</button>
     <div class="edit-row"><button class="ghost" id="tCancel">Отмена</button><button class="danger" id="tDel">Удалить</button></div>`);
+  let rep = t.repeat || 'Разово';
+  bindRep('tRep', v => rep = v);
   $('#tCancel').onclick = closeModal;
   $('#tSave').onclick = async () => {
-    if (await run('apiTaskSave', [{id:t.id, text:$('#tText').value, due:$('#tDue').value}], 'Задача обновлена', $('#tSave'))) closeModal();
+    if (await run('apiTaskSave', [{id:t.id, text:$('#tText').value, due:$('#tDue').value, repeat: rep}], 'Задача обновлена', $('#tSave'))) closeModal();
   };
   $('#tDel').onclick = async () => {
     if (!confirm('Удалить задачу?')) return;
@@ -1048,11 +1080,14 @@ function openTaskNew(ds){
     <label class="lbl" style="margin-top:12px">Что сделать</label>
     <textarea class="field" id="ntText" rows="2" placeholder="Например: заказать клей"></textarea>
     <label class="lbl">Срок</label><input class="field" id="ntDue" type="date" value="${ds}">
+    <label class="lbl">Повтор</label>${repChips('ntRep', 'Разово')}
     <button class="primary" id="ntSave" style="background:var(--ink)">Добавить</button>
     <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="ntCancel">Отмена</button></div>`);
+  let rep = 'Разово';
+  bindRep('ntRep', v => rep = v);
   $('#ntCancel').onclick = closeModal;
   $('#ntSave').onclick = async () => {
-    if (await run('apiTaskSave', [{text: $('#ntText').value, due: $('#ntDue').value}], 'Дело добавлено', $('#ntSave'))) { closeModal(); renderCal(); }
+    if (await run('apiTaskSave', [{text: $('#ntText').value, due: $('#ntDue').value, repeat: rep}], 'Дело добавлено', $('#ntSave'))) { closeModal(); renderCal(); }
   };
   setTimeout(() => $('#ntText').focus(), 100);
 }

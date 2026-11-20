@@ -27,7 +27,8 @@ const DEFAULT_EXPENSE = [
 ];
 const DEFAULT_METHODS = ['Наличные', 'Карта', 'Перевод', 'Расчётный счёт'];
 const PAY_COLS = ['Дата платежа', 'Название', 'Тип', 'Категория', 'Сумма', 'Повтор', 'Способ оплаты', 'Комментарий', 'Статус', 'Оплачено', 'ID', 'Календарь'];
-const TASK_COLS = ['Готово', 'Задача', 'Срок', 'Создано', 'Выполнено', 'ID', 'Календарь'];
+const TASK_COLS = ['Готово', 'Задача', 'Срок', 'Создано', 'Выполнено', 'ID', 'Календарь', 'Повтор'];
+const TASK_REPEATS = ['Разово', 'Ежедневно', 'Еженедельно', 'Ежемесячно', 'Ежеквартально', 'Ежегодно'];
 const REPEATS = ['Разово', 'Ежемесячно', 'Еженедельно', 'Ежеквартально', 'Ежегодно'];
 
 const C = {
@@ -165,12 +166,16 @@ function apiTaskSave(pin, t) {
   return withLock_(() => {
     const text = String(t.text || '').trim();
     if (!text) throw new Error('Напишите, что нужно сделать');
-    const due = /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? toDate_(t.due) : '';
+    const repeat = TASK_REPEATS.indexOf(t.repeat) > 0 ? t.repeat : 'Разово';
+    // у повторяющегося дела обязательно есть срок — по умолчанию сегодня
+    const dueStr = /^\d{4}-\d{2}-\d{2}$/.test(t.due || '') ? t.due : (repeat !== 'Разово' ? Utilities.formatDate(new Date(), tz_(), 'yyyy-MM-dd') : '');
+    const due = dueStr ? toDate_(dueStr) : '';
     const sh = sheet_(SH.TASK);
     if (t.id) {
       const row = findRowIn_(SH.TASK, 6, t.id);
       if (!row) throw new Error('Задача не найдена');
       sh.getRange(row, 2, 1, 2).setValues([[text, due]]);
+      sh.getRange(row, 8).setValue(repeat);
       syncTaskRow_(row);
     } else {
       // в листе заранее стоят чекбоксы, поэтому пишем в первую строку после последней задачи
@@ -180,10 +185,25 @@ function apiTaskSave(pin, t) {
       for (let i = texts.length - 1; i >= 0; i--) if (String(texts[i][0]).trim()) { row = i + 3; break; }
       if (row > sh.getMaxRows()) sh.insertRowsAfter(sh.getMaxRows(), 50);
       sh.getRange(row, 1, 1, 6).setValues([[false, text, due, new Date(), '', newId_()]]);
+      sh.getRange(row, 8).setValue(repeat);
       sh.getRange(row, 1).insertCheckboxes();
       syncTaskRow_(row);
     }
   });
+}
+
+function addTaskRow_(text, dueStr, repeat) {
+  const sh = sheet_(SH.TASK);
+  const last = sh.getLastRow();
+  const texts = last > 1 ? sh.getRange(2, 2, last - 1, 1).getValues() : [];
+  let row = 2;
+  for (let i = texts.length - 1; i >= 0; i--) if (String(texts[i][0]).trim()) { row = i + 3; break; }
+  if (row > sh.getMaxRows()) sh.insertRowsAfter(sh.getMaxRows(), 50);
+  sh.getRange(row, 1, 1, 6).setValues([[false, text, dueStr ? toDate_(dueStr) : '', new Date(), '', newId_()]]);
+  sh.getRange(row, 8).setValue(repeat || 'Разово');
+  sh.getRange(row, 1).insertCheckboxes();
+  syncTaskRow_(row);
+  return row;
 }
 
 function apiTaskToggle(pin, id, done) {
@@ -191,9 +211,25 @@ function apiTaskToggle(pin, id, done) {
   return withLock_(() => {
     const row = findRowIn_(SH.TASK, 6, id);
     if (!row) throw new Error('Задача не найдена');
-    sheet_(SH.TASK).getRange(row, 1).setValue(!!done);
-    sheet_(SH.TASK).getRange(row, 5).setValue(done ? new Date() : '');
+    const sh = sheet_(SH.TASK);
+    sh.getRange(row, 1).setValue(!!done);
+    sh.getRange(row, 5).setValue(done ? new Date() : '');
     syncTaskRow_(row);
+    // повторяющееся дело: выполненное остаётся в истории, следующее создаётся с новым сроком
+    if (done) {
+      const t = readTasks_().find(x => x.id === String(id));
+      if (t && t.repeat !== 'Разово' && t.due) {
+        const today = Utilities.formatDate(new Date(), tz_(), 'yyyy-MM-dd');
+        let next = nextDate_(t.due, t.repeat);
+        while (next <= today) next = nextDate_(next, t.repeat);
+        const exists = readTasks_().some(x => !x.done && x.text === t.text && x.due === next);
+        if (!exists) {
+          addTaskRow_(t.text, next, t.repeat);
+        }
+        return next;
+      }
+    }
+    return '';
   });
 }
 
@@ -251,6 +287,7 @@ function toDate_(ds) { return Utilities.parseDate(ds, tz_(), 'yyyy-MM-dd'); }
 
 function nextDate_(ds, repeat) {
   const [y, m, d] = ds.split('-').map(Number);
+  if (repeat === 'Ежедневно') return new Date(Date.UTC(y, m - 1, d + 1)).toISOString().slice(0, 10);
   if (repeat === 'Еженедельно') {
     const t = new Date(Date.UTC(y, m - 1, d + 7));
     return t.toISOString().slice(0, 10);
@@ -297,7 +334,7 @@ function readTasks_() {
   const sh = sheet_(SH.TASK), tz = tz_(), last = sh.getLastRow();
   if (last < 2) return [];
   const out = [];
-  sh.getRange(2, 1, last - 1, 6).getValues().forEach((r, i) => {
+  sh.getRange(2, 1, last - 1, 8).getValues().forEach((r, i) => {
     const text = String(r[1] || '').trim();
     if (!text) return;
     let id = r[5];
@@ -306,7 +343,8 @@ function readTasks_() {
       id: String(id), text: text, done: r[0] === true,
       due: toDateStr_(r[2], tz),
       created: r[3] instanceof Date ? r[3].getTime() : 0,
-      doneAt: r[4] instanceof Date ? r[4].getTime() : 0
+      doneAt: r[4] instanceof Date ? r[4].getTime() : 0,
+      repeat: TASK_REPEATS.indexOf(String(r[7]).trim()) > 0 ? String(r[7]).trim() : 'Разово'
     });
   });
   return out;
@@ -684,7 +722,7 @@ function setupTasks_(ss) {
   header_(sh.getRange(1, 1, 1, TASK_COLS.length), C.pink);
   sh.setRowHeight(1, 36);
   sh.setFrozenRows(1);
-  [70, 420, 110, 130, 130, 80, 80].forEach((w, i) => sh.setColumnWidth(i + 1, w));
+  [70, 420, 110, 130, 130, 80, 80, 120].forEach((w, i) => sh.setColumnWidth(i + 1, w));
   const n = sh.getMaxRows() - 1;
   sh.getRange(2, 1, n, TASK_COLS.length).setFontFamily('Arial').setFontSize(10).setVerticalAlignment('middle');
   sh.getRange(2, 1, n, 1).insertCheckboxes().setHorizontalAlignment('center');
@@ -704,6 +742,8 @@ function setupTasks_(ss) {
       .setBackground('#FFF4D6').setRanges([sh.getRange(2, 2, n, 2)]).build()
   ]);
   sh.hideColumns(6, 2);
+  sh.getRange(2, 8, n, 1).setHorizontalAlignment('center').setFontColor(C.violet).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(TASK_REPEATS, true).setAllowInvalid(false).build());
 }
 
 function setupDashboard_(ss) {
@@ -866,12 +906,13 @@ function syncPayRow_(row) {
 function syncTaskRow_(row) {
   calSafe_(() => {
     const sh = sheet_(SH.TASK), tz = tz_();
-    const r = sh.getRange(row, 1, 1, 7).getValues()[0];
+    const r = sh.getRange(row, 1, 1, 8).getValues()[0];
     const text = String(r[1] || '').trim(), ds = toDateStr_(r[2], tz), done = r[0] === true;
     const cal = cal_();
     let ev = eventById_(cal, r[6]);
     if (!text || !ds) { if (ev) ev.deleteEvent(); sh.getRange(row, 7).setValue(''); return; }
-    const title = (done ? '✔ ' : '📝 ') + text;
+    const rep = TASK_REPEATS.indexOf(String(r[7] || '').trim()) > 0;
+    const title = (done ? '✔ ' : '📝 ') + text + (rep ? ' ↻' : '');
     if (ev) {
       ev.setTitle(title); ev.setAllDayDate(dayDate_(ds));
     } else {
