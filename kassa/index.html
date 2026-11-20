@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Касса Art Mosaic</title>
+<meta name="theme-color" content="#2B2440">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Касса">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  html,body{margin:0;height:100%;background:#2B2440;overflow:hidden}
+  iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:#F7F3EF}
+  #splash{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+    background:#2B2440;color:#fff;font:600 15px/1.4 system-ui,-apple-system,sans-serif;transition:opacity .4s;z-index:2}
+  #splash img{width:96px;height:96px;border-radius:50%;animation:b 1.4s ease-in-out infinite}
+  #splash a{color:#F49BB6;font-size:13px;opacity:0;transition:opacity .4s}
+  @keyframes b{50%{transform:translateY(-8px) rotate(-4deg)}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <img src="icon-180.png" alt="">
+  <div>Феня открывает кассу…</div>
+  <a id="direct" href="https://script.google.com/macros/s/AKfycbz19KS3-W0EvcN7TiCvM9X8OfRSwnRg3XLOn_BgSkLpnRVidH1QG6mpGF8m-eTLZkCKow/exec">не открывается? нажмите сюда</a>
+</div>
+<iframe id="app" src="https://script.google.com/macros/s/AKfycbz19KS3-W0EvcN7TiCvM9X8OfRSwnRg3XLOn_BgSkLpnRVidH1QG6mpGF8m-eTLZkCKow/exec"
+        allow="clipboard-write" title="Касса Art Mosaic"></iframe>
+<script>
+  const s = document.getElementById('splash');
+  document.getElementById('app').addEventListener('load', () => setTimeout(() => { s.style.opacity = 0; setTimeout(() => s.remove(), 450); }, 900));
+  setTimeout(() => { const a = document.getElementById('direct'); if (a) a.style.opacity = 1; }, 8000);
+</script>
+</body>
+</html>
