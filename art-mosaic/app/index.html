@@ -1,0 +1,1738 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2B2440">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Art Mosaic">
+<title>Art Mosaic</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#2B2440; --ink2:#6B6480; --mute:#9A93A8; --line:#ECE6F2;
+    --bg:#F7F3EF; --card:#FFFFFF;
+    --inc:#1F9D6B; --incbg:#E6F6EE; --exp:#D9485F; --expbg:#FCE9EC;
+    --pink:#E86A92; --gold:#F2B544; --teal:#3BA8B5; --violet:#7B5EA7;
+    --r:18px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Manrope,system-ui,-apple-system,sans-serif;font-size:16px}
+  button,input,textarea{font-family:inherit;font-size:inherit;color:inherit}
+  button{cursor:pointer;border:0;background:none}
+  .hidden{display:none!important}
+
+  #app{max-width:560px;margin:0 auto;min-height:100vh;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+
+  /* шапка */
+  .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:14px 18px;
+       background:var(--ink);color:#fff;border-radius:0 0 22px 22px;box-shadow:0 6px 20px rgba(43,36,64,.18)}
+  .logo{width:38px;height:38px;flex:none;display:grid;grid-template-columns:1fr 1fr;gap:3px;transform:rotate(-8deg)}
+  .logo i{border-radius:4px;display:block}
+  .logo i:nth-child(1){background:var(--pink);clip-path:polygon(0 0,100% 0,0 100%)}
+  .logo i:nth-child(2){background:var(--gold)}
+  .logo i:nth-child(3){background:var(--teal)}
+  .logo i:nth-child(4){background:var(--violet);clip-path:polygon(100% 0,100% 100%,0 100%)}
+  .brand{font-weight:800;font-size:18px;letter-spacing:.2px}
+  .sub{font-size:12px;opacity:.7}
+  .top .grow{flex:1}
+  .icon-btn{width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font-size:20px;display:grid;place-items:center}
+  .icon-btn.spin{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  main{padding:16px}
+  .tab{display:none}
+  .tab.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:0 1px 0 var(--line),0 4px 16px rgba(43,36,64,.05);margin-bottom:14px}
+  .lbl{display:block;font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mute);margin:16px 2px 8px}
+  .lbl:first-child{margin-top:0}
+
+  /* тип */
+  .seg{display:grid;grid-template-columns:1fr 1fr;background:#EFEAF4;border-radius:14px;padding:4px;gap:4px}
+  .seg button{padding:12px;border-radius:11px;font-weight:700;color:var(--ink2);transition:.15s}
+  .seg button.on.inc{background:var(--inc);color:#fff;box-shadow:0 4px 12px rgba(31,157,107,.3)}
+  .seg button.on.exp{background:var(--exp);color:#fff;box-shadow:0 4px 12px rgba(217,72,95,.3)}
+
+  /* сумма */
+  .amount{display:flex;align-items:baseline;justify-content:center;gap:8px;padding:18px 0 6px}
+  .amount input{width:100%;max-width:300px;border:0;outline:0;background:transparent;text-align:center;
+    font-size:44px;font-weight:800;letter-spacing:-1px}
+  .amount input::placeholder{color:#D6D0DF}
+  .amount span{font-size:28px;font-weight:700;color:var(--mute)}
+  body.t-inc .amount input{color:var(--inc)}
+  body.t-exp .amount input{color:var(--exp)}
+
+  /* чипсы */
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{padding:9px 14px;border-radius:999px;background:#F3EFF7;color:var(--ink);font-weight:600;font-size:14px;border:1.5px solid transparent;transition:.12s}
+  .chip.on{background:var(--ink);color:#fff}
+  body.t-inc #cats .chip.on{background:var(--inc)}
+  body.t-exp #cats .chip.on{background:var(--exp)}
+  .dates{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .dates input{flex:1;min-width:150px;padding:8px 12px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:600;font-size:15px}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px;resize:vertical;outline:0;background:#fff;font-size:15px}
+  textarea:focus,.dates input:focus{border-color:var(--violet)}
+
+  .primary{width:100%;margin-top:18px;padding:16px;border-radius:16px;background:var(--ink);color:#fff;font-weight:800;font-size:17px;
+    box-shadow:0 8px 20px rgba(43,36,64,.25);transition:.15s}
+  body.t-inc .primary{background:var(--inc);box-shadow:0 8px 20px rgba(31,157,107,.3)}
+  body.t-exp .primary{background:var(--exp);box-shadow:0 8px 20px rgba(217,72,95,.3)}
+  .primary:disabled{opacity:.6}
+  .edit-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .ghost,.danger{padding:13px;border-radius:14px;font-weight:700}
+  .ghost{background:#EFEAF4}
+  .danger{background:var(--expbg);color:var(--exp)}
+  .edit-badge{display:inline-block;margin-bottom:10px;padding:5px 10px;border-radius:8px;background:#FFF4D6;color:#8A6510;font-size:13px;font-weight:700}
+
+  .mini{display:flex;justify-content:space-between;gap:10px;font-size:14px;color:var(--ink2)}
+  .mini b{font-weight:800}
+
+  /* месяц */
+  .month{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .month button{width:44px;height:44px;border-radius:14px;background:#fff;font-size:22px;font-weight:700;box-shadow:0 1px 0 var(--line)}
+  .month .title{font-weight:800;font-size:19px}
+
+  .totals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+  .tot{background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 1px 0 var(--line)}
+  .tot small{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--mute)}
+  .tot b{display:block;font-size:16px;font-weight:800;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+  /* журнал */
+  .day{font-size:13px;font-weight:700;color:var(--mute);margin:16px 4px 6px;display:flex;justify-content:space-between}
+  .op{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:6px;box-shadow:0 1px 0 var(--line);width:100%;text-align:left}
+  .op:active{transform:scale(.99)}
+  .dot{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-weight:800;flex:none}
+  .dot.inc{background:var(--incbg);color:var(--inc)}
+  .dot.exp{background:var(--expbg);color:var(--exp)}
+  .op .mid{flex:1;min-width:0}
+  .op .cat{font-weight:700;font-size:15px}
+  .op .com{font-size:13px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .op .sum{font-weight:800;white-space:nowrap}
+  .op .sum.inc{color:var(--inc)} .op .sum.exp{color:var(--exp)}
+  .empty{text-align:center;color:var(--mute);padding:40px 10px}
+  .empty div{font-size:38px;margin-bottom:6px}
+
+  /* итоги */
+  .big{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .kpi{border-radius:var(--r);padding:16px;color:#fff}
+  .kpi small{font-size:12px;font-weight:700;opacity:.85;text-transform:uppercase;letter-spacing:.5px}
+  .kpi b{display:block;font-size:22px;font-weight:800;margin-top:4px}
+  .kpi.inc{background:linear-gradient(135deg,#1F9D6B,#35B989)}
+  .kpi.exp{background:linear-gradient(135deg,#D9485F,#EC6C7F)}
+  .profit{background:var(--ink);color:#fff;border-radius:var(--r);padding:16px 18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .profit small{opacity:.7;font-weight:600}
+  .profit b{font-size:24px;font-weight:800}
+  .bars h3{margin:0 0 12px;font-size:15px}
+  .bar{margin-bottom:10px}
+  .bar .t{display:flex;justify-content:space-between;font-size:14px;margin-bottom:4px;gap:8px}
+  .bar .t span:first-child{font-weight:600}
+  .bar .t span:last-child{font-weight:800;white-space:nowrap}
+  .bar .track{height:8px;border-radius:6px;background:#F1ECF5;overflow:hidden}
+  .bar .fill{height:100%;border-radius:6px}
+  table.year{width:100%;border-collapse:collapse;font-size:14px}
+  table.year th{font-size:11px;text-transform:uppercase;color:var(--mute);text-align:right;padding:6px 4px;letter-spacing:.4px}
+  table.year th:first-child,table.year td:first-child{text-align:left}
+  table.year td{padding:9px 4px;border-top:1px solid var(--line);text-align:right;font-weight:600;white-space:nowrap}
+  table.year tr.cur td{background:#F6F2FA}
+  table.year tr{cursor:pointer}
+  table.year tfoot td{font-weight:800;border-top:2px solid var(--ink)}
+  .inc-t{color:var(--inc)} .exp-t{color:var(--exp)}
+  .link-btn{display:block;text-align:center;padding:14px;border-radius:14px;background:#fff;color:var(--ink);font-weight:700;text-decoration:none;box-shadow:0 1px 0 var(--line)}
+
+  /* нижнее меню */
+  nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;
+    background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+  nav.bottom .in{display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:560px;gap:4px}
+  nav.bottom button{position:relative;padding:8px 2px;border-radius:12px;color:var(--mute);font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
+  nav.bottom button .ic{font-size:22px;line-height:1}
+  nav.bottom button.on{color:var(--ink);background:#F3EFF7}
+
+  nav.bottom .badge{position:absolute;top:3px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 4px;border-radius:9px;
+    background:var(--exp);color:#fff;font-size:10px;line-height:17px;font-weight:800}
+
+  /* платежи и дела */
+  .head-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px}
+  .head-row h2{margin:0;font-size:21px;font-weight:800}
+  .add-btn{padding:10px 14px;border-radius:12px;background:var(--ink);color:#fff;font-weight:700;font-size:14px;white-space:nowrap}
+  .group{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin:18px 4px 8px;color:var(--mute)}
+  .group.red{color:var(--exp)} .group.amber{color:#B07A0C}
+  .pay{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .pay.overdue{box-shadow:inset 3px 0 0 var(--exp),0 1px 0 var(--line)}
+  .pay.soon{box-shadow:inset 3px 0 0 var(--gold),0 1px 0 var(--line)}
+  .cal{width:46px;flex:none;text-align:center;border-radius:11px;background:#F3EFF7;padding:5px 0}
+  .cal b{display:block;font-size:19px;font-weight:800;line-height:1.1}
+  .cal small{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink2)}
+  .pay.overdue .cal{background:var(--expbg);color:var(--exp)}
+  .pay .mid{flex:1;min-width:0;text-align:left}
+  .pay .nm{font-weight:700;font-size:15px}
+  .pay .meta{font-size:12px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pay .am{font-weight:800;white-space:nowrap;font-size:15px}
+  .done-btn{width:40px;height:40px;flex:none;border-radius:12px;background:var(--incbg);color:var(--inc);font-size:20px;font-weight:800}
+  .done-btn.exp{background:var(--expbg);color:var(--exp)}
+  .rep{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;background:#EFEAF5;color:var(--violet);margin-left:4px;vertical-align:2px}
+  .banner{display:flex;align-items:center;gap:10px;background:#FFF4D6;color:#7A5608;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-weight:600;font-size:14px;width:100%;text-align:left}
+  .banner.red{background:var(--expbg);color:var(--exp)}
+  .banner b{font-weight:800}
+
+  .task-new{display:flex;gap:8px;margin-bottom:6px}
+  .task-new input[type=text]{flex:1;min-width:0;padding:13px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;outline:0;font-size:15px}
+  .task-new input[type=text]:focus{border-color:var(--violet)}
+  .task-new button{width:50px;border-radius:14px;background:var(--ink);color:#fff;font-size:24px;font-weight:700}
+  .task-opts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
+  .task-opts .chip{padding:6px 11px;font-size:13px}
+  .task-opts input[type=date]{padding:5px 9px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:13px;font-weight:600}
+  .task{display:flex;align-items:center;gap:12px;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .check{width:26px;height:26px;flex:none;border-radius:50%;border:2px solid #CFC7DA;display:grid;place-items:center;color:#fff;font-size:14px;font-weight:900;transition:.15s}
+  .task.done .check{background:var(--inc);border-color:var(--inc)}
+  .task .tx{flex:1;min-width:0;text-align:left;font-size:15px;font-weight:600;line-height:1.3;word-break:break-word}
+  .task.done .tx{color:var(--mute);text-decoration:line-through;font-weight:500}
+  .due{font-size:12px;font-weight:800;padding:3px 8px;border-radius:8px;background:#F3EFF7;color:var(--ink2);white-space:nowrap}
+  .due.red{background:var(--expbg);color:var(--exp)} .due.amber{background:#FFF4D6;color:#8A6510}
+  .toggle-done{width:100%;padding:12px;margin-top:8px;border-radius:12px;color:var(--ink2);font-weight:700;background:#EFEAF4}
+
+  /* календарь */
+  .calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .calhead .title{font-weight:800;font-size:17px}
+  .calhead button{width:38px;height:38px;border-radius:12px;background:#F3EFF7;font-size:20px;font-weight:700}
+  .cgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .cgrid .wd{font-size:11px;font-weight:800;color:var(--mute);text-align:center;padding:2px 0 4px;text-transform:uppercase}
+  .cgrid .wd.we{color:var(--pink)}
+  .cday{aspect-ratio:1/1;border-radius:12px;background:#FAF7FC;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-weight:700;font-size:15px;position:relative;border:2px solid transparent}
+  .cday.out{opacity:.35}
+  .cday.today{background:#FFF4D6}
+  .cday.sel{border-color:var(--ink);background:#fff}
+  .cday .dots{display:flex;gap:3px;height:6px}
+  .cday .dots i{width:6px;height:6px;border-radius:50%}
+  .d-exp{background:var(--exp)} .d-inc{background:var(--inc)} .d-task{background:var(--violet)} .d-ev{background:var(--teal)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;color:var(--ink2);font-weight:600}
+  .legend span{display:flex;align-items:center;gap:4px} .legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:16px 4px 8px}
+  .dayhead b{font-size:16px} .dayhead small{color:var(--ink2);font-weight:600}
+  .ditem{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .ditem .tm{font-weight:800;font-size:13px;color:var(--teal);min-width:44px}
+  .ditem .tx{flex:1;min-width:0;font-weight:600;font-size:14px;text-align:left}
+  .ditem .tx small{display:block;font-weight:500;color:var(--ink2);font-size:12px}
+  .ditem .x{width:32px;height:32px;border-radius:10px;background:#F3EFF7;color:var(--ink2);font-weight:800}
+  .dadd{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+  .dadd button{padding:10px 4px;border-radius:12px;background:#fff;font-weight:700;font-size:13px;box-shadow:0 1px 0 var(--line)}
+  .calwarn{font-size:12px;color:#8A6510;background:#FFF4D6;border-radius:10px;padding:8px 10px;margin-top:10px}
+
+  /* абонементы */
+  .abo{display:block;width:100%;text-align:left;background:#fff;border-radius:16px;padding:14px;margin-bottom:8px;box-shadow:0 1px 0 var(--line)}
+  .abo.warn{box-shadow:inset 3px 0 0 var(--gold),0 1px 0 var(--line)}
+  .abo.red{box-shadow:inset 3px 0 0 var(--exp),0 1px 0 var(--line)}
+  .abo.off{opacity:.6}
+  .abo .r1{display:flex;align-items:center;gap:10px}
+  .abo .nm{flex:1;min-width:0;font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .abo .left{font-weight:800;font-size:15px;white-space:nowrap}
+  .abo .left small{font-weight:600;color:var(--ink2);font-size:12px}
+  .abo .track{height:9px;border-radius:6px;background:#F1ECF5;overflow:hidden;margin:10px 0 8px}
+  .abo .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--violet),var(--pink))}
+  .abo .r2{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2);font-weight:600}
+  .abo .r2 .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .visit-btn{padding:9px 13px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
+  .tag{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:7px;background:#F3EFF7;color:var(--ink2)}
+  .tag.red{background:var(--expbg);color:var(--exp)} .tag.amber{background:#FFF4D6;color:#8A6510} .tag.green{background:var(--incbg);color:var(--inc)}
+  .search{width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;outline:0;font-size:15px;margin-bottom:10px}
+  .search:focus{border-color:var(--violet)}
+  .vrow{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .vrow .h{font-weight:800;min-width:46px;color:var(--violet)}
+  .vrow .tx{flex:1;min-width:0;font-size:14px;font-weight:600}
+  .vrow .tx small{display:block;color:var(--ink2);font-weight:500;font-size:12px}
+  .vrow .x{width:32px;height:32px;border-radius:10px;background:#F3EFF7;color:var(--ink2);font-weight:800}
+  .infogrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+  .infogrid div{background:#fff;border-radius:12px;padding:10px;box-shadow:0 1px 0 var(--line)}
+  .infogrid small{display:block;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
+  .infogrid b{display:block;font-size:17px;font-weight:800;margin-top:2px}
+  .checkrow{display:flex;align-items:center;gap:10px;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer}
+  .checkrow input{width:22px;height:22px;accent-color:var(--inc)}
+  /* главная */
+  .hello{margin:2px 2px 14px}
+  .hello h2{margin:0;font-size:23px;font-weight:800}
+  .hello p{margin:3px 0 0;color:var(--ink2);font-weight:600;font-size:14px}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .kpis div{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 1px 0 var(--line)}
+  .kpis small{display:block;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+  .kpis b{display:block;font-size:19px;font-weight:800;margin-top:3px}
+  .alerts{margin-bottom:14px}
+  .alert{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#FFF4D6;color:#6E4E08;border-radius:14px;padding:11px 13px;margin-bottom:6px;font-size:14px;font-weight:600}
+  .alert.red{background:var(--expbg);color:#A3283C} .alert.ok{background:var(--incbg);color:#14704C}
+  .alert .e{font-size:18px} .alert b{font-weight:800}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:104px;padding:14px;border-radius:18px;background:#fff;
+    box-shadow:0 1px 0 var(--line),0 4px 14px rgba(43,36,64,.05);text-align:left;color:var(--ink);text-decoration:none}
+  .tile:active{transform:scale(.98)}
+  .tile .e{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:21px}
+  .tile b{font-size:15px;font-weight:800;line-height:1.2}
+  .tile small{font-size:12px;color:var(--ink2);font-weight:600;line-height:1.3}
+  .tile .badge{position:absolute;top:10px;right:10px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--exp);color:#fff;font-size:12px;line-height:22px;font-weight:800;text-align:center}
+  .tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
+  .tile.dark{background:var(--ink);color:#fff} .tile.dark small{color:rgba(255,255,255,.7)}
+  .tiles-lbl{display:block;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--mute);margin:20px 4px 8px}
+  /* сертификаты */
+  .cert{display:block;width:100%;text-align:left;background:#fff;border-radius:16px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 0 var(--line)}
+  .cert.warn{box-shadow:inset 3px 0 0 var(--gold),0 1px 0 var(--line)} .cert.off{opacity:.55}
+  .cert .r1{display:flex;align-items:center;gap:10px}
+  .cert .no{font-weight:800;font-size:13px;padding:4px 8px;border-radius:9px;background:#FCE9F0;color:#B23A68;white-space:nowrap}
+  .cert .nm{flex:1;min-width:0;font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cert .am{font-weight:800;white-space:nowrap} .cert .am small{font-weight:600;color:var(--ink2);font-size:12px}
+  .cert .r2{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--ink2);font-weight:600}
+  .cert .r2 .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .redeem-btn{padding:9px 13px;border-radius:12px;background:var(--pink);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
+  .head-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  #tab-cert .head-row{flex-wrap:wrap}
+  #tab-cert .add-btn{padding:9px 11px;font-size:13px}
+  html,body{overflow-x:hidden}
+  .add-btn.alt{background:#EFEAF4;color:var(--ink)}
+  .pick{display:grid;gap:8px;margin-top:14px}
+  .pick a,.pick button{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#fff;color:var(--ink);text-decoration:none;font-weight:800;box-shadow:0 1px 0 var(--line);text-align:left;width:100%}
+  .pick small{display:block;font-weight:600;color:var(--ink2);font-size:12px}
+  .pick .e{font-size:22px}
+  /* все приложения мастерской */
+  .apps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .apps a{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:#FAF7FC;color:var(--ink);text-decoration:none;border:1.5px solid var(--line)}
+  .apps a b{font-size:14px;font-weight:800} .apps a small{font-size:12px;color:var(--ink2);font-weight:500;line-height:1.3}
+  .apps a .e{font-size:20px}
+
+  /* модальное окно */
+  .modal{position:fixed;inset:0;z-index:25;background:rgba(43,36,64,.45);display:flex;align-items:flex-end;justify-content:center}
+  .modal .panel{width:100%;max-width:560px;max-height:92vh;overflow:auto;background:var(--bg);border-radius:22px 22px 0 0;
+    padding:18px 16px calc(18px + env(safe-area-inset-bottom));animation:up .22s ease}
+  @keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+  .modal h3{margin:0 0 4px;font-size:19px;font-weight:800}
+  .modal .hint{font-size:13px;color:var(--ink2);margin:6px 2px 0}
+  .field{width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;outline:0;font-size:16px;font-weight:600}
+  .field:focus{border-color:var(--violet)}
+  .field.big{font-size:26px;font-weight:800}
+  .modal .seg{margin-top:4px}
+  @media (min-width:700px){ .modal{align-items:center} .modal .panel{border-radius:22px} }
+
+  /* тост, оверлеи */
+  #toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;
+    background:var(--ink);color:#fff;padding:12px 18px;border-radius:14px;font-weight:600;font-size:14px;z-index:20;transition:.25s;max-width:90vw;text-align:center;pointer-events:none}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.err{background:var(--exp)}
+  .overlay{position:fixed;inset:0;z-index:30;background:var(--bg);display:grid;place-items:center;padding:24px}
+  .pinbox{width:100%;max-width:320px;text-align:center}
+  .pinbox .logo{margin:0 auto 16px;width:56px;height:56px}
+  .pinbox input{width:100%;text-align:center;font-size:30px;letter-spacing:10px;padding:14px;border-radius:16px;border:2px solid var(--line);outline:0;background:#fff;font-weight:800}
+  .loading{text-align:center;color:var(--mute);padding:60px 0}
+  .loading .logo{margin:0 auto 14px;animation:spin 2.4s linear infinite}
+
+  @media (min-width:700px){
+    .amount input{font-size:52px}
+  }
+</style>
+</head>
+<body class="t-inc">
+<div id="app">
+  <header class="top">
+    <div class="logo"><i></i><i></i><i></i><i></i></div>
+    <div class="grow" id="homeLink" style="cursor:pointer"><div class="brand">Art Mosaic</div><div class="sub">мастерская · всё в одном месте</div></div>
+    <button id="refreshBtn" class="icon-btn" title="Обновить из таблицы">↻</button>
+  </header>
+
+  <main>
+    <div id="boot" class="loading"><div class="logo"><i></i><i></i><i></i><i></i></div>Загружаю данные…</div>
+
+    <!-- ГЛАВНАЯ -->
+    <section id="tab-home" class="tab">
+      <div class="hello"><h2 id="helloTitle">Добрый день!</h2><p id="helloDate"></p></div>
+      <div class="kpis" id="homeKpis"></div>
+      <div class="alerts" id="homeAlerts"></div>
+      <div class="tiles">
+        <button class="tile dark wide" data-go="add"><span class="e" style="background:rgba(255,255,255,.12)">＋</span><span><b>Записать доход или расход</b><br><small>мастер-класс, праздник, покупка материалов</small></span></button>
+        <button class="tile" data-go="certnew"><span class="e" style="background:#FCE9F0">🎁</span><b>Продать сертификат</b><small>номер из таблицы, продажа в кассу</small></button>
+        <button class="tile" data-go="cert"><span class="e" style="background:#FCE9F0">🔍</span><b>Сертификаты</b><small id="tileCert">найти и погасить</small><span class="badge hidden" id="tbCert"></span></button>
+        <button class="tile" data-go="subnew"><span class="e" style="background:#EFE8F7">◷</span><b>Продать абонемент</b><small>часы и срок</small></button>
+        <button class="tile" data-go="sub"><span class="e" style="background:#EFE8F7">✎</span><b>Абонементы</b><small id="tileSub">отметить занятие</small><span class="badge hidden" id="tbSub"></span></button>
+        <button class="tile" data-go="pay"><span class="e" style="background:#E3F3F5">▦</span><b>Календарь и платежи</b><small id="tilePay">что оплатить</small><span class="badge hidden" id="tbPay"></span></button>
+        <button class="tile" data-go="task"><span class="e" style="background:#EFE8F7">✓</span><b>Дела</b><small id="tileTask">список задач</small><span class="badge hidden" id="tbTask"></span></button>
+        <button class="tile" data-go="log"><span class="e" style="background:#F3EFF7">☰</span><b>Журнал</b><small>все записи по месяцам</small></button>
+        <button class="tile" data-go="sum"><span class="e" style="background:var(--incbg)">∑</span><b>Итоги</b><small>доходы, расходы, прибыль</small></button>
+      </div>
+      <span class="tiles-lbl">Для клиентов</span>
+      <div class="tiles">
+        <a class="tile" target="_blank" data-ext="priglasheniya.html"><span class="e" style="background:#FFF4D6">🎂</span><b>Приглашение на ДР</b><small>дата и время — и готово</small></a>
+        <a class="tile" target="_blank" data-ext="katalog.html"><span class="e" style="background:#FFF4D6">🧩</span><b>Каталог мастер-классов</b><small>отправить клиенту</small></a>
+        <a class="tile" target="_blank" data-ext="site/"><span class="e" style="background:#E3F3F5">🌐</span><b>Сайт мастерской</b><small>для клиентов</small></a>
+        <a class="tile" target="_blank" id="sheetTile" href="#"><span class="e" style="background:var(--incbg)">📊</span><b>Google Таблица</b><small>все данные</small></a>
+      </div>
+    </section>
+
+    <!-- СЕРТИФИКАТЫ -->
+    <section id="tab-cert" class="tab">
+      <div class="head-row"><h2>Сертификаты</h2>
+        <div class="head-btns"><button class="add-btn alt" id="certQuick" title="Записать уже выданный сертификат">＋ Записать</button><button class="add-btn" id="certNew">🎁 Выписать</button></div></div>
+      <input type="search" class="search" id="certSearch" placeholder="Номер или имя" inputmode="search">
+      <div class="totals" id="certTotals"></div>
+      <div id="certList"></div>
+    </section>
+
+    <!-- ДОБАВИТЬ -->
+    <section id="tab-add" class="tab">
+      <button id="payBanner" class="banner hidden"></button>
+      <div class="card">
+        <div id="editBadge" class="edit-badge hidden">✎ Редактирование записи</div>
+        <div class="seg" id="typeSeg">
+          <button data-type="Доход" class="inc on">＋ Доход</button>
+          <button data-type="Расход" class="exp">− Расход</button>
+        </div>
+        <div class="amount">
+          <input id="amount" inputmode="decimal" placeholder="0" autocomplete="off" enterkeyhint="done">
+          <span>₽</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <label class="lbl">Дата</label>
+        <div class="dates">
+          <button class="chip" data-shift="0">Сегодня</button>
+          <button class="chip" data-shift="-1">Вчера</button>
+          <input type="date" id="date">
+        </div>
+
+        <label class="lbl">Категория</label>
+        <div id="cats" class="chips"></div>
+
+        <label class="lbl">Способ оплаты</label>
+        <div id="methods" class="chips"></div>
+
+        <label class="lbl">Комментарий</label>
+        <textarea id="comment" rows="2" placeholder="Например: МК «Ваза», 3 человека"></textarea>
+
+        <button id="saveBtn" class="primary">Сохранить</button>
+        <div id="editRow" class="edit-row hidden">
+          <button id="cancelEdit" class="ghost">Отмена</button>
+          <button id="delBtn" class="danger">Удалить</button>
+        </div>
+      </div>
+
+      <div class="card mini" id="todayLine"></div>
+    </section>
+
+    <!-- ЖУРНАЛ -->
+    <section id="tab-log" class="tab">
+      <div class="month">
+        <button data-step="-1">‹</button><div class="title js-month"></div><button data-step="1">›</button>
+      </div>
+      <div class="totals" id="logTotals"></div>
+      <div id="logList"></div>
+    </section>
+
+    <!-- ПЛАТЕЖИ -->
+    <section id="tab-pay" class="tab">
+      <div class="card">
+        <div class="calhead"><button id="calPrev">‹</button><div class="title" id="calTitle"></div><button id="calNext">›</button></div>
+        <div class="cgrid" id="calGrid"></div>
+        <div class="legend">
+          <span><i class="d-exp"></i>оплатить</span><span><i class="d-inc"></i>ждём деньги</span>
+          <span><i class="d-task"></i>дела</span><span><i class="d-ev"></i>события</span>
+        </div>
+        <div id="calWarn"></div>
+      </div>
+      <div class="dayhead"><b id="dayTitle"></b><small id="dayCash"></small></div>
+      <div id="dayList"></div>
+      <div class="dadd">
+        <button id="dAddEv">＋ Событие</button><button id="dAddPay">＋ Платёж</button><button id="dAddTask">＋ Дело</button>
+      </div>
+
+      <div class="head-row" style="margin-top:24px"><h2>Платежи</h2><button class="add-btn" id="payAdd">＋ Платёж</button></div>
+      <div class="totals" id="payTotals"></div>
+      <div id="payList"></div>
+    </section>
+
+    <!-- АБОНЕМЕНТЫ -->
+    <section id="tab-sub" class="tab">
+      <div class="head-row"><h2>Абонементы</h2><button class="add-btn" id="subAdd">＋ Абонемент</button></div>
+      <input type="search" class="search hidden" id="subSearch" placeholder="Найти по имени или телефону">
+      <div class="totals" id="subTotals"></div>
+      <div id="subList"></div>
+    </section>
+
+    <!-- ДЕЛА -->
+    <section id="tab-task" class="tab">
+      <div class="head-row"><h2>Дела</h2></div>
+      <div class="task-new">
+        <input type="text" id="taskText" placeholder="Что нужно сделать?" enterkeyhint="done" autocomplete="off">
+        <button id="taskAdd">＋</button>
+      </div>
+      <div class="task-opts" id="taskOpts">
+        <span style="font-size:13px;color:var(--mute);font-weight:700">Срок:</span>
+        <button class="chip on" data-due="">без срока</button>
+        <button class="chip" data-due="0">сегодня</button>
+        <button class="chip" data-due="1">завтра</button>
+        <input type="date" id="taskDue">
+      </div>
+      <div class="task-opts" id="taskRep">
+        <span style="font-size:13px;color:var(--mute);font-weight:700">Повтор:</span>
+        <button class="chip on" data-rep="Разово">нет</button>
+        <button class="chip" data-rep="Ежедневно">каждый день</button>
+        <button class="chip" data-rep="Еженедельно">неделя</button>
+        <button class="chip" data-rep="Ежемесячно">месяц</button>
+        <button class="chip" data-rep="Ежеквартально">квартал</button>
+        <button class="chip" data-rep="Ежегодно">год</button>
+      </div>
+      <div id="taskList"></div>
+    </section>
+
+    <!-- ИТОГИ -->
+    <section id="tab-sum" class="tab">
+      <div class="month">
+        <button data-step="-1">‹</button><div class="title js-month"></div><button data-step="1">›</button>
+      </div>
+      <div class="big">
+        <div class="kpi inc"><small>Доходы</small><b id="kInc">0 ₽</b></div>
+        <div class="kpi exp"><small>Расходы</small><b id="kExp">0 ₽</b></div>
+      </div>
+      <div class="profit"><small>Прибыль за месяц</small><b id="kProfit">0 ₽</b></div>
+      <div class="card bars" id="incBars"></div>
+      <div class="card bars" id="expBars"></div>
+      <div class="card">
+        <h3 style="margin:0 0 8px;font-size:15px" id="yearTitle"></h3>
+        <table class="year" id="yearTable"></table>
+      </div>
+      <a id="sheetLink" class="link-btn" target="_blank" href="#">Открыть Google Таблицу ↗</a>
+    </section>
+  </main>
+
+  <nav class="bottom"><div class="in">
+    <button data-tab="home" class="on"><span class="ic">⌂</span>Главная<span class="badge hidden" id="homeBadge"></span></button>
+    <button data-tab="add"><span class="ic">＋</span>Добавить</button>
+    <button data-tab="sub"><span class="ic">◷</span>Абонем.<span class="badge hidden" id="subBadge"></span></button>
+    <button data-tab="cert"><span class="ic">🎁</span>Сертиф.<span class="badge hidden" id="certBadge"></span></button>
+    <button data-tab="pay"><span class="ic">▦</span>Календарь<span class="badge hidden" id="payBadge"></span></button>
+  </div></nav>
+</div>
+
+<div id="pinScreen" class="overlay hidden">
+  <div class="pinbox">
+    <div class="logo"><i></i><i></i><i></i><i></i></div>
+    <h2 style="margin:0 0 6px">Art Mosaic</h2>
+    <p style="color:var(--ink2);margin:0 0 18px">Введите ПИН-код</p>
+    <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+    <button id="pinBtn" class="primary">Войти</button>
+  </div>
+</div>
+<div id="modal" class="modal hidden"><div class="panel" id="modalPanel"></div></div>
+<div id="toast"></div>
+
+<script>
+const MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const WD = ['вс','пн','вт','ср','чт','пт','сб'];
+const PALETTE = ['#E86A92','#3BA8B5','#F2B544','#7B5EA7','#1F9D6B','#E98A4F','#5C7FD6','#C45BAA','#8AB04A','#D9485F'];
+
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('am_'+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem('am_'+k, JSON.stringify(v)); }catch(e){} }
+};
+
+const S = {
+  ops: [], pays: [], tasks: [], subs: [], subQuery: '', subShowOld: false, certs: [], certQuery: '', certShowOld: false, cats: {income:[], expense:[], methods:[]}, url: '#',
+  taskDue: '', taskRep: 'Разово', showDone: false,
+  calMonth: todayStr().slice(0,7), calDay: todayStr(), events: {}, calOk: true,
+  type: 'Доход', cat: '', method: store.get('method',''), date: todayStr(),
+  editId: null, month: todayStr().slice(0,7), pin: store.get('pin',''), busy: false
+};
+
+/* ---------- утилиты ---------- */
+function todayStr(shift){
+  const d = new Date(); d.setDate(d.getDate() + (shift||0));
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function money(n, sign){
+  const s = Math.abs(n).toLocaleString('ru-RU',{maximumFractionDigits:2}) + ' ₽';
+  if (!sign) return (n<0?'−':'') + s;
+  return (n<0?'− ':'+ ') + s;
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function monthTitle(ym){ const [y,m] = ym.split('-'); return MONTHS[+m-1] + ' ' + y; }
+function shiftMonth(ym, k){ let [y,m] = ym.split('-').map(Number); m += k; while(m<1){m+=12;y--} while(m>12){m-=12;y++} return y+'-'+String(m).padStart(2,'0'); }
+function dayTitle(ds){
+  const d = new Date(ds+'T12:00:00');
+  const t = todayStr(), y = todayStr(-1);
+  const base = d.getDate()+' '+MONTHS_GEN[d.getMonth()]+', '+WD[d.getDay()];
+  return ds===t ? 'Сегодня · '+base : ds===y ? 'Вчера · '+base : base;
+}
+function toast(msg, err){
+  const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err?' err':'');
+  clearTimeout(toast._t); toast._t = setTimeout(()=> t.className = err?'err':'', 2600);
+}
+// Внутри Google Apps Script — google.script.run; на GitHub Pages — запрос к тому же скрипту по ссылке /exec
+const API_URL = 'https://script.google.com/macros/s/AKfycbz19KS3-W0EvcN7TiCvM9X8OfRSwnRg3XLOn_BgSkLpnRVidH1QG6mpGF8m-eTLZkCKow/exec';
+const IN_GAS = !!(window.google && google.script && google.script.run);
+const BASE = 'https://svetlana020257-lab.github.io/ddd/art-mosaic/';
+function call(fn, ...args){
+  if (IN_GAS) return new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+  const [pin, ...rest] = args;
+  const url = API_URL + '?api=' + encodeURIComponent(fn) + '&pin=' + encodeURIComponent(pin || '') +
+    '&args=' + encodeURIComponent(JSON.stringify(rest)) + '&_=' + Date.now();
+  return fetch(url, {redirect:'follow'}).then(r => { if (!r.ok) throw new Error('сервер ответил ' + r.status); return r.json(); })
+    .then(j => { if (!j.ok) throw new Error(j.error || 'ошибка'); return j.data; });
+}
+function errText(e){ return (e && e.message ? e.message : String(e)).replace(/^Error:\s*/,''); }
+
+/* ---------- загрузка ---------- */
+async function load(quiet){
+  const btn = $('#refreshBtn'); btn.classList.add('spin');
+  try{
+    const r = await call('apiInit', S.pin);
+    applyData(r);
+    saveCache();
+    if (quiet === 'manual') toast('Данные обновлены');
+  }catch(e){
+    const m = errText(e);
+    if (m.includes('PIN_REQUIRED')) { showPin(); }
+    else { S.loadError = m; renderCats(); toast('Нет связи с таблицей: ' + m, true); }
+  }finally{
+    btn.classList.remove('spin');
+    $('#boot').classList.add('hidden');
+    if (!$$('.tab.active').length) switchTab('home');
+  }
+}
+function saveCache(){ store.set('cache', {ops:S.ops, pays:S.pays, tasks:S.tasks, subs:S.subs, certs:S.certs, cats:S.cats, url:S.url}); }
+function applyData(r){
+  S.loadError = '';
+  S.ops = r.ops || S.ops; S.pays = r.pays || S.pays; S.tasks = r.tasks || S.tasks; S.subs = r.subs || S.subs; S.certs = r.certs || S.certs;
+  S.cats = r.cats || S.cats; S.url = r.url || S.url;
+  $('#sheetLink').href = S.url; $('#sheetTile').href = S.url;
+  renderAll();
+}
+
+/* ---------- ПИН ---------- */
+function showPin(){ $('#pinScreen').classList.remove('hidden'); setTimeout(()=>$('#pinInput').focus(), 100); }
+$('#pinBtn').onclick = async () => {
+  S.pin = $('#pinInput').value.trim();
+  try{
+    const r = await call('apiInit', S.pin);
+    store.set('pin', S.pin);
+    $('#pinScreen').classList.add('hidden');
+    applyData(r);
+  }catch(e){ toast(errText(e).includes('PIN_REQUIRED') ? 'Неверный ПИН' : errText(e), true); }
+};
+$('#pinInput').addEventListener('keydown', e => { if (e.key === 'Enter') $('#pinBtn').click(); });
+
+/* ---------- вкладки ---------- */
+function switchTab(name){
+  $$('.tab').forEach(t => t.classList.toggle('active', t.id === 'tab-'+name));
+  $$('nav.bottom button').forEach(b => b.classList.toggle('on', b.dataset.tab === name));
+  window.scrollTo({top:0});
+  if (name === 'log') renderLog();
+  if (name === 'sum') renderSum();
+  if (name === 'pay') { renderPays(); renderCal(); loadEvents(S.calMonth); }
+  if (name === 'task') renderTasks();
+  if (name === 'sub') renderSubs();
+  if (name === 'cert') renderCerts();
+  if (name === 'home') renderHome();
+}
+$$('nav.bottom button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+$$('.month button').forEach(b => b.onclick = () => { S.month = shiftMonth(S.month, +b.dataset.step); renderLog(); renderSum(); });
+$('#refreshBtn').onclick = () => load('manual');
+
+/* ---------- форма ---------- */
+function setType(t){
+  S.type = t;
+  document.body.className = t === 'Доход' ? 't-inc' : 't-exp';
+  $$('#typeSeg button').forEach(b => b.classList.toggle('on', b.dataset.type === t));
+  const list = t === 'Доход' ? S.cats.income : S.cats.expense;
+  if (!list.includes(S.cat)) S.cat = '';
+  renderCats();
+}
+$$('#typeSeg button').forEach(b => b.onclick = () => setType(b.dataset.type));
+
+function setDate(ds){
+  S.date = ds; $('#date').value = ds;
+  $$('.dates .chip').forEach(c => c.classList.toggle('on', todayStr(+c.dataset.shift) === ds));
+}
+$$('.dates .chip').forEach(c => c.onclick = () => setDate(todayStr(+c.dataset.shift)));
+$('#date').onchange = e => setDate(e.target.value || todayStr());
+
+function renderCats(){
+  const list = (S.type === 'Доход' ? S.cats.income : S.cats.expense).slice();
+  if (S.cat && !list.includes(S.cat)) list.push(S.cat);
+  $('#cats').innerHTML = list.map(c => `<button class="chip${c===S.cat?' on':''}" data-v="${esc(c)}">${esc(c)}</button>`).join('')
+    || (S.loadError
+      ? `<span style="color:var(--exp);font-size:14px">⚠️ Не загрузилось из таблицы: ${esc(S.loadError)}<br>Нажмите ↻ или пришлите этот текст Светлане</span>`
+      : '<span style="color:var(--mute);font-size:14px">Загружаю категории… если долго — нажмите ↻</span>');
+  $$('#cats .chip').forEach(b => b.onclick = () => { S.cat = S.cat === b.dataset.v ? '' : b.dataset.v; renderCats(); });
+}
+function renderMethods(){
+  const list = S.cats.methods.slice();
+  if (S.method && !list.includes(S.method)) list.push(S.method);
+  $('#methods').innerHTML = list.map(c => `<button class="chip${c===S.method?' on':''}" data-v="${esc(c)}">${esc(c)}</button>`).join('');
+  $$('#methods .chip').forEach(b => b.onclick = () => {
+    S.method = S.method === b.dataset.v ? '' : b.dataset.v;
+    if (!S.editId) store.set('method', S.method);
+    renderMethods();
+  });
+}
+
+function resetForm(){
+  S.editId = null; S.cat = '';
+  $('#amount').value = ''; $('#comment').value = '';
+  $('#editBadge').classList.add('hidden'); $('#editRow').classList.add('hidden');
+  $('#saveBtn').textContent = 'Сохранить';
+  S.method = store.get('method','');
+  setDate(todayStr()); renderCats(); renderMethods();
+}
+
+function editOp(id){
+  const op = S.ops.find(o => o.id === id); if (!op) return;
+  S.editId = id; S.cat = op.cat; S.method = op.method;
+  setType(op.type); setDate(op.date);
+  $('#amount').value = String(op.amount).replace('.', ',');
+  $('#comment').value = op.comment;
+  renderCats(); renderMethods();
+  $('#editBadge').classList.remove('hidden'); $('#editRow').classList.remove('hidden');
+  $('#saveBtn').textContent = 'Сохранить изменения';
+  switchTab('add');
+}
+$('#cancelEdit').onclick = () => { resetForm(); switchTab('log'); };
+
+$('#amount').addEventListener('input', e => {
+  let v = e.target.value.replace(/[^\d.,\s]/g,'').replace('.', ',');
+  const parts = v.split(','); if (parts.length > 2) v = parts[0] + ',' + parts.slice(1).join('');
+  e.target.value = v;
+});
+
+$('#saveBtn').onclick = async () => {
+  if (S.busy) return;
+  const amount = parseFloat($('#amount').value.replace(/\s/g,'').replace(',', '.'));
+  if (!(amount > 0)) { toast('Введите сумму', true); $('#amount').focus(); return; }
+  if (!S.cat) { toast('Выберите категорию', true); return; }
+  const op = { id: S.editId, type: S.type, amount, cat: S.cat, method: S.method, comment: $('#comment').value, date: S.date };
+  const btn = $('#saveBtn'), label = btn.textContent;
+  S.busy = true; btn.disabled = true; btn.textContent = 'Сохраняю…';
+  try{
+    const r = await call('apiSave', S.pin, op);
+    const wasEdit = !!S.editId;
+    applyData(r); saveCache();
+    toast((wasEdit ? 'Изменено: ' : 'Записано: ') + money(op.type==='Доход'?amount:-amount, true) + ' · ' + op.cat);
+    resetForm();
+    if (wasEdit) switchTab('log');
+  }catch(e){
+    btn.textContent = label;
+    toast('Не сохранилось: ' + errText(e), true);
+  }finally{
+    S.busy = false; btn.disabled = false;
+    if (btn.textContent === 'Сохраняю…') btn.textContent = S.editId ? 'Сохранить изменения' : 'Сохранить';
+  }
+};
+
+$('#delBtn').onclick = async () => {
+  if (!S.editId || S.busy) return;
+  if (!confirm('Удалить эту запись из таблицы?')) return;
+  S.busy = true;
+  try{
+    const r = await call('apiDelete', S.pin, S.editId);
+    applyData(r); saveCache();
+    toast('Запись удалена'); resetForm(); switchTab('log');
+  }catch(e){ toast('Не удалилось: ' + errText(e), true); }
+  finally{ S.busy = false; }
+};
+
+/* ---------- подсчёты ---------- */
+function opsOfMonth(ym){ return S.ops.filter(o => o.date.slice(0,7) === ym); }
+function totals(list){
+  const inc = list.filter(o=>o.type==='Доход').reduce((s,o)=>s+o.amount,0);
+  const exp = list.filter(o=>o.type==='Расход').reduce((s,o)=>s+o.amount,0);
+  return {inc, exp, profit: inc-exp};
+}
+
+function renderToday(){
+  const t = totals(S.ops.filter(o => o.date === todayStr()));
+  const m = totals(opsOfMonth(todayStr().slice(0,7)));
+  $('#todayLine').innerHTML =
+    `<div>Сегодня<br><b class="inc-t">${money(t.inc,true)}</b> · <b class="exp-t">${money(-t.exp,true)}</b></div>
+     <div style="text-align:right">${MONTHS[new Date().getMonth()]}: прибыль<br><b class="${m.profit<0?'exp-t':'inc-t'}">${money(m.profit)}</b></div>`;
+}
+
+function renderLog(){
+  $$('.js-month').forEach(el => el.textContent = monthTitle(S.month));
+  const list = opsOfMonth(S.month).sort((a,b) => b.date.localeCompare(a.date) || b.added - a.added);
+  const t = totals(list);
+  $('#logTotals').innerHTML =
+    `<div class="tot"><small>Доходы</small><b class="inc-t">${money(t.inc)}</b></div>
+     <div class="tot"><small>Расходы</small><b class="exp-t">${money(t.exp)}</b></div>
+     <div class="tot"><small>Прибыль</small><b class="${t.profit<0?'exp-t':''}">${money(t.profit)}</b></div>`;
+  if (!list.length){
+    $('#logList').innerHTML = '<div class="empty"><div>🧩</div>В этом месяце пока нет записей</div>';
+    return;
+  }
+  let html = '', cur = '';
+  list.forEach(o => {
+    if (o.date !== cur){
+      cur = o.date;
+      const d = totals(list.filter(x => x.date === cur));
+      html += `<div class="day"><span>${dayTitle(cur)}</span><span>${money(d.profit, true)}</span></div>`;
+    }
+    const inc = o.type === 'Доход';
+    const sub = [o.method, o.comment].filter(Boolean).join(' · ');
+    html += `<button class="op" data-id="${esc(o.id)}">
+      <div class="dot ${inc?'inc':'exp'}">${inc?'＋':'−'}</div>
+      <div class="mid"><div class="cat">${esc(o.cat)}</div>${sub?`<div class="com">${esc(sub)}</div>`:''}</div>
+      <div class="sum ${inc?'inc':'exp'}">${money(inc?o.amount:-o.amount, true)}</div>
+    </button>`;
+  });
+  $('#logList').innerHTML = html;
+  $$('#logList .op').forEach(b => b.onclick = () => editOp(b.dataset.id));
+}
+
+function bars(title, list, color){
+  const by = {};
+  list.forEach(o => by[o.cat] = (by[o.cat]||0) + o.amount);
+  const rows = Object.entries(by).sort((a,b) => b[1]-a[1]);
+  if (!rows.length) return `<h3>${title}</h3><div style="color:var(--mute);font-size:14px">Нет записей</div>`;
+  const max = rows[0][1], total = rows.reduce((s,r)=>s+r[1],0);
+  return `<h3>${title}</h3>` + rows.map(([c,v],i) => `
+    <div class="bar"><div class="t"><span>${esc(c)}</span><span>${money(v)} <span style="color:var(--mute);font-weight:600">· ${Math.round(v/total*100)}%</span></span></div>
+    <div class="track"><div class="fill" style="width:${Math.max(3, v/max*100)}%;background:${color==='inc'?PALETTE[(i+4)%PALETTE.length]:PALETTE[i%PALETTE.length]}"></div></div></div>`).join('');
+}
+
+function renderSum(){
+  $$('.js-month').forEach(el => el.textContent = monthTitle(S.month));
+  const list = opsOfMonth(S.month), t = totals(list);
+  $('#kInc').textContent = money(t.inc);
+  $('#kExp').textContent = money(t.exp);
+  $('#kProfit').textContent = money(t.profit);
+  $('#kProfit').style.color = t.profit < 0 ? '#FF9AA9' : '#8EF0C4';
+  $('#incBars').innerHTML = bars('Доходы по категориям', list.filter(o=>o.type==='Доход'), 'inc');
+  $('#expBars').innerHTML = bars('Расходы по категориям', list.filter(o=>o.type==='Расход'), 'exp');
+
+  const y = S.month.slice(0,4);
+  $('#yearTitle').textContent = 'По месяцам · ' + y;
+  let rows = '', sum = {inc:0,exp:0,profit:0};
+  for (let m = 1; m <= 12; m++){
+    const ym = y + '-' + String(m).padStart(2,'0');
+    const tt = totals(opsOfMonth(ym));
+    if (!tt.inc && !tt.exp && ym !== S.month) continue;
+    sum.inc += tt.inc; sum.exp += tt.exp; sum.profit += tt.profit;
+    rows += `<tr data-ym="${ym}" class="${ym===S.month?'cur':''}"><td>${MONTHS[m-1]}</td>
+      <td class="inc-t">${money(tt.inc)}</td><td class="exp-t">${money(tt.exp)}</td>
+      <td class="${tt.profit<0?'exp-t':''}">${money(tt.profit)}</td></tr>`;
+  }
+  $('#yearTable').innerHTML = `<thead><tr><th>Месяц</th><th>Доход</th><th>Расход</th><th>Прибыль</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td>Итого</td><td class="inc-t">${money(sum.inc)}</td><td class="exp-t">${money(sum.exp)}</td><td>${money(sum.profit)}</td></tr></tfoot>`;
+  $$('#yearTable tbody tr').forEach(r => r.onclick = () => { S.month = r.dataset.ym; renderSum(); renderLog(); });
+}
+
+/* ---------- общие помощники ---------- */
+const MON_SHORT = ['янв','фев','мар','апр','мая','июн','июл','авг','сен','окт','ноя','дек'];
+function daysFromToday(ds){
+  const a = new Date(ds+'T12:00:00'), b = new Date(todayStr()+'T12:00:00');
+  return Math.round((a - b) / 86400000);
+}
+function dueLabel(ds){
+  const n = daysFromToday(ds), d = new Date(ds+'T12:00:00');
+  if (n === 0) return 'сегодня';
+  if (n === 1) return 'завтра';
+  if (n === -1) return 'вчера';
+  return d.getDate()+' '+MON_SHORT[d.getMonth()];
+}
+function chipsHtml(list, val, name){
+  return list.map(c => `<button class="chip${c===val?' on':''}" data-${name}="${esc(c)}">${esc(c)}</button>`).join('');
+}
+function bindChips(root, name, onPick){
+  root.querySelectorAll('[data-'+name+']').forEach(b => b.onclick = () => {
+    root.querySelectorAll('[data-'+name+']').forEach(x => x.classList.toggle('on', x === b && !b.classList.contains('on')));
+    onPick(b.classList.contains('on') ? b.dataset[name] : '');
+  });
+}
+function openModal(html){ $('#modalPanel').innerHTML = html; $('#modal').classList.remove('hidden'); }
+function closeModal(){ $('#modal').classList.add('hidden'); $('#modalPanel').innerHTML = ''; }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+async function run(fn, args, okMsg, btn){
+  if (S.busy) return false;
+  S.busy = true; let label;
+  if (btn){ label = btn.textContent; btn.disabled = true; btn.textContent = 'Сохраняю…'; }
+  try{
+    const r = await call(fn, S.pin, ...args);
+    applyData(r); saveCache();
+    if (okMsg) toast(okMsg);
+    return true;
+  }catch(e){
+    toast(errText(e), true);
+    return false;
+  }finally{
+    S.busy = false;
+    if (btn){ btn.disabled = false; btn.textContent = label; }
+  }
+}
+
+/* ---------- календарь платежей ---------- */
+const REPEATS = ['Разово','Ежемесячно','Еженедельно','Ежеквартально','Ежегодно'];
+const REP_SHORT = {'Ежемесячно':'каждый месяц','Еженедельно':'каждую неделю','Ежеквартально':'раз в квартал','Ежегодно':'раз в год'};
+
+function pendingPays(){ return S.pays.filter(p => p.status !== 'Оплачено').sort((a,b) => a.date.localeCompare(b.date)); }
+
+function renderPays(){
+  const list = pendingPays();
+  const ym = todayStr().slice(0,7);
+  const month = list.filter(p => p.date.slice(0,7) <= ym);
+  const out = month.filter(p => p.type==='Расход').reduce((s,p)=>s+p.amount,0);
+  const inn = month.filter(p => p.type==='Доход').reduce((s,p)=>s+p.amount,0);
+  const overdue = list.filter(p => daysFromToday(p.date) < 0);
+  $('#payTotals').innerHTML =
+    `<div class="tot"><small>Оплатить до конца месяца</small><b class="exp-t">${money(out)}</b></div>
+     <div class="tot"><small>Ожидаем поступлений</small><b class="inc-t">${money(inn)}</b></div>
+     <div class="tot"><small>Просрочено</small><b class="${overdue.length?'exp-t':''}">${overdue.length}</b></div>`;
+  if (!list.length){
+    $('#payList').innerHTML = '<div class="empty"><div>📅</div>Платежей пока нет.<br>Добавьте аренду, налоги, закупки —<br>приложение напомнит о сроках.</div>';
+    return;
+  }
+  const groups = [
+    ['Просрочено', 'red', p => daysFromToday(p.date) < 0],
+    ['Сегодня и ближайшие 7 дней', 'amber', p => { const n = daysFromToday(p.date); return n >= 0 && n <= 7; }],
+    ['Позже в этом месяце', '', p => daysFromToday(p.date) > 7 && p.date.slice(0,7) === ym],
+    ['Следующие месяцы', '', p => daysFromToday(p.date) > 7 && p.date.slice(0,7) > ym]
+  ];
+  let html = '';
+  groups.forEach(([title, cls, f]) => {
+    const g = list.filter(f); if (!g.length) return;
+    html += `<div class="group ${cls}">${title}</div>`;
+    g.forEach(p => {
+      const n = daysFromToday(p.date), d = new Date(p.date+'T12:00:00');
+      const inc = p.type === 'Доход';
+      const meta = [n<0 ? 'просрочен на '+(-n)+' дн.' : dueLabel(p.date), p.cat, p.method].filter(Boolean).join(' · ');
+      html += `<div class="pay ${n<0?'overdue':n<=3?'soon':''}">
+        <div class="cal"><b>${d.getDate()}</b><small>${MON_SHORT[d.getMonth()]}</small></div>
+        <button class="mid" data-edit="${esc(p.id)}">
+          <div class="nm">${esc(p.name)}${p.repeat!=='Разово'?`<span class="rep">↻ ${REP_SHORT[p.repeat]}</span>`:''}</div>
+          <div class="meta">${esc(meta)}</div>
+        </button>
+        <div class="am ${inc?'inc-t':'exp-t'}">${p.amount ? money(p.amount) : '—'}</div>
+        <button class="done-btn ${inc?'':'exp'}" data-done="${esc(p.id)}" title="${inc?'Получено':'Оплачено'}">✓</button>
+      </div>`;
+    });
+  });
+  $('#payList').innerHTML = html;
+  $$('#payList [data-edit]').forEach(b => b.onclick = () => payForm(S.pays.find(p => p.id === b.dataset.edit)));
+  $$('#payList [data-done]').forEach(b => b.onclick = () => payDoneForm(S.pays.find(p => p.id === b.dataset.done)));
+}
+$('#payAdd').onclick = () => payForm(null);
+
+function payForm(p, presetDate){
+  const f = Object.assign({id:'', name:'', type:'Расход', cat:'', amount:'', date:presetDate || todayStr(), repeat:'Ежемесячно', method:'', comment:''}, p || {});
+  const catsOf = t => t === 'Доход' ? S.cats.income : S.cats.expense;
+  openModal(`
+    <h3>${p ? 'Платёж' : 'Новый платёж'}</h3>
+    <label class="lbl" style="margin-top:12px">Название</label>
+    <input class="field" id="pName" value="${esc(f.name)}" placeholder="Например: Аренда студии">
+    <div class="seg" id="pType" style="margin-top:12px">
+      <button data-type="Расход" class="exp">− Нужно оплатить</button>
+      <button data-type="Доход" class="inc">＋ Ожидаем деньги</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Сумма, ₽</label><input class="field" id="pAmount" inputmode="decimal" value="${f.amount?String(f.amount).replace('.',','):''}" placeholder="0"></div>
+      <div><label class="lbl">Дата</label><input class="field" id="pDate" type="date" value="${f.date}"></div>
+    </div>
+    <label class="lbl">Повтор</label><div class="chips" id="pRep">${chipsHtml(REPEATS, f.repeat, 'rep')}</div>
+    <label class="lbl">Категория</label><div class="chips" id="pCat"></div>
+    <label class="lbl">Способ оплаты</label><div class="chips" id="pMeth">${chipsHtml(S.cats.methods, f.method, 'meth')}</div>
+    <label class="lbl">Комментарий</label><input class="field" id="pCom" value="${esc(f.comment)}" placeholder="Необязательно">
+    <button class="primary" id="pSave" style="background:var(--ink)">Сохранить</button>
+    <div class="edit-row">
+      <button class="ghost" id="pCancel">Отмена</button>
+      ${p ? '<button class="danger" id="pDel">Удалить</button>' : '<span></span>'}
+    </div>`);
+  const drawType = () => {
+    $$('#pType button').forEach(b => b.classList.toggle('on', b.dataset.type === f.type));
+    if (f.cat && !catsOf(f.type).includes(f.cat) && !(p && p.cat === f.cat)) f.cat = '';
+    const list = catsOf(f.type).slice(); if (f.cat && !list.includes(f.cat)) list.push(f.cat);
+    $('#pCat').innerHTML = chipsHtml(list, f.cat, 'cat');
+    bindChips($('#pCat'), 'cat', v => f.cat = v);
+  };
+  $$('#pType button').forEach(b => b.onclick = () => { f.type = b.dataset.type; drawType(); });
+  drawType();
+  bindChips($('#pRep'), 'rep', v => { f.repeat = v || 'Разово'; if (!v) $('#pRep [data-rep="Разово"]').classList.add('on'); });
+  bindChips($('#pMeth'), 'meth', v => f.method = v);
+  $('#pCancel').onclick = closeModal;
+  $('#pSave').onclick = async () => {
+    const data = Object.assign({}, f, {
+      name: $('#pName').value, amount: $('#pAmount').value, date: $('#pDate').value, comment: $('#pCom').value
+    });
+    if (await run('apiPaySave', [data], p ? 'Платёж обновлён' : 'Платёж добавлен', $('#pSave'))) closeModal();
+  };
+  if (p) $('#pDel').onclick = async () => {
+    if (!confirm('Удалить платёж «'+p.name+'»' + (p.repeat!=='Разово' ? ' и все его повторы' : '') + '?')) return;
+    if (await run('apiPayDelete', [p.id], 'Платёж удалён')) closeModal();
+  };
+}
+
+function payDoneForm(p){
+  const inc = p.type === 'Доход';
+  let method = p.method;
+  const next = p.repeat !== 'Разово' ? nextDateJs(p.date, p.repeat) : '';
+  openModal(`
+    <h3>${inc ? 'Деньги получены' : 'Платёж оплачен'}</h3>
+    <div class="hint">${esc(p.name)} — запишется в журнал как ${inc ? 'доход' : 'расход'}${p.cat ? ' «'+esc(p.cat)+'»' : ''}</div>
+    <label class="lbl" style="margin-top:14px">Сумма, ₽</label>
+    <input class="field big ${inc?'inc-t':'exp-t'}" id="dAmount" inputmode="decimal" value="${p.amount?String(p.amount).replace('.',','):''}" placeholder="0">
+    <label class="lbl">Дата оплаты</label>
+    <input class="field" id="dDate" type="date" value="${todayStr()}">
+    <label class="lbl">Способ оплаты</label><div class="chips" id="dMeth">${chipsHtml(S.cats.methods, method, 'meth')}</div>
+    ${next ? `<div class="hint" style="margin-top:12px">↻ Следующий срок: <b>${dueLabel(next)} ${next.slice(0,4)}</b></div>` : ''}
+    <button class="primary" id="dSave" style="background:${inc?'var(--inc)':'var(--exp)'}">${inc ? 'Получено' : 'Оплачено'} — записать</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="dCancel">Отмена</button></div>`);
+  bindChips($('#dMeth'), 'meth', v => method = v);
+  $('#dCancel').onclick = closeModal;
+  $('#dSave').onclick = async () => {
+    const amount = parseFloat($('#dAmount').value.replace(/\s/g,'').replace(',', '.'));
+    if (!(amount > 0)) { toast('Введите сумму', true); return; }
+    const ok = await run('apiPayDone', [p.id, {amount, date: $('#dDate').value || todayStr(), method}],
+      (inc ? 'Получено: ' : 'Оплачено: ') + money(amount) + ' · записано в журнал', $('#dSave'));
+    if (ok) closeModal();
+  };
+}
+
+function nextDateJs(ds, repeat){
+  const [y,m,d] = ds.split('-').map(Number);
+  let t;
+  if (repeat === 'Ежедневно') t = new Date(Date.UTC(y, m-1, d+1));
+  else if (repeat === 'Еженедельно') t = new Date(Date.UTC(y, m-1, d+7));
+  else {
+    const add = repeat === 'Ежеквартально' ? 3 : repeat === 'Ежегодно' ? 12 : 1;
+    const last = new Date(Date.UTC(y, m-1+add+1, 0)).getUTCDate();
+    t = new Date(Date.UTC(y, m-1+add, Math.min(d, last)));
+  }
+  return t.toISOString().slice(0,10);
+}
+
+/* ---------- список дел ---------- */
+function setTaskDue(v){
+  S.taskDue = v;
+  $$('#taskOpts .chip').forEach(c => c.classList.toggle('on',
+    (c.dataset.due === '' && !v) || (c.dataset.due !== '' && v && todayStr(+c.dataset.due) === v)));
+  $('#taskDue').value = v || '';
+}
+$$('#taskOpts .chip').forEach(c => c.onclick = () => setTaskDue(c.dataset.due === '' ? '' : todayStr(+c.dataset.due)));
+$('#taskDue').onchange = e => setTaskDue(e.target.value);
+
+const TASK_REP = [['Разово','нет'],['Ежедневно','каждый день'],['Еженедельно','неделя'],['Ежемесячно','месяц'],['Ежеквартально','квартал'],['Ежегодно','год']];
+const TASK_REP_LONG = {'Ежедневно':'каждый день','Еженедельно':'каждую неделю','Ежемесячно':'каждый месяц','Ежеквартально':'раз в квартал','Ежегодно':'раз в год'};
+function setTaskRep(v){
+  S.taskRep = v;
+  $$('#taskRep .chip').forEach(c => c.classList.toggle('on', c.dataset.rep === v));
+}
+$$('#taskRep .chip').forEach(c => c.onclick = () => setTaskRep(c.dataset.rep));
+function repChips(id, val){
+  return `<div class="chips" id="${id}">${TASK_REP.map(r => `<button class="chip${r[0]===val?' on':''}" data-rep="${r[0]}">${r[1]}</button>`).join('')}</div>`;
+}
+function bindRep(id, onPick){
+  $$('#'+id+' .chip').forEach(b => b.onclick = () => { $$('#'+id+' .chip').forEach(x => x.classList.toggle('on', x === b)); onPick(b.dataset.rep); });
+}
+
+async function addTask(){
+  const text = $('#taskText').value.trim();
+  if (!text) { $('#taskText').focus(); return; }
+  const ok = await run('apiTaskSave', [{text, due: S.taskDue, repeat: S.taskRep}],
+    S.taskRep !== 'Разово' ? 'Регулярное дело добавлено ↻' : 'Задача добавлена');
+  if (ok){ $('#taskText').value = ''; setTaskDue(''); setTaskRep('Разово'); }
+}
+$('#taskAdd').onclick = addTask;
+$('#taskText').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+function taskHtml(t){
+  let due = '';
+  if (t.due && !t.done){
+    const n = daysFromToday(t.due);
+    due = `<span class="due ${n<0?'red':n===0?'amber':''}">${dueLabel(t.due)}</span>`;
+  }
+  return `<div class="task ${t.done?'done':''}">
+    <button class="check" data-check="${esc(t.id)}">${t.done?'✓':''}</button>
+    <button class="tx" data-tedit="${esc(t.id)}">${esc(t.text)}${t.repeat && t.repeat!=='Разово' && !t.done ? `<span class="rep">↻ ${TASK_REP_LONG[t.repeat]}</span>` : ''}</button>${due}</div>`;
+}
+
+function renderTasks(){
+  const open = S.tasks.filter(t => !t.done).sort((a,b) =>
+    (a.due||'9999') .localeCompare(b.due||'9999') || a.created - b.created);
+  const done = S.tasks.filter(t => t.done).sort((a,b) => b.doneAt - a.doneAt);
+  let html = '';
+  if (!open.length) html += '<div class="empty"><div>✨</div>Все дела сделаны</div>';
+  const over = open.filter(t => t.due && daysFromToday(t.due) < 0);
+  const today = open.filter(t => t.due && daysFromToday(t.due) === 0);
+  const later = open.filter(t => t.due && daysFromToday(t.due) > 0);
+  const nodate = open.filter(t => !t.due);
+  [['Просрочено','red',over],['Сегодня','amber',today],['Скоро','',later],['Без срока','',nodate]].forEach(([title,cls,g]) => {
+    if (!g.length) return;
+    html += `<div class="group ${cls}">${title}</div>` + g.map(taskHtml).join('');
+  });
+  if (done.length){
+    html += `<button class="toggle-done" id="toggleDone">${S.showDone ? 'Скрыть выполненные' : 'Выполненные ('+done.length+')'}</button>`;
+    if (S.showDone) html += '<div style="margin-top:8px">' + done.slice(0,40).map(taskHtml).join('') + '</div>';
+  }
+  $('#taskList').innerHTML = html;
+  $$('#taskList [data-check]').forEach(b => b.onclick = () => toggleTask(b.dataset.check));
+  $$('#taskList [data-tedit]').forEach(b => b.onclick = () => taskForm(S.tasks.find(t => t.id === b.dataset.tedit)));
+  const td = $('#toggleDone'); if (td) td.onclick = () => { S.showDone = !S.showDone; renderTasks(); };
+}
+
+async function toggleTask(id){
+  const t = S.tasks.find(x => x.id === id); if (!t) return;
+  const was = t.done;
+  t.done = !was; t.doneAt = Date.now();          // сразу показываем, потом сохраняем
+  renderTasks(); renderBadges();
+  try{
+    const r = await call('apiTaskToggle', S.pin, id, t.done);
+    applyData(r); saveCache();
+    if (t.done && t.repeat && t.repeat !== 'Разово' && t.due){
+      let next = nextDateJs(t.due, t.repeat); while (next <= todayStr()) next = nextDateJs(next, t.repeat);
+      toast('✓ Сделано · ↻ следующее — ' + dueLabel(next));
+    }
+  }catch(e){
+    t.done = was; renderTasks(); renderBadges();
+    toast('Не сохранилось: ' + errText(e), true);
+  }
+}
+
+function taskForm(t){
+  openModal(`
+    <h3>Задача</h3>
+    <label class="lbl" style="margin-top:12px">Что сделать</label>
+    <textarea class="field" id="tText" rows="3">${esc(t.text)}</textarea>
+    <label class="lbl">Срок</label>
+    <input class="field" id="tDue" type="date" value="${t.due||''}">
+    <label class="lbl">Повтор</label>${repChips('tRep', t.repeat || 'Разово')}
+    <button class="primary" id="tSave" style="background:var(--ink)">Сохранить</button>
+    <div class="edit-row"><button class="ghost" id="tCancel">Отмена</button><button class="danger" id="tDel">Удалить</button></div>`);
+  let rep = t.repeat || 'Разово';
+  bindRep('tRep', v => rep = v);
+  $('#tCancel').onclick = closeModal;
+  $('#tSave').onclick = async () => {
+    if (await run('apiTaskSave', [{id:t.id, text:$('#tText').value, due:$('#tDue').value, repeat: rep}], 'Задача обновлена', $('#tSave'))) closeModal();
+  };
+  $('#tDel').onclick = async () => {
+    if (!confirm('Удалить задачу?')) return;
+    if (await run('apiTaskDelete', [t.id], 'Задача удалена')) closeModal();
+  };
+}
+
+/* ---------- календарь ---------- */
+const WD_SHORT = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+const EV_KINDS = [['🚚','Поставка'],['🤝','Встреча'],['🎨','МК'],['🎉','Праздник'],['📞','Созвон'],['📌','Другое']];
+
+async function loadEvents(ym, force){
+  if (S.events[ym] && !force) return;
+  try{
+    const r = await call('apiEvents', S.pin, ym);
+    S.events[ym] = r.events || []; S.calOk = r.ok !== false;
+    renderCal();
+  }catch(e){ S.calOk = false; renderCal(); }
+}
+
+function dayItems(ds){
+  return {
+    pays: S.pays.filter(p => p.date === ds && p.status !== 'Оплачено'),
+    tasks: S.tasks.filter(t => t.due === ds),
+    events: (S.events[ds.slice(0,7)] || []).filter(e => e.day === ds).sort((a,b) => (a.start||'').localeCompare(b.start||'')),
+    ops: S.ops.filter(o => o.date === ds)
+  };
+}
+
+function renderCal(){
+  if (!$('#calGrid')) return;
+  const [y, m] = S.calMonth.split('-').map(Number);
+  $('#calTitle').textContent = MONTHS[m-1] + ' ' + y;
+  const first = new Date(y, m-1, 1), shift = (first.getDay() + 6) % 7;
+  const start = new Date(y, m-1, 1 - shift);
+  let html = WD_SHORT.map((w,i) => `<div class="wd${i>4?' we':''}">${w}</div>`).join('');
+  const today = todayStr();
+  for (let i = 0; i < 42; i++){
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    const ds = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if (i >= 35 && d.getMonth() !== m-1) break;
+    const it = dayItems(ds);
+    const dots = [];
+    if (it.pays.some(p => p.type==='Расход')) dots.push('d-exp');
+    if (it.pays.some(p => p.type==='Доход')) dots.push('d-inc');
+    if (it.tasks.some(t => !t.done)) dots.push('d-task');
+    if (it.events.length) dots.push('d-ev');
+    html += `<button class="cday${d.getMonth()!==m-1?' out':''}${ds===today?' today':''}${ds===S.calDay?' sel':''}" data-ds="${ds}">
+      ${d.getDate()}<span class="dots">${dots.map(c=>`<i class="${c}"></i>`).join('')}</span></button>`;
+  }
+  $('#calGrid').innerHTML = html;
+  $$('#calGrid .cday').forEach(b => b.onclick = () => {
+    S.calDay = b.dataset.ds;
+    if (S.calDay.slice(0,7) !== S.calMonth){ S.calMonth = S.calDay.slice(0,7); loadEvents(S.calMonth); }
+    renderCal();
+  });
+  $('#calWarn').innerHTML = S.calOk ? '' : '<div class="calwarn">Google Календарь ещё не подключён — платежи и дела видны, а события появятся после запуска setupCalendar в Apps Script.</div>';
+  renderDay();
+}
+
+function renderDay(){
+  const ds = S.calDay, it = dayItems(ds);
+  $('#dayTitle').textContent = dayTitle(ds);
+  const t = totals(it.ops);
+  $('#dayCash').innerHTML = [t.inc ? `<span class="inc-t">+${money(t.inc)}</span>` : '', t.exp ? `<span class="exp-t">−${money(t.exp)}</span>` : ''].filter(Boolean).join(' · ');
+  let html = '';
+  it.events.forEach(e => {
+    html += `<div class="ditem"><span class="tm">${e.start || 'весь день'}</span>
+      <div class="tx">${esc(e.title)}${e.end ? `<small>до ${e.end}</small>` : ''}</div>
+      <button class="x" data-evdel="${esc(e.id)}" title="Убрать">✕</button></div>`;
+  });
+  it.pays.forEach(p => {
+    const inc = p.type === 'Доход';
+    html += `<div class="ditem"><span class="tm" style="color:${inc?'var(--inc)':'var(--exp)'}">${inc?'💰':'💳'}</span>
+      <button class="tx" data-pedit="${esc(p.id)}">${esc(p.name)}<small>${p.amount?money(p.amount):'сумма не указана'}${p.repeat!=='Разово'?' · ↻ '+REP_SHORT[p.repeat]:''}</small></button>
+      <button class="done-btn ${inc?'':'exp'}" data-pdone="${esc(p.id)}" style="width:36px;height:36px">✓</button></div>`;
+  });
+  it.tasks.forEach(tk => {
+    html += `<div class="ditem task ${tk.done?'done':''}" style="padding:10px 12px"><button class="check" data-check="${esc(tk.id)}">${tk.done?'✓':''}</button>
+      <button class="tx" data-tedit="${esc(tk.id)}">${esc(tk.text)}</button></div>`;
+  });
+  if (!html) html = '<div style="text-align:center;color:var(--mute);font-size:14px;padding:14px 0">На этот день ничего нет 🐣</div>';
+  $('#dayList').innerHTML = html;
+  $$('#dayList [data-evdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Убрать событие из календаря?')) return;
+    try{ const r = await call('apiEventDelete', S.pin, b.dataset.evdel, S.calDay.slice(0,7)); S.events[S.calDay.slice(0,7)] = r.events; renderCal(); toast('Убрала из календаря'); }
+    catch(e){ toast(errText(e), true); }
+  });
+  $$('#dayList [data-pedit]').forEach(b => b.onclick = () => payForm(S.pays.find(p => p.id === b.dataset.pedit)));
+  $$('#dayList [data-pdone]').forEach(b => b.onclick = () => payDoneForm(S.pays.find(p => p.id === b.dataset.pdone)));
+  $$('#dayList [data-check]').forEach(b => b.onclick = async () => { await toggleTask(b.dataset.check); renderCal(); });
+  $$('#dayList [data-tedit]').forEach(b => b.onclick = () => taskForm(S.tasks.find(t => t.id === b.dataset.tedit)));
+}
+
+$('#calPrev').onclick = () => { S.calMonth = shiftMonth(S.calMonth, -1); S.calDay = S.calMonth + '-01'; renderCal(); loadEvents(S.calMonth); };
+$('#calNext').onclick = () => { S.calMonth = shiftMonth(S.calMonth, 1); S.calDay = S.calMonth + '-01'; renderCal(); loadEvents(S.calMonth); };
+$('#dAddPay').onclick = () => payForm(null, S.calDay);
+$('#dAddTask').onclick = () => openTaskNew(S.calDay);
+$('#dAddEv').onclick = () => eventForm(S.calDay);
+
+function openTaskNew(ds){
+  openModal(`<h3>Новое дело</h3>
+    <label class="lbl" style="margin-top:12px">Что сделать</label>
+    <textarea class="field" id="ntText" rows="2" placeholder="Например: заказать клей"></textarea>
+    <label class="lbl">Срок</label><input class="field" id="ntDue" type="date" value="${ds}">
+    <label class="lbl">Повтор</label>${repChips('ntRep', 'Разово')}
+    <button class="primary" id="ntSave" style="background:var(--ink)">Добавить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="ntCancel">Отмена</button></div>`);
+  let rep = 'Разово';
+  bindRep('ntRep', v => rep = v);
+  $('#ntCancel').onclick = closeModal;
+  $('#ntSave').onclick = async () => {
+    if (await run('apiTaskSave', [{text: $('#ntText').value, due: $('#ntDue').value, repeat: rep}], 'Дело добавлено', $('#ntSave'))) { closeModal(); renderCal(); }
+  };
+  setTimeout(() => $('#ntText').focus(), 100);
+}
+
+function eventForm(ds){
+  let kind = EV_KINDS[0], minutes = 60;
+  const durs = [[30,'30 мин'],[60,'1 ч'],[120,'2 ч'],[180,'3 ч']];
+  openModal(`<h3>Событие в календарь</h3>
+    <label class="lbl" style="margin-top:12px">Что</label>
+    <div class="chips" id="eKind">${EV_KINDS.map((k,i) => `<button class="chip${i===0?' on':''}" data-k="${i}">${k[0]} ${k[1]}</button>`).join('')}</div>
+    <input class="field" id="eTitle" style="margin-top:10px" placeholder="Например: стекло от «Витраж-Сиб»">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Дата</label><input class="field" id="eDate" type="date" value="${ds}"></div>
+      <div><label class="lbl">Время</label><input class="field" id="eTime" type="time" placeholder="весь день"></div>
+    </div>
+    <label class="lbl">Длительность</label>
+    <div class="chips" id="eDur">${durs.map(d => `<button class="chip${d[0]===60?' on':''}" data-m="${d[0]}">${d[1]}</button>`).join('')}</div>
+    <div class="hint">Без времени — событие на весь день. Напоминание придёт за час и накануне.</div>
+    <label class="lbl">Заметка</label><input class="field" id="eDesc" placeholder="Необязательно">
+    <button class="primary" id="eSave" style="background:var(--teal)">Добавить в календарь</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="eCancel">Отмена</button></div>`);
+  $$('#eKind .chip').forEach(b => b.onclick = () => { kind = EV_KINDS[+b.dataset.k]; $$('#eKind .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  $$('#eDur .chip').forEach(b => b.onclick = () => { minutes = +b.dataset.m; $$('#eDur .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#eCancel').onclick = closeModal;
+  $('#eSave').onclick = async () => {
+    const extra = $('#eTitle').value.trim();
+    const label = kind[1] === 'Другое' ? '' : kind[1];
+    const title = (kind[0] + ' ' + [label, extra].filter(Boolean).join(' ')).trim();
+    if (!extra && kind[1] === 'Другое') { toast('Напишите, что за событие', true); return; }
+    const date = $('#eDate').value || ds;
+    const btn = $('#eSave'); btn.disabled = true; btn.textContent = 'Сохраняю…';
+    try{
+      const r = await call('apiEventAdd', S.pin, {title, date, start: $('#eTime').value, minutes, desc: $('#eDesc').value});
+      S.events[date.slice(0,7)] = r.events; S.calDay = date; S.calMonth = date.slice(0,7);
+      closeModal(); renderCal(); toast('🗓 Добавила в календарь');
+    }catch(e){ toast(errText(e), true); btn.disabled = false; btn.textContent = 'Добавить в календарь'; }
+  };
+}
+
+/* ---------- значки и напоминания ---------- */
+function renderBadges(){
+  const urgentPays = pendingPays().filter(p => daysFromToday(p.date) <= 3);
+  const nowPays = urgentPays.filter(p => daysFromToday(p.date) <= 0);
+  const urgentTasks = S.tasks.filter(t => !t.done && t.due && daysFromToday(t.due) <= 0);
+  const pb = $('#payBadge'), tb = $('#taskBadge');
+  pb.textContent = urgentPays.length; pb.classList.toggle('hidden', !urgentPays.length);
+  if (tb){ tb.textContent = urgentTasks.length; tb.classList.toggle('hidden', !urgentTasks.length); }
+  const sb = $('#subBadge'), urgentSubs = S.subs.filter(a => { const st = subState(a); return st.key === 'on' && (st.warn || st.red); });
+  sb.textContent = urgentSubs.length; sb.classList.toggle('hidden', !urgentSubs.length);
+  const urgentCerts = S.certs.filter(c => certState(c).warn);
+  const cb = $('#certBadge'); cb.textContent = urgentCerts.length; cb.classList.toggle('hidden', !urgentCerts.length);
+  [['#tbPay', urgentPays.length], ['#tbTask', urgentTasks.length], ['#tbSub', urgentSubs.length], ['#tbCert', urgentCerts.length]]
+    .forEach(([id, n]) => { const el = $(id); if (el){ el.textContent = n; el.classList.toggle('hidden', !n); } });
+
+  const ban = $('#payBanner');
+  if (urgentPays.length){
+    const over = nowPays.some(p => daysFromToday(p.date) < 0);
+    const names = urgentPays.slice(0,3).map(p => p.name + ' — ' + dueLabel(p.date)).join(', ');
+    ban.className = 'banner' + (over ? ' red' : '');
+    ban.innerHTML = `<span style="font-size:20px">${over?'⚠️':'📅'}</span><span><b>${over?'Платежи требуют внимания':'Скоро платежи'}:</b> ${esc(names)}${urgentPays.length>3?' и ещё '+(urgentPays.length-3):''}</span>`;
+    ban.onclick = () => switchTab('pay');
+  } else ban.className = 'banner hidden';
+}
+
+/* ---------- абонементы ---------- */
+function hrs(n){ n = Math.round((+n||0)*100)/100; return String(n).replace('.', ','); }
+function hWord(n){ n = Math.abs(n); if (n % 1) return 'ч'; const a = n % 10, b = n % 100;
+  return (a===1&&b!==11)?'час':(a>=2&&a<=4&&(b<12||b>14))?'часа':'часов'; }
+function ruDate(ds){ return ds ? ds.split('-').reverse().join('.') : '—'; }
+function addDaysStr(ds, n){ const d = new Date(ds+'T12:00:00'); d.setDate(d.getDate()+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addMonthsStr(ds, n){ const d = new Date(ds+'T12:00:00'); d.setMonth(d.getMonth()+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+// Состояние абонемента: активен / не начался / закончились часы / истёк срок
+function subState(a){
+  const t = todayStr(), daysLeft = daysFromToday(a.end);
+  if (a.left <= 0) return {key:'done', label:'часы закончились', cls:''};
+  if (a.end < t) return {key:'exp', label:'срок истёк '+ruDate(a.end), cls:'red'};
+  if (a.start > t) return {key:'wait', label:'с '+ruDate(a.start), cls:''};
+  const red = daysLeft <= 3, warn = !red && (daysLeft <= 10 || a.left <= 2);
+  return {key:'on', daysLeft, red, warn,
+    label: daysLeft===0 ? 'последний день' : 'до '+dueLabel(a.end)+' · '+daysLeft+' дн.'};
+}
+
+function renderSubs(){
+  const box = $('#subList'); if (!box) return;
+  const q = S.subQuery.trim().toLowerCase();
+  const src = q ? S.subs.filter(a => (a.name+' '+a.phone).toLowerCase().includes(q)) : S.subs;
+  $('#subSearch').classList.toggle('hidden', S.subs.length < 6 && !q);
+  const act = src.filter(a => ['on','wait'].includes(subState(a).key)).sort((x,y) => x.end.localeCompare(y.end));
+  const old = src.filter(a => !['on','wait'].includes(subState(a).key)).sort((x,y) => y.end.localeCompare(x.end));
+  const allAct = S.subs.filter(a => subState(a).key === 'on');
+  $('#subTotals').innerHTML = `
+    <div class="tot"><small>Активных</small><b>${allAct.length}</b></div>
+    <div class="tot"><small>Осталось часов</small><b>${hrs(allAct.reduce((s,a)=>s+a.left,0))}</b></div>
+    <div class="tot"><small>Скоро сгорят</small><b style="color:${allAct.some(a=>subState(a).red||subState(a).warn)?'#B07A0C':'inherit'}">${allAct.filter(a=>subState(a).red||subState(a).warn).length}</b></div>`;
+  const card = a => {
+    const st = subState(a), pct = a.hours ? Math.max(0, Math.min(100, a.left / a.hours * 100)) : 0;
+    const off = !['on','wait'].includes(st.key);
+    const tags = [];
+    if (st.key === 'on' && a.left <= 2) tags.push(`<span class="tag amber">мало часов</span>`);
+    if (st.key === 'on' && st.red) tags.push(`<span class="tag red">срок!</span>`);
+    return `<div class="abo ${st.red?'red':st.warn?'warn':''} ${off?'off':''}" data-sub="${a.id}">
+      <div class="r1"><div class="nm">${esc(a.name)}</div>
+        <div class="left">${hrs(a.left)} <small>из ${hrs(a.hours)} ч</small></div></div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="r2"><span class="grow">${esc(st.label)} ${tags.join(' ')}</span>
+        ${st.key==='on' ? `<button class="visit-btn" data-visit="${a.id}">− занятие</button>` : ''}</div>
+    </div>`;
+  };
+  let html = '';
+  if (!S.subs.length) html = `<div class="empty"><div>◷</div>Абонементов пока нет.<br>Нажмите «＋ Абонемент», когда клиент купит.</div>`;
+  else if (!act.length && !old.length) html = `<div class="empty">Никого не нашлось</div>`;
+  else {
+    html += act.map(card).join('') || `<div class="empty" style="padding:20px">Активных абонементов нет</div>`;
+    if (old.length){
+      html += `<button class="toggle-done" id="subOld">${S.subShowOld ? 'Скрыть' : 'Показать'} закончившиеся · ${old.length}</button>`;
+      if (S.subShowOld) html += '<div style="margin-top:8px">' + old.map(card).join('') + '</div>';
+    }
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('[data-visit]').forEach(b => b.onclick = e => { e.stopPropagation(); visitForm(S.subs.find(a => a.id === b.dataset.visit)); });
+  box.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => subDetail(S.subs.find(a => a.id === b.dataset.sub)));
+  const ob = $('#subOld'); if (ob) ob.onclick = () => { S.subShowOld = !S.subShowOld; renderSubs(); };
+}
+$('#subAdd').onclick = () => subForm();
+$('#subSearch').oninput = e => { S.subQuery = e.target.value; renderSubs(); };
+
+function visitForm(a){
+  if (!a) return;
+  let date = todayStr(), hours = '';
+  openModal(`
+    <h3>Занятие · ${esc(a.name)}</h3>
+    <div class="hint">Сейчас на абонементе ${hrs(a.left)} ${hWord(a.left)} из ${hrs(a.hours)}</div>
+    <label class="lbl" style="margin-top:14px">Сколько часов списать</label>
+    <div class="chips" id="vH">${['1','1,5','2','2,5','3'].map(h => `<button class="chip" data-h="${h}">${h} ч</button>`).join('')}</div>
+    <input class="field big" id="vHours" inputmode="decimal" placeholder="0" style="margin-top:8px">
+    <div class="hint" id="vLeft"></div>
+    <label class="lbl">Дата занятия</label>
+    <div class="dates"><button class="chip on" data-vd="0">Сегодня</button><button class="chip" data-vd="-1">Вчера</button>
+      <input type="date" id="vDate" value="${date}"></div>
+    <label class="lbl">Комментарий</label><input class="field" id="vCom" placeholder="Например: МК «Ваза»">
+    <button class="primary" id="vSave" style="background:var(--violet)">Списать</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="vCancel">Отмена</button></div>`);
+  const upd = () => {
+    const h = parseFloat(($('#vHours').value||'').replace(',', '.')) || 0;
+    const rest = Math.round((a.left - h)*100)/100;
+    $('#vLeft').innerHTML = h ? (rest < 0 ? `<b style="color:var(--exp)">Не хватает ${hrs(-rest)} ч — на абонементе только ${hrs(a.left)}</b>` : `Останется <b>${hrs(rest)} ${hWord(rest)}</b>`) : '';
+    $$('#vH .chip').forEach(c => c.classList.toggle('on', c.dataset.h.replace(',', '.') == String(h)));
+  };
+  $$('#vH .chip').forEach(c => c.onclick = () => { $('#vHours').value = c.dataset.h; upd(); });
+  $('#vHours').oninput = upd;
+  $$('[data-vd]').forEach(c => c.onclick = () => { $('#vDate').value = todayStr(+c.dataset.vd); $$('[data-vd]').forEach(x => x.classList.toggle('on', x === c)); });
+  $('#vDate').onchange = () => $$('[data-vd]').forEach(x => x.classList.remove('on'));
+  $('#vCancel').onclick = closeModal;
+  $('#vSave').onclick = async () => {
+    const h = parseFloat(($('#vHours').value||'').replace(',', '.'));
+    if (!(h > 0)) { toast('Сколько часов списать?', true); return; }
+    if (h > a.left && !confirm('На абонементе только ' + hrs(a.left) + ' ч. Всё равно списать ' + hrs(h) + ' ч?')) return;
+    const rest = Math.round((a.left - h)*100)/100;
+    if (await run('apiVisitAdd', [{subId: a.id, hours: h, date: $('#vDate').value || todayStr(), comment: $('#vCom').value}],
+      'Списано ' + hrs(h) + ' ч · осталось ' + hrs(rest), $('#vSave'))) closeModal();
+  };
+}
+
+function subDetail(a){
+  if (!a) return;
+  const st = subState(a);
+  openModal(`
+    <h3>${esc(a.name)}</h3>
+    <div class="hint">${a.phone ? `<a href="tel:${esc(a.phone.replace(/[^\d+]/g,''))}" style="color:var(--violet);font-weight:700">${esc(a.phone)}</a> · ` : ''}${ruDate(a.start)} — ${ruDate(a.end)}${a.price ? ' · '+money(a.price) : ''}</div>
+    <div class="infogrid">
+      <div><small>Всего</small><b>${hrs(a.hours)} ч</b></div>
+      <div><small>Прошли</small><b>${hrs(a.used)} ч</b></div>
+      <div><small>Осталось</small><b style="color:${a.left<=0?'var(--mute)':'var(--violet)'}">${hrs(a.left)} ч</b></div>
+    </div>
+    <div class="hint" style="margin:0 2px 10px"><span class="tag ${st.cls||(st.key==='on'?'green':'')}">${esc(st.label)}</span>${a.comment ? ' · '+esc(a.comment) : ''}</div>
+    ${st.key==='on' ? '<button class="primary" id="sdVisit" style="background:var(--violet);margin-top:4px">− Отметить занятие</button>' : ''}
+    <span class="lbl">Занятия</span>
+    <div id="sdVis">${a.visits.length ? a.visits.map(v => `<div class="vrow"><span class="h">−${hrs(v.hours)} ч</span>
+      <span class="tx">${ruDate(v.date)}${v.comment ? `<small>${esc(v.comment)}</small>` : ''}</span>
+      <button class="x" data-vdel="${v.id}" title="Удалить">✕</button></div>`).join('') : '<div class="hint">Занятий пока не было</div>'}</div>
+    <div class="edit-row">
+      <button class="ghost" id="sdEdit">Изменить</button>
+      <button class="danger" id="sdDel">Удалить</button>
+    </div>
+    <div class="edit-row" style="grid-template-columns:1fr;margin-top:8px"><button class="ghost" id="sdClose">Закрыть</button></div>`);
+  if ($('#sdVisit')) $('#sdVisit').onclick = () => visitForm(a);
+  $('#sdClose').onclick = closeModal;
+  $('#sdEdit').onclick = () => subForm(a);
+  $('#sdDel').onclick = async () => {
+    if (!confirm('Удалить абонемент «' + a.name + '» вместе со всеми занятиями? Оплата в журнале останется.')) return;
+    if (await run('apiSubDelete', [a.id], 'Абонемент удалён')) closeModal();
+  };
+  $$('[data-vdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Удалить это занятие? Часы вернутся на абонемент.')) return;
+    if (await run('apiVisitDelete', [b.dataset.vdel], 'Занятие удалено, часы вернулись'))
+      subDetail(S.subs.find(x => x.id === a.id));
+  });
+}
+
+function subForm(a){
+  const isNew = !a;
+  const f = Object.assign({id:'', name:'', phone:'', hours:'', start:todayStr(), end:'', price:'', comment:''}, a || {});
+  let method = S.method || '';
+  openModal(`
+    <h3>${isNew ? 'Новый абонемент' : 'Абонемент'}</h3>
+    <label class="lbl" style="margin-top:12px">Клиент</label>
+    <input class="field" id="aName" value="${esc(f.name)}" placeholder="Имя и фамилия" autocomplete="off">
+    <label class="lbl">Телефон</label>
+    <input class="field" id="aPhone" value="${esc(f.phone)}" inputmode="tel" placeholder="Необязательно">
+    <label class="lbl">На сколько часов</label>
+    <div class="chips" id="aHc">${['4','8','10','12','20'].map(h => `<button class="chip${String(f.hours)===h?' on':''}" data-h="${h}">${h} ч</button>`).join('')}</div>
+    <input class="field" id="aHours" inputmode="decimal" value="${f.hours?hrs(f.hours):''}" placeholder="Часов" style="margin-top:8px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Начало</label><input class="field" id="aStart" type="date" value="${f.start}"></div>
+      <div><label class="lbl">Действует до</label><input class="field" id="aEnd" type="date" value="${f.end}"></div>
+    </div>
+    <div class="chips" id="aDur" style="margin-top:8px">
+      <button class="chip" data-m="1">1 месяц</button><button class="chip" data-w="6">6 недель</button>
+      <button class="chip" data-m="2">2 месяца</button><button class="chip" data-m="3">3 месяца</button></div>
+    <label class="lbl">Стоимость, ₽</label>
+    <input class="field" id="aPrice" inputmode="decimal" value="${f.price?String(f.price).replace('.',','):''}" placeholder="0">
+    ${isNew ? `
+    <label class="checkrow"><input type="checkbox" id="aPay" checked> Записать оплату в доходы</label>
+    <div id="aPayBox"><label class="lbl">Способ оплаты</label><div class="chips" id="aMeth">${chipsHtml(S.cats.methods, method, 'meth')}</div></div>
+    <label class="lbl">Уже израсходовано, ч</label>
+    <input class="field" id="aUsed" inputmode="decimal" placeholder="0 — если абонемент только купили">
+    <div class="hint">Если клиент уже позанимался до того, как абонемент попал в приложение</div>` : ''}
+    <label class="lbl">Комментарий</label><input class="field" id="aCom" value="${esc(f.comment)}" placeholder="Необязательно">
+    <button class="primary" id="aSave" style="background:var(--violet)">Сохранить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="aCancel">Отмена</button></div>`);
+  $$('#aHc .chip').forEach(c => c.onclick = () => { $('#aHours').value = c.dataset.h; $$('#aHc .chip').forEach(x => x.classList.toggle('on', x === c)); });
+  $('#aHours').oninput = () => $$('#aHc .chip').forEach(x => x.classList.toggle('on', x.dataset.h === $('#aHours').value.trim()));
+  $$('#aDur .chip').forEach(c => c.onclick = () => {
+    const st = $('#aStart').value || todayStr();
+    $('#aEnd').value = c.dataset.m ? addMonthsStr(st, +c.dataset.m) : addDaysStr(st, 7 * +c.dataset.w);
+    $$('#aDur .chip').forEach(x => x.classList.toggle('on', x === c));
+  });
+  if (isNew){
+    bindChips($('#aMeth'), 'meth', v => method = v);
+    $('#aPay').onchange = () => $('#aPayBox').classList.toggle('hidden', !$('#aPay').checked);
+  }
+  $('#aCancel').onclick = () => a ? subDetail(a) : closeModal();
+  $('#aSave').onclick = async () => {
+    const data = { id: f.id, name: $('#aName').value, phone: $('#aPhone').value, hours: $('#aHours').value,
+      start: $('#aStart').value, end: $('#aEnd').value, price: $('#aPrice').value, comment: $('#aCom').value };
+    if (isNew){ data.pay = $('#aPay').checked; data.method = method; data.used = $('#aUsed').value; data.payDate = todayStr(); }
+    if (!data.end) { toast('Укажите, до какого числа действует абонемент', true); return; }
+    if (isNew && data.pay && !(parseFloat(String(data.price).replace(/\s/g,'').replace(',', '.')) > 0)) {
+      if (!confirm('Стоимость не указана — оплата в доходы не запишется. Сохранить так?')) return;
+    }
+    if (await run('apiSubSave', [data], isNew ? 'Абонемент добавлен' : 'Абонемент обновлён', $('#aSave'))) {
+      if (a) subDetail(S.subs.find(x => x.id === a.id)); else closeModal();
+    }
+  };
+}
+
+/* ---------- главная ---------- */
+$('#homeLink').onclick = () => switchTab('home');
+$$('[data-ext]').forEach(a => a.href = BASE + a.dataset.ext);
+$$('#tab-home [data-go]').forEach(b => b.onclick = () => {
+  const g = b.dataset.go;
+  if (g === 'certnew') return certBuilderPick();
+  if (g === 'subnew') { switchTab('sub'); return subForm(); }
+  switchTab(g);
+});
+function renderHome(){
+  if (!$('#homeKpis')) return;
+  const now = new Date(), h = now.getHours();
+  $('#helloTitle').textContent = h < 5 ? 'Доброй ночи!' : h < 12 ? 'Доброе утро!' : h < 18 ? 'Добрый день!' : 'Добрый вечер!';
+  $('#helloDate').textContent = 'Сегодня ' + now.getDate() + ' ' + MONTHS_GEN[now.getMonth()] + ', ' + WD[now.getDay()];
+  const t = totals(S.ops.filter(o => o.date === todayStr()));
+  const m = totals(opsOfMonth(todayStr().slice(0,7)));
+  $('#homeKpis').innerHTML = `<div><small>Сегодня</small><b class="inc-t">${money(t.inc)}</b></div>
+    <div><small>${MONTHS[now.getMonth()]} · прибыль</small><b class="${m.profit<0?'exp-t':''}">${money(m.profit)}</b></div>`;
+  // что требует внимания
+  const A = [];
+  pendingPays().filter(p => daysFromToday(p.date) <= 3).slice(0,3).forEach(p => A.push({
+    cls: daysFromToday(p.date) < 0 ? 'red' : '', e: p.type === 'Доход' ? '💰' : '💳', go: 'pay',
+    t: `<b>${esc(p.name)}</b> — ${dueLabel(p.date)}${p.amount ? ', ' + money(p.amount) : ''}`}));
+  S.subs.filter(a => { const st = subState(a); return st.key === 'on' && (st.warn || st.red); }).slice(0,3).forEach(a => A.push({
+    cls: subState(a).red ? 'red' : '', e: '◷', go: 'sub',
+    t: `Абонемент <b>${esc(a.name)}</b>: ${hrs(a.left)} ч, ${esc(subState(a).label)}`}));
+  S.certs.filter(c => certState(c).warn).slice(0,3).forEach(c => A.push({
+    cls: '', e: '🎁', go: 'cert', t: `Сертификат <b>№${esc(c.num)}</b> ${esc(c.who)} — ${esc(certState(c).label)}`}));
+  const td = S.tasks.filter(x => !x.done && x.due && daysFromToday(x.due) <= 0);
+  if (td.length) A.push({cls: td.some(x => daysFromToday(x.due) < 0) ? 'red' : '', e: '✓', go: 'task',
+    t: `Дела на сегодня: <b>${td.length}</b> — ${esc(td.slice(0,2).map(x => x.text).join(', '))}${td.length > 2 ? '…' : ''}`});
+  $('#homeAlerts').innerHTML = A.length ? A.map((a, i) => `<button class="alert ${a.cls}" data-ago="${a.go}"><span class="e">${a.e}</span><span>${a.t}</span></button>`).join('')
+    : `<div class="alert ok"><span class="e">✨</span><span>Всё спокойно — срочного ничего нет</span></div>`;
+  $$('#homeAlerts [data-ago]').forEach(b => b.onclick = () => switchTab(b.dataset.ago));
+  const hb = $('#homeBadge'); hb.textContent = A.length; hb.classList.toggle('hidden', !A.some(a => a.cls === 'red'));
+  const actSubs = S.subs.filter(a => subState(a).key === 'on'), actCerts = S.certs.filter(c => ['on','part'].includes(certState(c).key));
+  $('#tileSub').textContent = actSubs.length ? 'активных: ' + actSubs.length : 'отметить занятие';
+  $('#tileCert').textContent = actCerts.length ? 'действуют: ' + actCerts.length : 'найти и погасить';
+  const np = pendingPays()[0]; $('#tilePay').textContent = np ? 'ближайший: ' + dueLabel(np.date) : 'что оплатить';
+  const open = S.tasks.filter(x => !x.done).length; $('#tileTask').textContent = open ? 'открытых: ' + open : 'список задач';
+}
+
+/* ---------- сертификаты ---------- */
+function certState(c){
+  const t = todayStr(), d = daysFromToday(c.till);
+  if (c.left <= 0) return {key:'used', label:'использован'};
+  if (c.till < t) return {key:'exp', label:'истёк ' + ruDate(c.till)};
+  const key = c.used > 0 ? 'part' : 'on';
+  return {key, warn: d <= 14, label: (d === 0 ? 'последний день' : 'до ' + dueLabel(c.till) + (d <= 60 ? ' · ' + d + ' дн.' : ' ' + c.till.slice(0,4)))};
+}
+function certAmount(c){
+  if (c.kind === 'Мастер-класс') return c.left > 0 ? 'МК' : '—';
+  return c.used > 0 ? `${money(c.left)} <small>из ${money(c.sum)}</small>` : money(c.sum);
+}
+function renderCerts(){
+  const box = $('#certList'); if (!box) return;
+  const q = S.certQuery.trim().toLowerCase().replace(/^№/, '');
+  const src = q ? S.certs.filter(c => (c.num + ' ' + c.who + ' ' + c.buyer + ' ' + c.phone + ' ' + c.what).toLowerCase().includes(q)
+      || (parseInt(q,10) && parseInt(c.num,10) === parseInt(q,10))) : S.certs;
+  const live = c => ['on','part'].includes(certState(c).key);
+  const act = src.filter(live).sort((a,b) => a.till.localeCompare(b.till));
+  const old = src.filter(c => !live(c)).sort((a,b) => b.num.localeCompare(a.num));
+  const all = S.certs.filter(live);
+  $('#certTotals').innerHTML = `
+    <div class="tot"><small>Действуют</small><b>${all.length}</b></div>
+    <div class="tot"><small>Ждут на сумму</small><b>${money(all.filter(c => c.kind !== 'Мастер-класс').reduce((s,c) => s + c.left, 0))}</b></div>
+    <div class="tot"><small>Скоро истекут</small><b>${all.filter(c => certState(c).warn).length}</b></div>`;
+  const card = c => {
+    const st = certState(c), on = live(c);
+    return `<div class="cert ${st.warn?'warn':''} ${on?'':'off'}" data-cert="${c.id}">
+      <div class="r1"><span class="no">№${esc(c.num)}</span><span class="nm">${esc(c.who || c.buyer || 'Без имени')}</span><span class="am">${certAmount(c)}</span></div>
+      <div class="r2"><span class="grow">${c.kind === 'Мастер-класс' ? '<span class="tag">на МК</span> ' + esc(c.what) + ' · ' : (c.what ? esc(c.what) + ' · ' : '')}${esc(st.label)}</span>
+        ${on ? `<button class="redeem-btn" data-redeem="${c.id}">Погасить</button>` : ''}</div></div>`;
+  };
+  let html = '';
+  if (!S.certs.length) html = `<div class="empty"><div>🎁</div>Сертификатов в таблице пока нет.<br>«🎁 Выписать» — сделать новый,<br>«＋ Записать» — внести уже выданный.</div>`;
+  else if (!act.length && !old.length) html = `<div class="empty">Сертификат «${esc(S.certQuery)}» не найден</div>`;
+  else {
+    html += act.map(card).join('') || `<div class="empty" style="padding:20px">Действующих сертификатов нет</div>`;
+    if (old.length){
+      if (q) html += old.map(card).join('');
+      else {
+        html += `<button class="toggle-done" id="certOld">${S.certShowOld ? 'Скрыть' : 'Показать'} использованные и истёкшие · ${old.length}</button>`;
+        if (S.certShowOld) html += '<div style="margin-top:8px">' + old.map(card).join('') + '</div>';
+      }
+    }
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('[data-redeem]').forEach(b => b.onclick = e => { e.stopPropagation(); redeemForm(S.certs.find(c => c.id === b.dataset.redeem)); });
+  box.querySelectorAll('[data-cert]').forEach(b => b.onclick = () => certDetail(S.certs.find(c => c.id === b.dataset.cert)));
+  const ob = $('#certOld'); if (ob) ob.onclick = () => { S.certShowOld = !S.certShowOld; renderCerts(); };
+}
+$('#certSearch').oninput = e => { S.certQuery = e.target.value; renderCerts(); };
+$('#certNew').onclick = () => certBuilderPick();
+$('#certQuick').onclick = () => certForm();
+
+function certBuilderPick(){
+  openModal(`<h3>Выписать сертификат</h3>
+    <div class="hint">Номер выдаст таблица, продажа сама запишется в доходы</div>
+    <div class="pick">
+      <a href="${BASE}index.html?from=app" ${IN_GAS?'target="_blank"':''}><span class="e">🎁</span><span>Двусторонний<small>PDF, печать и подарочная ссылка-открытка</small></span></a>
+      <a href="${BASE}sertifikat.html?from=app" ${IN_GAS?'target="_blank"':''}><span class="e">🎫</span><span>Одной стороной<small>как старые макеты, PDF или картинка</small></span></a>
+      <button id="pkQuick"><span class="e">✍️</span><span>Только записать в таблицу<small>сертификат уже распечатан или выписан от руки</small></span></button>
+    </div>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="pkClose">Отмена</button></div>`);
+  $('#pkClose').onclick = closeModal;
+  $('#pkQuick').onclick = () => certForm();
+}
+
+function redeemForm(c){
+  if (!c) return;
+  const mk = c.kind === 'Мастер-класс';
+  openModal(`
+    <h3>Погасить №${esc(c.num)}</h3>
+    <div class="hint">${esc(c.who || c.buyer || '')}${c.what ? ' · ' + esc(c.what) : ''} · ${esc(certState(c).label)}</div>
+    ${mk ? `<div class="card" style="margin-top:14px;margin-bottom:0"><b>Сертификат на мастер-класс</b><div class="hint" style="margin:4px 0 0">Гасится целиком — после этого он больше не действует</div></div>`
+      : `<label class="lbl" style="margin-top:14px">Сколько списать, ₽ <span style="text-transform:none;letter-spacing:0">· осталось ${money(c.left)}</span></label>
+    <input class="field big" id="rAmount" inputmode="decimal" placeholder="0">
+    <div class="chips" style="margin-top:8px"><button class="chip" id="rAll">весь остаток · ${money(c.left)}</button></div>
+    <div class="hint" id="rLeft"></div>`}
+    <label class="lbl">Дата</label>
+    <div class="dates"><button class="chip on" data-rd="0">Сегодня</button><button class="chip" data-rd="-1">Вчера</button><input type="date" id="rDate" value="${todayStr()}"></div>
+    <label class="lbl">Комментарий</label><input class="field" id="rCom" placeholder="Например: МК «Ваза»">
+    <button class="primary" id="rSave" style="background:var(--pink)">${mk ? 'Погасить сертификат' : 'Списать'}</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="rCancel">Отмена</button></div>`);
+  const amt = () => parseFloat((($('#rAmount')||{}).value||'').replace(/\s/g,'').replace(',', '.')) || 0;
+  if (!mk){
+    const upd = () => { const a = amt(), r = Math.round((c.left - a)*100)/100;
+      $('#rLeft').innerHTML = a ? (r < 0 ? `<b style="color:var(--exp)">Больше остатка на ${money(-r)} — доплата отдельно, в «Добавить»</b>` : `Останется <b>${money(r)}</b>`) : ''; };
+    $('#rAmount').oninput = upd;
+    $('#rAll').onclick = () => { $('#rAmount').value = String(c.left).replace('.', ','); upd(); };
+  }
+  $$('[data-rd]').forEach(b => b.onclick = () => { $('#rDate').value = todayStr(+b.dataset.rd); $$('[data-rd]').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#rDate').onchange = () => $$('[data-rd]').forEach(x => x.classList.remove('on'));
+  $('#rCancel').onclick = closeModal;
+  $('#rSave').onclick = async () => {
+    let a = mk ? c.left : amt();
+    if (!(a > 0)) { toast('Сколько списать с сертификата?', true); return; }
+    if (a > c.left) { if (!confirm('На сертификате ' + money(c.left) + '. Списать весь остаток, а разницу клиент доплатит?')) return; a = c.left; }
+    const rest = Math.round((c.left - a)*100)/100;
+    if (await run('apiCertRedeem', [{certId: c.id, amount: a, date: $('#rDate').value || todayStr(), comment: $('#rCom').value}],
+      mk || rest <= 0 ? 'Сертификат №' + c.num + ' погашен' : 'Списано ' + money(a) + ' · осталось ' + money(rest), $('#rSave'))) closeModal();
+  };
+}
+
+function certDetail(c){
+  if (!c) return;
+  const st = certState(c), on = ['on','part'].includes(st.key), mk = c.kind === 'Мастер-класс';
+  openModal(`
+    <h3>Сертификат №${esc(c.num)}</h3>
+    <div class="hint">${mk ? 'На мастер-класс' : 'На сумму'}${c.what ? ' · ' + esc(c.what) : ''}</div>
+    <div class="infogrid">
+      <div><small>Номинал</small><b>${money(c.sum)}</b></div>
+      <div><small>${mk ? 'Статус' : 'Потрачено'}</small><b>${mk ? (c.left > 0 ? 'не исп.' : 'исп.') : money(c.used)}</b></div>
+      <div><small>Осталось</small><b style="color:${c.left>0?'var(--pink)':'var(--mute)'}">${mk ? (c.left > 0 ? 'МК' : '—') : money(c.left)}</b></div>
+    </div>
+    <div class="card" style="font-size:14px;line-height:1.7;margin-bottom:10px">
+      <div>Для кого: <b>${esc(c.who || '—')}</b></div>
+      ${c.buyer ? `<div>Купил(а): <b>${esc(c.buyer)}</b>${c.phone ? ` · <a href="tel:${esc(c.phone.replace(/[^\d+]/g,''))}" style="color:var(--violet);font-weight:700">${esc(c.phone)}</a>` : ''}</div>` : ''}
+      <div>Продан: <b>${ruDate(c.sold)}</b>${c.price ? ' за ' + money(c.price) : ''}${c.method ? ' · ' + esc(c.method) : ''}</div>
+      <div>Действует до: <b>${ruDate(c.till)}</b> <span class="tag ${st.key==='exp'?'red':on?(st.warn?'amber':'green'):''}">${esc(st.label)}</span></div>
+      ${c.comment ? `<div>${esc(c.comment)}</div>` : ''}
+    </div>
+    ${on ? '<button class="primary" id="cdRedeem" style="background:var(--pink);margin-top:0">Погасить</button>' : ''}
+    <span class="lbl">Погашения</span>
+    <div>${c.reds.length ? c.reds.map(r => `<div class="vrow"><span class="h" style="color:var(--pink);min-width:70px">−${money(r.amount)}</span>
+      <span class="tx">${ruDate(r.date)}${r.comment ? `<small>${esc(r.comment)}</small>` : ''}</span>
+      <button class="x" data-rdel="${r.id}" title="Отменить">✕</button></div>`).join('') : '<div class="hint">Ещё не использовался</div>'}</div>
+    <div class="edit-row"><button class="ghost" id="cdEdit">Изменить</button><button class="danger" id="cdDel">Удалить</button></div>
+    <div class="edit-row" style="grid-template-columns:1fr;margin-top:8px"><button class="ghost" id="cdClose">Закрыть</button></div>`);
+  if ($('#cdRedeem')) $('#cdRedeem').onclick = () => redeemForm(c);
+  $('#cdClose').onclick = closeModal;
+  $('#cdEdit').onclick = () => certForm(c);
+  $('#cdDel').onclick = async () => {
+    if (!confirm('Удалить сертификат №' + c.num + ' и его погашения из таблицы?')) return;
+    const withOp = !!c.opId && confirm('Удалить и оплату этого сертификата из журнала доходов?\n\nОК — удалить оплату тоже, Отмена — оставить оплату в журнале.');
+    if (await run('apiCertDelete', [c.id, withOp], 'Сертификат удалён')) closeModal();
+  };
+  $$('[data-rdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Отменить это погашение? Сумма вернётся на сертификат.')) return;
+    if (await run('apiRedeemDelete', [b.dataset.rdel], 'Погашение отменено')) certDetail(S.certs.find(x => x.id === c.id));
+  });
+}
+
+// Записать сертификат без конструктора (бумажный или выписанный раньше) или исправить существующий
+function certForm(c){
+  const isNew = !c;
+  const till6 = addMonthsStr(todayStr(), 6);
+  const f = Object.assign({id:'', kind:'Сумма', num:'', who:'', what:'', sum:'', till:till6, buyer:'', phone:'', price:'', method:'', sold:todayStr(), comment:''}, c || {});
+  let method = f.method || S.method || '', kind = f.kind;
+  openModal(`
+    <h3>${isNew ? 'Записать сертификат' : 'Сертификат №' + esc(f.num)}</h3>
+    ${isNew ? '<div class="hint">Для сертификата, который уже выдан на бумаге. Новый удобнее выписать в конструкторе.</div>' : ''}
+    <div class="seg" id="cKind" style="margin-top:12px"><button data-k="Сумма">На сумму</button><button data-k="Мастер-класс">На мастер-класс</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:10px">
+      <div><label class="lbl">Номер</label><input class="field" id="cNum" value="${esc(f.num)}" placeholder="…" maxlength="12"></div>
+      <div><label class="lbl">Номинал, ₽</label><input class="field" id="cSum" inputmode="decimal" value="${f.sum?String(f.sum).replace('.',','):''}" placeholder="0"></div>
+    </div>
+    <div class="hint" id="cNumHint">${isNew ? 'Пусто — таблица выдаст следующий номер' : ''}</div>
+    <label class="lbl">Для кого</label><input class="field" id="cWho" value="${esc(f.who)}" placeholder="Имя на сертификате">
+    <label class="lbl" id="cWhatL">На что</label><input class="field" id="cWhat" value="${esc(f.what)}" placeholder="мозаичный мастер-класс">
+    <label class="lbl">Действует до</label><input class="field" id="cTill" type="date" value="${f.till}">
+    <div class="chips" id="cTc" style="margin-top:8px"><button class="chip" data-m="3">3 месяца</button><button class="chip" data-m="6">6 месяцев</button><button class="chip" data-m="12">год</button></div>
+    <label class="lbl">Кто купил</label><input class="field" id="cBuyer" value="${esc(f.buyer)}" placeholder="Необязательно">
+    <label class="lbl">Телефон</label><input class="field" id="cPhone" value="${esc(f.phone)}" inputmode="tel" placeholder="Необязательно">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Оплачено, ₽</label><input class="field" id="cPrice" inputmode="decimal" value="${f.price?String(f.price).replace('.',','):''}" placeholder="= номиналу"></div>
+      <div><label class="lbl">Дата продажи</label><input class="field" id="cSold" type="date" value="${f.sold}"></div>
+    </div>
+    <label class="lbl">Способ оплаты</label><div class="chips" id="cMeth">${chipsHtml(S.cats.methods, method, 'meth')}</div>
+    ${isNew ? '<label class="checkrow"><input type="checkbox" id="cPay" checked> Записать оплату в доходы</label>' : ''}
+    <label class="lbl">Комментарий</label><input class="field" id="cCom" value="${esc(f.comment)}" placeholder="Необязательно">
+    <button class="primary" id="cSave" style="background:var(--pink)">Сохранить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="cCancel">Отмена</button></div>`);
+  const drawKind = () => {
+    $$('#cKind button').forEach(b => { b.classList.toggle('on', b.dataset.k === kind); b.style.background = b.dataset.k === kind ? 'var(--pink)' : ''; b.style.color = b.dataset.k === kind ? '#fff' : ''; });
+    $('#cWhatL').textContent = kind === 'Мастер-класс' ? 'Какой мастер-класс' : 'На что';
+  };
+  $$('#cKind button').forEach(b => b.onclick = () => { kind = b.dataset.k; drawKind(); });
+  drawKind();
+  if (isNew) call('apiCertNext', S.pin).then(n => { if (!$('#cNum').value) $('#cNum').placeholder = n; $('#cNumHint').textContent = 'Следующий свободный — №' + n + '. Если у бумажного другой номер — впишите его.'; }).catch(()=>{});
+  $$('#cTc .chip').forEach(b => b.onclick = () => { $('#cTill').value = addMonthsStr($('#cSold').value || todayStr(), +b.dataset.m); $$('#cTc .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  bindChips($('#cMeth'), 'meth', v => method = v);
+  $('#cCancel').onclick = () => c ? certDetail(c) : closeModal();
+  $('#cSave').onclick = async () => {
+    const data = { id: f.id, kind, num: $('#cNum').value.trim(), sum: $('#cSum').value, who: $('#cWho').value, what: $('#cWhat').value,
+      till: $('#cTill').value, buyer: $('#cBuyer').value, phone: $('#cPhone').value, price: $('#cPrice').value, sold: $('#cSold').value,
+      method, comment: $('#cCom').value };
+    if (isNew) data.pay = $('#cPay').checked;
+    const btn = $('#cSave');
+    if (S.busy) return; S.busy = true; btn.disabled = true; btn.textContent = 'Сохраняю…';
+    try{
+      const r = await call('apiCertSave', S.pin, data);
+      applyData(r); saveCache();
+      toast(isNew ? 'Сертификат №' + r.issued.num + ' записан' + (data.pay ? ' · оплата в доходах' : '') : 'Сертификат обновлён');
+      if (c) certDetail(S.certs.find(x => x.id === c.id)); else closeModal();
+    }catch(e){ toast(errText(e), true); }
+    finally{ S.busy = false; btn.disabled = false; btn.textContent = 'Сохранить'; }
+  };
+}
+
+function renderAll(){
+  setType(S.type); renderMethods(); renderToday();
+  renderLog(); renderSum(); renderPays(); renderTasks(); renderSubs(); renderCerts(); renderBadges(); renderCal(); renderHome();
+}
+
+
+/* ---------- старт ---------- */
+setDate(todayStr());
+const cache = store.get('cache', null);
+if (cache){ applyData(cache); $('#boot').classList.add('hidden'); switchTab(location.hash === '#cert' ? 'cert' : 'home'); }
+load();
+</script>
+</body>
+</html>

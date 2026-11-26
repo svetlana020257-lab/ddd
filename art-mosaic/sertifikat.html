@@ -108,12 +108,13 @@ input:focus-visible,button:focus-visible,.design input:focus-visible+span{outlin
 </form>
 <section class="prev" aria-label="Предпросмотр">
   <div class="side"><canvas id="ci" width="2481" height="1419"></canvas></div>
-  <p class="hint">Номер берётся следующий за последним выданным в этом браузере. Его можно поправить вручную.</p>
+  <p class="hint">Номер выдаёт Google Таблица — сквозной для всех устройств. Если продажу не записывать, номер можно вписать вручную.</p>
 </section>
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="shared.js"></script>
+<script src="sale.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
@@ -141,20 +142,20 @@ const msg=(t,cls='')=>{$('msg').textContent=t;$('msg').className='msg '+cls};
 const fileBase=()=>{const n=$('num').value.trim();const w=$('who').value.trim().replace(/[\\/:*?"<>|]+/g,'').slice(0,30);return `Сертификат ArtMosaic ${n}${w?' — '+w:''}`};
 const valid=()=>{if(!$('who').value.trim()||!$('sum').value){msg('Заполните «Для кого» и номинал.','err');return false}return true};
 function issued(){const n=parseInt($('num').value,10);if(!isNaN(n)&&n>parseInt(store.get('am_cert_num')||'0',10))store.set('am_cert_num',String(n));$('next').hidden=false;}
-$('next').addEventListener('click',()=>{$('num').value=nextNum();$('who').value='';$('linkbox').hidden=true;$('next').hidden=true;msg('');draw();$('who').focus();});
+$('next').addEventListener('click',()=>{$('num').value=nextNum();AMSale.reset();$('who').value='';$('linkbox').hidden=true;$('next').hidden=true;msg('');draw();$('who').focus();});
 $('form').addEventListener('submit',async e=>{
-  e.preventDefault();if(!valid())return;$('pdf').disabled=true;msg('Собираю PDF…');
+  e.preventDefault();if(!valid()||!(await AMSale.ensure()))return;$('pdf').disabled=true;msg('Собираю PDF…');
   try{await draw();AM.download(fileBase()+'.pdf',AM.pdfInvite($('ci')));issued();msg('PDF скачан.','ok');}
   catch(err){msg('Не получилось собрать PDF: '+err.message,'err')}finally{$('pdf').disabled=false}
 });
 $('png').addEventListener('click',async()=>{
-  if(!valid())return;await draw();
+  if(!valid()||!(await AMSale.ensure()))return;await draw();
   const c=document.createElement('canvas');c.width=1600;c.height=Math.round(1600*AM.H/AM.W);
   const x=c.getContext('2d');x.imageSmoothingQuality='high';x.drawImage($('ci'),0,0,c.width,c.height);
   c.toBlob(b=>{AM.download(fileBase()+'.png',b);issued();msg('Картинка скачана — пересылайте в мессенджер.','ok')},'image/png');
 });
-$('mklink').addEventListener('click',()=>{
-  if(!valid())return;
+$('mklink').addEventListener('click',async()=>{
+  if(!valid()||!(await AMSale.ensure()))return;
   const url=new URL('gift.html',location.href);url.search='?c='+AM.encode(data());
   $('linkout').value=url.href;$('open').href=url.href;$('linkbox').hidden=false;issued();
   msg('Ссылка готова — отправьте её клиенту.','ok');$('linkout').select();
@@ -164,6 +165,7 @@ $('copy').addEventListener('click',async()=>{
   catch(e){$('linkout').select();msg('Выделила ссылку — скопируйте её вручную.','')}
 });
 if(navigator.share){$('share').hidden=false;$('share').addEventListener('click',()=>{navigator.share({title:'Подарочный сертификат Art Mosaic',text:'Для вас подарок 🎁',url:$('linkout').value}).catch(()=>{})});}
+AMSale.init({getData:data,setNum:n=>{$('num').value=n;draw();}});
 (async()=>{ready=true;await AM.inviteFontsReady();await draw();document.fonts.ready.then(draw);})();
 </script>
 </body></html>

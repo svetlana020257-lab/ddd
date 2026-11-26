@@ -5,6 +5,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2B2440">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Art Mosaic">
+<title>Art Mosaic</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -144,7 +148,7 @@
   nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;
     background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
     border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
-  nav.bottom .in{display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:560px;gap:3px}
+  nav.bottom .in{display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:560px;gap:4px}
   nav.bottom button{position:relative;padding:8px 2px;border-radius:12px;color:var(--mute);font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
   nav.bottom button .ic{font-size:22px;line-height:1}
   nav.bottom button.on{color:var(--ink);background:#F3EFF7}
@@ -248,6 +252,48 @@
   .infogrid b{display:block;font-size:17px;font-weight:800;margin-top:2px}
   .checkrow{display:flex;align-items:center;gap:10px;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer}
   .checkrow input{width:22px;height:22px;accent-color:var(--inc)}
+  /* главная */
+  .hello{margin:2px 2px 14px}
+  .hello h2{margin:0;font-size:23px;font-weight:800}
+  .hello p{margin:3px 0 0;color:var(--ink2);font-weight:600;font-size:14px}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+  .kpis div{background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 1px 0 var(--line)}
+  .kpis small{display:block;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.5px}
+  .kpis b{display:block;font-size:19px;font-weight:800;margin-top:3px}
+  .alerts{margin-bottom:14px}
+  .alert{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#FFF4D6;color:#6E4E08;border-radius:14px;padding:11px 13px;margin-bottom:6px;font-size:14px;font-weight:600}
+  .alert.red{background:var(--expbg);color:#A3283C} .alert.ok{background:var(--incbg);color:#14704C}
+  .alert .e{font-size:18px} .alert b{font-weight:800}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:104px;padding:14px;border-radius:18px;background:#fff;
+    box-shadow:0 1px 0 var(--line),0 4px 14px rgba(43,36,64,.05);text-align:left;color:var(--ink);text-decoration:none}
+  .tile:active{transform:scale(.98)}
+  .tile .e{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:21px}
+  .tile b{font-size:15px;font-weight:800;line-height:1.2}
+  .tile small{font-size:12px;color:var(--ink2);font-weight:600;line-height:1.3}
+  .tile .badge{position:absolute;top:10px;right:10px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--exp);color:#fff;font-size:12px;line-height:22px;font-weight:800;text-align:center}
+  .tile.wide{grid-column:1/-1;min-height:0;flex-direction:row;align-items:center}
+  .tile.dark{background:var(--ink);color:#fff} .tile.dark small{color:rgba(255,255,255,.7)}
+  .tiles-lbl{display:block;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--mute);margin:20px 4px 8px}
+  /* сертификаты */
+  .cert{display:block;width:100%;text-align:left;background:#fff;border-radius:16px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 0 var(--line)}
+  .cert.warn{box-shadow:inset 3px 0 0 var(--gold),0 1px 0 var(--line)} .cert.off{opacity:.55}
+  .cert .r1{display:flex;align-items:center;gap:10px}
+  .cert .no{font-weight:800;font-size:13px;padding:4px 8px;border-radius:9px;background:#FCE9F0;color:#B23A68;white-space:nowrap}
+  .cert .nm{flex:1;min-width:0;font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cert .am{font-weight:800;white-space:nowrap} .cert .am small{font-weight:600;color:var(--ink2);font-size:12px}
+  .cert .r2{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12.5px;color:var(--ink2);font-weight:600}
+  .cert .r2 .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .redeem-btn{padding:9px 13px;border-radius:12px;background:var(--pink);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
+  .head-btns{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  #tab-cert .head-row{flex-wrap:wrap}
+  #tab-cert .add-btn{padding:9px 11px;font-size:13px}
+  html,body{overflow-x:hidden}
+  .add-btn.alt{background:#EFEAF4;color:var(--ink)}
+  .pick{display:grid;gap:8px;margin-top:14px}
+  .pick a,.pick button{display:flex;align-items:center;gap:12px;padding:14px;border-radius:14px;background:#fff;color:var(--ink);text-decoration:none;font-weight:800;box-shadow:0 1px 0 var(--line);text-align:left;width:100%}
+  .pick small{display:block;font-weight:600;color:var(--ink2);font-size:12px}
+  .pick .e{font-size:22px}
   /* все приложения мастерской */
   .apps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
   .apps a{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:#FAF7FC;color:var(--ink);text-decoration:none;border:1.5px solid var(--line)}
@@ -288,12 +334,46 @@
 <div id="app">
   <header class="top">
     <div class="logo"><i></i><i></i><i></i><i></i></div>
-    <div class="grow"><div class="brand">Art Mosaic</div><div class="sub">доходы и расходы мастерской</div></div>
+    <div class="grow" id="homeLink" style="cursor:pointer"><div class="brand">Art Mosaic</div><div class="sub">мастерская · всё в одном месте</div></div>
     <button id="refreshBtn" class="icon-btn" title="Обновить из таблицы">↻</button>
   </header>
 
   <main>
     <div id="boot" class="loading"><div class="logo"><i></i><i></i><i></i><i></i></div>Загружаю данные…</div>
+
+    <!-- ГЛАВНАЯ -->
+    <section id="tab-home" class="tab">
+      <div class="hello"><h2 id="helloTitle">Добрый день!</h2><p id="helloDate"></p></div>
+      <div class="kpis" id="homeKpis"></div>
+      <div class="alerts" id="homeAlerts"></div>
+      <div class="tiles">
+        <button class="tile dark wide" data-go="add"><span class="e" style="background:rgba(255,255,255,.12)">＋</span><span><b>Записать доход или расход</b><br><small>мастер-класс, праздник, покупка материалов</small></span></button>
+        <button class="tile" data-go="certnew"><span class="e" style="background:#FCE9F0">🎁</span><b>Продать сертификат</b><small>номер из таблицы, продажа в кассу</small></button>
+        <button class="tile" data-go="cert"><span class="e" style="background:#FCE9F0">🔍</span><b>Сертификаты</b><small id="tileCert">найти и погасить</small><span class="badge hidden" id="tbCert"></span></button>
+        <button class="tile" data-go="subnew"><span class="e" style="background:#EFE8F7">◷</span><b>Продать абонемент</b><small>часы и срок</small></button>
+        <button class="tile" data-go="sub"><span class="e" style="background:#EFE8F7">✎</span><b>Абонементы</b><small id="tileSub">отметить занятие</small><span class="badge hidden" id="tbSub"></span></button>
+        <button class="tile" data-go="pay"><span class="e" style="background:#E3F3F5">▦</span><b>Календарь и платежи</b><small id="tilePay">что оплатить</small><span class="badge hidden" id="tbPay"></span></button>
+        <button class="tile" data-go="task"><span class="e" style="background:#EFE8F7">✓</span><b>Дела</b><small id="tileTask">список задач</small><span class="badge hidden" id="tbTask"></span></button>
+        <button class="tile" data-go="log"><span class="e" style="background:#F3EFF7">☰</span><b>Журнал</b><small>все записи по месяцам</small></button>
+        <button class="tile" data-go="sum"><span class="e" style="background:var(--incbg)">∑</span><b>Итоги</b><small>доходы, расходы, прибыль</small></button>
+      </div>
+      <span class="tiles-lbl">Для клиентов</span>
+      <div class="tiles">
+        <a class="tile" target="_blank" data-ext="priglasheniya.html"><span class="e" style="background:#FFF4D6">🎂</span><b>Приглашение на ДР</b><small>дата и время — и готово</small></a>
+        <a class="tile" target="_blank" data-ext="katalog.html"><span class="e" style="background:#FFF4D6">🧩</span><b>Каталог мастер-классов</b><small>отправить клиенту</small></a>
+        <a class="tile" target="_blank" data-ext="site/"><span class="e" style="background:#E3F3F5">🌐</span><b>Сайт мастерской</b><small>для клиентов</small></a>
+        <a class="tile" target="_blank" id="sheetTile" href="#"><span class="e" style="background:var(--incbg)">📊</span><b>Google Таблица</b><small>все данные</small></a>
+      </div>
+    </section>
+
+    <!-- СЕРТИФИКАТЫ -->
+    <section id="tab-cert" class="tab">
+      <div class="head-row"><h2>Сертификаты</h2>
+        <div class="head-btns"><button class="add-btn alt" id="certQuick" title="Записать уже выданный сертификат">＋ Записать</button><button class="add-btn" id="certNew">🎁 Выписать</button></div></div>
+      <input type="search" class="search" id="certSearch" placeholder="Номер или имя" inputmode="search">
+      <div class="totals" id="certTotals"></div>
+      <div id="certList"></div>
+    </section>
 
     <!-- ДОБАВИТЬ -->
     <section id="tab-add" class="tab">
@@ -419,24 +499,15 @@
         <table class="year" id="yearTable"></table>
       </div>
       <a id="sheetLink" class="link-btn" target="_blank" href="#">Открыть Google Таблицу ↗</a>
-      <span class="lbl" style="margin-top:22px">Все приложения мастерской</span>
-      <div class="apps">
-        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/index.html" target="_blank"><span class="e">🎁</span><b>Сертификаты</b><small>двусторонний, с PDF и подарочной ссылкой</small></a>
-        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/sertifikat.html" target="_blank"><span class="e">🎫</span><b>Сертификат одной стороной</b><small>как старые макеты</small></a>
-        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/priglasheniya.html" target="_blank"><span class="e">🎂</span><b>Приглашения на ДР</b><small>дата и время — и готово</small></a>
-        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/katalog.html" target="_blank"><span class="e">🧩</span><b>Каталог мастер-классов</b><small>что можно собрать</small></a>
-        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/site/" target="_blank"><span class="e">🌐</span><b>Сайт мастерской</b><small>для клиентов</small></a>
-      </div>
     </section>
   </main>
 
   <nav class="bottom"><div class="in">
-    <button data-tab="add" class="on"><span class="ic">＋</span>Добавить</button>
+    <button data-tab="home" class="on"><span class="ic">⌂</span>Главная<span class="badge hidden" id="homeBadge"></span></button>
+    <button data-tab="add"><span class="ic">＋</span>Добавить</button>
     <button data-tab="sub"><span class="ic">◷</span>Абонем.<span class="badge hidden" id="subBadge"></span></button>
-    <button data-tab="log"><span class="ic">☰</span>Журнал</button>
+    <button data-tab="cert"><span class="ic">🎁</span>Сертиф.<span class="badge hidden" id="certBadge"></span></button>
     <button data-tab="pay"><span class="ic">▦</span>Календарь<span class="badge hidden" id="payBadge"></span></button>
-    <button data-tab="task"><span class="ic">✓</span>Дела<span class="badge hidden" id="taskBadge"></span></button>
-    <button data-tab="sum"><span class="ic">∑</span>Итоги</button>
   </div></nav>
 </div>
 
@@ -466,7 +537,7 @@ const store = {
 };
 
 const S = {
-  ops: [], pays: [], tasks: [], subs: [], subQuery: '', subShowOld: false, cats: {income:[], expense:[], methods:[]}, url: '#',
+  ops: [], pays: [], tasks: [], subs: [], subQuery: '', subShowOld: false, certs: [], certQuery: '', certShowOld: false, cats: {income:[], expense:[], methods:[]}, url: '#',
   taskDue: '', taskRep: 'Разово', showDone: false,
   calMonth: todayStr().slice(0,7), calDay: todayStr(), events: {}, calOk: true,
   type: 'Доход', cat: '', method: store.get('method',''), date: todayStr(),
@@ -496,8 +567,17 @@ function toast(msg, err){
   const t = $('#toast'); t.textContent = msg; t.className = 'show' + (err?' err':'');
   clearTimeout(toast._t); toast._t = setTimeout(()=> t.className = err?'err':'', 2600);
 }
+// Внутри Google Apps Script — google.script.run; на GitHub Pages — запрос к тому же скрипту по ссылке /exec
+const API_URL = 'https://script.google.com/macros/s/AKfycbz19KS3-W0EvcN7TiCvM9X8OfRSwnRg3XLOn_BgSkLpnRVidH1QG6mpGF8m-eTLZkCKow/exec';
+const IN_GAS = !!(window.google && google.script && google.script.run);
+const BASE = 'https://svetlana020257-lab.github.io/ddd/art-mosaic/';
 function call(fn, ...args){
-  return new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+  if (IN_GAS) return new Promise((res, rej) => google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
+  const [pin, ...rest] = args;
+  const url = API_URL + '?api=' + encodeURIComponent(fn) + '&pin=' + encodeURIComponent(pin || '') +
+    '&args=' + encodeURIComponent(JSON.stringify(rest)) + '&_=' + Date.now();
+  return fetch(url, {redirect:'follow'}).then(r => { if (!r.ok) throw new Error('сервер ответил ' + r.status); return r.json(); })
+    .then(j => { if (!j.ok) throw new Error(j.error || 'ошибка'); return j.data; });
 }
 function errText(e){ return (e && e.message ? e.message : String(e)).replace(/^Error:\s*/,''); }
 
@@ -516,15 +596,15 @@ async function load(quiet){
   }finally{
     btn.classList.remove('spin');
     $('#boot').classList.add('hidden');
-    if (!$$('.tab.active').length) switchTab('add');
+    if (!$$('.tab.active').length) switchTab('home');
   }
 }
-function saveCache(){ store.set('cache', {ops:S.ops, pays:S.pays, tasks:S.tasks, subs:S.subs, cats:S.cats, url:S.url}); }
+function saveCache(){ store.set('cache', {ops:S.ops, pays:S.pays, tasks:S.tasks, subs:S.subs, certs:S.certs, cats:S.cats, url:S.url}); }
 function applyData(r){
   S.loadError = '';
-  S.ops = r.ops || S.ops; S.pays = r.pays || S.pays; S.tasks = r.tasks || S.tasks; S.subs = r.subs || S.subs;
+  S.ops = r.ops || S.ops; S.pays = r.pays || S.pays; S.tasks = r.tasks || S.tasks; S.subs = r.subs || S.subs; S.certs = r.certs || S.certs;
   S.cats = r.cats || S.cats; S.url = r.url || S.url;
-  $('#sheetLink').href = S.url;
+  $('#sheetLink').href = S.url; $('#sheetTile').href = S.url;
   renderAll();
 }
 
@@ -551,6 +631,8 @@ function switchTab(name){
   if (name === 'pay') { renderPays(); renderCal(); loadEvents(S.calMonth); }
   if (name === 'task') renderTasks();
   if (name === 'sub') renderSubs();
+  if (name === 'cert') renderCerts();
+  if (name === 'home') renderHome();
 }
 $$('nav.bottom button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
 $$('.month button').forEach(b => b.onclick = () => { S.month = shiftMonth(S.month, +b.dataset.step); renderLog(); renderSum(); });
@@ -1187,9 +1269,13 @@ function renderBadges(){
   const urgentTasks = S.tasks.filter(t => !t.done && t.due && daysFromToday(t.due) <= 0);
   const pb = $('#payBadge'), tb = $('#taskBadge');
   pb.textContent = urgentPays.length; pb.classList.toggle('hidden', !urgentPays.length);
-  tb.textContent = urgentTasks.length; tb.classList.toggle('hidden', !urgentTasks.length);
+  if (tb){ tb.textContent = urgentTasks.length; tb.classList.toggle('hidden', !urgentTasks.length); }
   const sb = $('#subBadge'), urgentSubs = S.subs.filter(a => { const st = subState(a); return st.key === 'on' && (st.warn || st.red); });
   sb.textContent = urgentSubs.length; sb.classList.toggle('hidden', !urgentSubs.length);
+  const urgentCerts = S.certs.filter(c => certState(c).warn);
+  const cb = $('#certBadge'); cb.textContent = urgentCerts.length; cb.classList.toggle('hidden', !urgentCerts.length);
+  [['#tbPay', urgentPays.length], ['#tbTask', urgentTasks.length], ['#tbSub', urgentSubs.length], ['#tbCert', urgentCerts.length]]
+    .forEach(([id, n]) => { const el = $(id); if (el){ el.textContent = n; el.classList.toggle('hidden', !n); } });
 
   const ban = $('#payBanner');
   if (urgentPays.length){
@@ -1396,16 +1482,257 @@ function subForm(a){
   };
 }
 
+/* ---------- главная ---------- */
+$('#homeLink').onclick = () => switchTab('home');
+$$('[data-ext]').forEach(a => a.href = BASE + a.dataset.ext);
+$$('#tab-home [data-go]').forEach(b => b.onclick = () => {
+  const g = b.dataset.go;
+  if (g === 'certnew') return certBuilderPick();
+  if (g === 'subnew') { switchTab('sub'); return subForm(); }
+  switchTab(g);
+});
+function renderHome(){
+  if (!$('#homeKpis')) return;
+  const now = new Date(), h = now.getHours();
+  $('#helloTitle').textContent = h < 5 ? 'Доброй ночи!' : h < 12 ? 'Доброе утро!' : h < 18 ? 'Добрый день!' : 'Добрый вечер!';
+  $('#helloDate').textContent = 'Сегодня ' + now.getDate() + ' ' + MONTHS_GEN[now.getMonth()] + ', ' + WD[now.getDay()];
+  const t = totals(S.ops.filter(o => o.date === todayStr()));
+  const m = totals(opsOfMonth(todayStr().slice(0,7)));
+  $('#homeKpis').innerHTML = `<div><small>Сегодня</small><b class="inc-t">${money(t.inc)}</b></div>
+    <div><small>${MONTHS[now.getMonth()]} · прибыль</small><b class="${m.profit<0?'exp-t':''}">${money(m.profit)}</b></div>`;
+  // что требует внимания
+  const A = [];
+  pendingPays().filter(p => daysFromToday(p.date) <= 3).slice(0,3).forEach(p => A.push({
+    cls: daysFromToday(p.date) < 0 ? 'red' : '', e: p.type === 'Доход' ? '💰' : '💳', go: 'pay',
+    t: `<b>${esc(p.name)}</b> — ${dueLabel(p.date)}${p.amount ? ', ' + money(p.amount) : ''}`}));
+  S.subs.filter(a => { const st = subState(a); return st.key === 'on' && (st.warn || st.red); }).slice(0,3).forEach(a => A.push({
+    cls: subState(a).red ? 'red' : '', e: '◷', go: 'sub',
+    t: `Абонемент <b>${esc(a.name)}</b>: ${hrs(a.left)} ч, ${esc(subState(a).label)}`}));
+  S.certs.filter(c => certState(c).warn).slice(0,3).forEach(c => A.push({
+    cls: '', e: '🎁', go: 'cert', t: `Сертификат <b>№${esc(c.num)}</b> ${esc(c.who)} — ${esc(certState(c).label)}`}));
+  const td = S.tasks.filter(x => !x.done && x.due && daysFromToday(x.due) <= 0);
+  if (td.length) A.push({cls: td.some(x => daysFromToday(x.due) < 0) ? 'red' : '', e: '✓', go: 'task',
+    t: `Дела на сегодня: <b>${td.length}</b> — ${esc(td.slice(0,2).map(x => x.text).join(', '))}${td.length > 2 ? '…' : ''}`});
+  $('#homeAlerts').innerHTML = A.length ? A.map((a, i) => `<button class="alert ${a.cls}" data-ago="${a.go}"><span class="e">${a.e}</span><span>${a.t}</span></button>`).join('')
+    : `<div class="alert ok"><span class="e">✨</span><span>Всё спокойно — срочного ничего нет</span></div>`;
+  $$('#homeAlerts [data-ago]').forEach(b => b.onclick = () => switchTab(b.dataset.ago));
+  const hb = $('#homeBadge'); hb.textContent = A.length; hb.classList.toggle('hidden', !A.some(a => a.cls === 'red'));
+  const actSubs = S.subs.filter(a => subState(a).key === 'on'), actCerts = S.certs.filter(c => ['on','part'].includes(certState(c).key));
+  $('#tileSub').textContent = actSubs.length ? 'активных: ' + actSubs.length : 'отметить занятие';
+  $('#tileCert').textContent = actCerts.length ? 'действуют: ' + actCerts.length : 'найти и погасить';
+  const np = pendingPays()[0]; $('#tilePay').textContent = np ? 'ближайший: ' + dueLabel(np.date) : 'что оплатить';
+  const open = S.tasks.filter(x => !x.done).length; $('#tileTask').textContent = open ? 'открытых: ' + open : 'список задач';
+}
+
+/* ---------- сертификаты ---------- */
+function certState(c){
+  const t = todayStr(), d = daysFromToday(c.till);
+  if (c.left <= 0) return {key:'used', label:'использован'};
+  if (c.till < t) return {key:'exp', label:'истёк ' + ruDate(c.till)};
+  const key = c.used > 0 ? 'part' : 'on';
+  return {key, warn: d <= 14, label: (d === 0 ? 'последний день' : 'до ' + dueLabel(c.till) + (d <= 60 ? ' · ' + d + ' дн.' : ' ' + c.till.slice(0,4)))};
+}
+function certAmount(c){
+  if (c.kind === 'Мастер-класс') return c.left > 0 ? 'МК' : '—';
+  return c.used > 0 ? `${money(c.left)} <small>из ${money(c.sum)}</small>` : money(c.sum);
+}
+function renderCerts(){
+  const box = $('#certList'); if (!box) return;
+  const q = S.certQuery.trim().toLowerCase().replace(/^№/, '');
+  const src = q ? S.certs.filter(c => (c.num + ' ' + c.who + ' ' + c.buyer + ' ' + c.phone + ' ' + c.what).toLowerCase().includes(q)
+      || (parseInt(q,10) && parseInt(c.num,10) === parseInt(q,10))) : S.certs;
+  const live = c => ['on','part'].includes(certState(c).key);
+  const act = src.filter(live).sort((a,b) => a.till.localeCompare(b.till));
+  const old = src.filter(c => !live(c)).sort((a,b) => b.num.localeCompare(a.num));
+  const all = S.certs.filter(live);
+  $('#certTotals').innerHTML = `
+    <div class="tot"><small>Действуют</small><b>${all.length}</b></div>
+    <div class="tot"><small>Ждут на сумму</small><b>${money(all.filter(c => c.kind !== 'Мастер-класс').reduce((s,c) => s + c.left, 0))}</b></div>
+    <div class="tot"><small>Скоро истекут</small><b>${all.filter(c => certState(c).warn).length}</b></div>`;
+  const card = c => {
+    const st = certState(c), on = live(c);
+    return `<div class="cert ${st.warn?'warn':''} ${on?'':'off'}" data-cert="${c.id}">
+      <div class="r1"><span class="no">№${esc(c.num)}</span><span class="nm">${esc(c.who || c.buyer || 'Без имени')}</span><span class="am">${certAmount(c)}</span></div>
+      <div class="r2"><span class="grow">${c.kind === 'Мастер-класс' ? '<span class="tag">на МК</span> ' + esc(c.what) + ' · ' : (c.what ? esc(c.what) + ' · ' : '')}${esc(st.label)}</span>
+        ${on ? `<button class="redeem-btn" data-redeem="${c.id}">Погасить</button>` : ''}</div></div>`;
+  };
+  let html = '';
+  if (!S.certs.length) html = `<div class="empty"><div>🎁</div>Сертификатов в таблице пока нет.<br>«🎁 Выписать» — сделать новый,<br>«＋ Записать» — внести уже выданный.</div>`;
+  else if (!act.length && !old.length) html = `<div class="empty">Сертификат «${esc(S.certQuery)}» не найден</div>`;
+  else {
+    html += act.map(card).join('') || `<div class="empty" style="padding:20px">Действующих сертификатов нет</div>`;
+    if (old.length){
+      if (q) html += old.map(card).join('');
+      else {
+        html += `<button class="toggle-done" id="certOld">${S.certShowOld ? 'Скрыть' : 'Показать'} использованные и истёкшие · ${old.length}</button>`;
+        if (S.certShowOld) html += '<div style="margin-top:8px">' + old.map(card).join('') + '</div>';
+      }
+    }
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('[data-redeem]').forEach(b => b.onclick = e => { e.stopPropagation(); redeemForm(S.certs.find(c => c.id === b.dataset.redeem)); });
+  box.querySelectorAll('[data-cert]').forEach(b => b.onclick = () => certDetail(S.certs.find(c => c.id === b.dataset.cert)));
+  const ob = $('#certOld'); if (ob) ob.onclick = () => { S.certShowOld = !S.certShowOld; renderCerts(); };
+}
+$('#certSearch').oninput = e => { S.certQuery = e.target.value; renderCerts(); };
+$('#certNew').onclick = () => certBuilderPick();
+$('#certQuick').onclick = () => certForm();
+
+function certBuilderPick(){
+  openModal(`<h3>Выписать сертификат</h3>
+    <div class="hint">Номер выдаст таблица, продажа сама запишется в доходы</div>
+    <div class="pick">
+      <a href="${BASE}index.html?from=app" ${IN_GAS?'target="_blank"':''}><span class="e">🎁</span><span>Двусторонний<small>PDF, печать и подарочная ссылка-открытка</small></span></a>
+      <a href="${BASE}sertifikat.html?from=app" ${IN_GAS?'target="_blank"':''}><span class="e">🎫</span><span>Одной стороной<small>как старые макеты, PDF или картинка</small></span></a>
+      <button id="pkQuick"><span class="e">✍️</span><span>Только записать в таблицу<small>сертификат уже распечатан или выписан от руки</small></span></button>
+    </div>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="pkClose">Отмена</button></div>`);
+  $('#pkClose').onclick = closeModal;
+  $('#pkQuick').onclick = () => certForm();
+}
+
+function redeemForm(c){
+  if (!c) return;
+  const mk = c.kind === 'Мастер-класс';
+  openModal(`
+    <h3>Погасить №${esc(c.num)}</h3>
+    <div class="hint">${esc(c.who || c.buyer || '')}${c.what ? ' · ' + esc(c.what) : ''} · ${esc(certState(c).label)}</div>
+    ${mk ? `<div class="card" style="margin-top:14px;margin-bottom:0"><b>Сертификат на мастер-класс</b><div class="hint" style="margin:4px 0 0">Гасится целиком — после этого он больше не действует</div></div>`
+      : `<label class="lbl" style="margin-top:14px">Сколько списать, ₽ <span style="text-transform:none;letter-spacing:0">· осталось ${money(c.left)}</span></label>
+    <input class="field big" id="rAmount" inputmode="decimal" placeholder="0">
+    <div class="chips" style="margin-top:8px"><button class="chip" id="rAll">весь остаток · ${money(c.left)}</button></div>
+    <div class="hint" id="rLeft"></div>`}
+    <label class="lbl">Дата</label>
+    <div class="dates"><button class="chip on" data-rd="0">Сегодня</button><button class="chip" data-rd="-1">Вчера</button><input type="date" id="rDate" value="${todayStr()}"></div>
+    <label class="lbl">Комментарий</label><input class="field" id="rCom" placeholder="Например: МК «Ваза»">
+    <button class="primary" id="rSave" style="background:var(--pink)">${mk ? 'Погасить сертификат' : 'Списать'}</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="rCancel">Отмена</button></div>`);
+  const amt = () => parseFloat((($('#rAmount')||{}).value||'').replace(/\s/g,'').replace(',', '.')) || 0;
+  if (!mk){
+    const upd = () => { const a = amt(), r = Math.round((c.left - a)*100)/100;
+      $('#rLeft').innerHTML = a ? (r < 0 ? `<b style="color:var(--exp)">Больше остатка на ${money(-r)} — доплата отдельно, в «Добавить»</b>` : `Останется <b>${money(r)}</b>`) : ''; };
+    $('#rAmount').oninput = upd;
+    $('#rAll').onclick = () => { $('#rAmount').value = String(c.left).replace('.', ','); upd(); };
+  }
+  $$('[data-rd]').forEach(b => b.onclick = () => { $('#rDate').value = todayStr(+b.dataset.rd); $$('[data-rd]').forEach(x => x.classList.toggle('on', x === b)); });
+  $('#rDate').onchange = () => $$('[data-rd]').forEach(x => x.classList.remove('on'));
+  $('#rCancel').onclick = closeModal;
+  $('#rSave').onclick = async () => {
+    let a = mk ? c.left : amt();
+    if (!(a > 0)) { toast('Сколько списать с сертификата?', true); return; }
+    if (a > c.left) { if (!confirm('На сертификате ' + money(c.left) + '. Списать весь остаток, а разницу клиент доплатит?')) return; a = c.left; }
+    const rest = Math.round((c.left - a)*100)/100;
+    if (await run('apiCertRedeem', [{certId: c.id, amount: a, date: $('#rDate').value || todayStr(), comment: $('#rCom').value}],
+      mk || rest <= 0 ? 'Сертификат №' + c.num + ' погашен' : 'Списано ' + money(a) + ' · осталось ' + money(rest), $('#rSave'))) closeModal();
+  };
+}
+
+function certDetail(c){
+  if (!c) return;
+  const st = certState(c), on = ['on','part'].includes(st.key), mk = c.kind === 'Мастер-класс';
+  openModal(`
+    <h3>Сертификат №${esc(c.num)}</h3>
+    <div class="hint">${mk ? 'На мастер-класс' : 'На сумму'}${c.what ? ' · ' + esc(c.what) : ''}</div>
+    <div class="infogrid">
+      <div><small>Номинал</small><b>${money(c.sum)}</b></div>
+      <div><small>${mk ? 'Статус' : 'Потрачено'}</small><b>${mk ? (c.left > 0 ? 'не исп.' : 'исп.') : money(c.used)}</b></div>
+      <div><small>Осталось</small><b style="color:${c.left>0?'var(--pink)':'var(--mute)'}">${mk ? (c.left > 0 ? 'МК' : '—') : money(c.left)}</b></div>
+    </div>
+    <div class="card" style="font-size:14px;line-height:1.7;margin-bottom:10px">
+      <div>Для кого: <b>${esc(c.who || '—')}</b></div>
+      ${c.buyer ? `<div>Купил(а): <b>${esc(c.buyer)}</b>${c.phone ? ` · <a href="tel:${esc(c.phone.replace(/[^\d+]/g,''))}" style="color:var(--violet);font-weight:700">${esc(c.phone)}</a>` : ''}</div>` : ''}
+      <div>Продан: <b>${ruDate(c.sold)}</b>${c.price ? ' за ' + money(c.price) : ''}${c.method ? ' · ' + esc(c.method) : ''}</div>
+      <div>Действует до: <b>${ruDate(c.till)}</b> <span class="tag ${st.key==='exp'?'red':on?(st.warn?'amber':'green'):''}">${esc(st.label)}</span></div>
+      ${c.comment ? `<div>${esc(c.comment)}</div>` : ''}
+    </div>
+    ${on ? '<button class="primary" id="cdRedeem" style="background:var(--pink);margin-top:0">Погасить</button>' : ''}
+    <span class="lbl">Погашения</span>
+    <div>${c.reds.length ? c.reds.map(r => `<div class="vrow"><span class="h" style="color:var(--pink);min-width:70px">−${money(r.amount)}</span>
+      <span class="tx">${ruDate(r.date)}${r.comment ? `<small>${esc(r.comment)}</small>` : ''}</span>
+      <button class="x" data-rdel="${r.id}" title="Отменить">✕</button></div>`).join('') : '<div class="hint">Ещё не использовался</div>'}</div>
+    <div class="edit-row"><button class="ghost" id="cdEdit">Изменить</button><button class="danger" id="cdDel">Удалить</button></div>
+    <div class="edit-row" style="grid-template-columns:1fr;margin-top:8px"><button class="ghost" id="cdClose">Закрыть</button></div>`);
+  if ($('#cdRedeem')) $('#cdRedeem').onclick = () => redeemForm(c);
+  $('#cdClose').onclick = closeModal;
+  $('#cdEdit').onclick = () => certForm(c);
+  $('#cdDel').onclick = async () => {
+    if (!confirm('Удалить сертификат №' + c.num + ' и его погашения из таблицы?')) return;
+    const withOp = !!c.opId && confirm('Удалить и оплату этого сертификата из журнала доходов?\n\nОК — удалить оплату тоже, Отмена — оставить оплату в журнале.');
+    if (await run('apiCertDelete', [c.id, withOp], 'Сертификат удалён')) closeModal();
+  };
+  $$('[data-rdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Отменить это погашение? Сумма вернётся на сертификат.')) return;
+    if (await run('apiRedeemDelete', [b.dataset.rdel], 'Погашение отменено')) certDetail(S.certs.find(x => x.id === c.id));
+  });
+}
+
+// Записать сертификат без конструктора (бумажный или выписанный раньше) или исправить существующий
+function certForm(c){
+  const isNew = !c;
+  const till6 = addMonthsStr(todayStr(), 6);
+  const f = Object.assign({id:'', kind:'Сумма', num:'', who:'', what:'', sum:'', till:till6, buyer:'', phone:'', price:'', method:'', sold:todayStr(), comment:''}, c || {});
+  let method = f.method || S.method || '', kind = f.kind;
+  openModal(`
+    <h3>${isNew ? 'Записать сертификат' : 'Сертификат №' + esc(f.num)}</h3>
+    ${isNew ? '<div class="hint">Для сертификата, который уже выдан на бумаге. Новый удобнее выписать в конструкторе.</div>' : ''}
+    <div class="seg" id="cKind" style="margin-top:12px"><button data-k="Сумма">На сумму</button><button data-k="Мастер-класс">На мастер-класс</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:10px">
+      <div><label class="lbl">Номер</label><input class="field" id="cNum" value="${esc(f.num)}" placeholder="…" maxlength="12"></div>
+      <div><label class="lbl">Номинал, ₽</label><input class="field" id="cSum" inputmode="decimal" value="${f.sum?String(f.sum).replace('.',','):''}" placeholder="0"></div>
+    </div>
+    <div class="hint" id="cNumHint">${isNew ? 'Пусто — таблица выдаст следующий номер' : ''}</div>
+    <label class="lbl">Для кого</label><input class="field" id="cWho" value="${esc(f.who)}" placeholder="Имя на сертификате">
+    <label class="lbl" id="cWhatL">На что</label><input class="field" id="cWhat" value="${esc(f.what)}" placeholder="мозаичный мастер-класс">
+    <label class="lbl">Действует до</label><input class="field" id="cTill" type="date" value="${f.till}">
+    <div class="chips" id="cTc" style="margin-top:8px"><button class="chip" data-m="3">3 месяца</button><button class="chip" data-m="6">6 месяцев</button><button class="chip" data-m="12">год</button></div>
+    <label class="lbl">Кто купил</label><input class="field" id="cBuyer" value="${esc(f.buyer)}" placeholder="Необязательно">
+    <label class="lbl">Телефон</label><input class="field" id="cPhone" value="${esc(f.phone)}" inputmode="tel" placeholder="Необязательно">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Оплачено, ₽</label><input class="field" id="cPrice" inputmode="decimal" value="${f.price?String(f.price).replace('.',','):''}" placeholder="= номиналу"></div>
+      <div><label class="lbl">Дата продажи</label><input class="field" id="cSold" type="date" value="${f.sold}"></div>
+    </div>
+    <label class="lbl">Способ оплаты</label><div class="chips" id="cMeth">${chipsHtml(S.cats.methods, method, 'meth')}</div>
+    ${isNew ? '<label class="checkrow"><input type="checkbox" id="cPay" checked> Записать оплату в доходы</label>' : ''}
+    <label class="lbl">Комментарий</label><input class="field" id="cCom" value="${esc(f.comment)}" placeholder="Необязательно">
+    <button class="primary" id="cSave" style="background:var(--pink)">Сохранить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="cCancel">Отмена</button></div>`);
+  const drawKind = () => {
+    $$('#cKind button').forEach(b => { b.classList.toggle('on', b.dataset.k === kind); b.style.background = b.dataset.k === kind ? 'var(--pink)' : ''; b.style.color = b.dataset.k === kind ? '#fff' : ''; });
+    $('#cWhatL').textContent = kind === 'Мастер-класс' ? 'Какой мастер-класс' : 'На что';
+  };
+  $$('#cKind button').forEach(b => b.onclick = () => { kind = b.dataset.k; drawKind(); });
+  drawKind();
+  if (isNew) call('apiCertNext', S.pin).then(n => { if (!$('#cNum').value) $('#cNum').placeholder = n; $('#cNumHint').textContent = 'Следующий свободный — №' + n + '. Если у бумажного другой номер — впишите его.'; }).catch(()=>{});
+  $$('#cTc .chip').forEach(b => b.onclick = () => { $('#cTill').value = addMonthsStr($('#cSold').value || todayStr(), +b.dataset.m); $$('#cTc .chip').forEach(x => x.classList.toggle('on', x === b)); });
+  bindChips($('#cMeth'), 'meth', v => method = v);
+  $('#cCancel').onclick = () => c ? certDetail(c) : closeModal();
+  $('#cSave').onclick = async () => {
+    const data = { id: f.id, kind, num: $('#cNum').value.trim(), sum: $('#cSum').value, who: $('#cWho').value, what: $('#cWhat').value,
+      till: $('#cTill').value, buyer: $('#cBuyer').value, phone: $('#cPhone').value, price: $('#cPrice').value, sold: $('#cSold').value,
+      method, comment: $('#cCom').value };
+    if (isNew) data.pay = $('#cPay').checked;
+    const btn = $('#cSave');
+    if (S.busy) return; S.busy = true; btn.disabled = true; btn.textContent = 'Сохраняю…';
+    try{
+      const r = await call('apiCertSave', S.pin, data);
+      applyData(r); saveCache();
+      toast(isNew ? 'Сертификат №' + r.issued.num + ' записан' + (data.pay ? ' · оплата в доходах' : '') : 'Сертификат обновлён');
+      if (c) certDetail(S.certs.find(x => x.id === c.id)); else closeModal();
+    }catch(e){ toast(errText(e), true); }
+    finally{ S.busy = false; btn.disabled = false; btn.textContent = 'Сохранить'; }
+  };
+}
+
 function renderAll(){
   setType(S.type); renderMethods(); renderToday();
-  renderLog(); renderSum(); renderPays(); renderTasks(); renderSubs(); renderBadges(); renderCal();
+  renderLog(); renderSum(); renderPays(); renderTasks(); renderSubs(); renderCerts(); renderBadges(); renderCal(); renderHome();
 }
 
 
 /* ---------- старт ---------- */
 setDate(todayStr());
 const cache = store.get('cache', null);
-if (cache){ applyData(cache); $('#boot').classList.add('hidden'); switchTab('add'); }
+if (cache){ applyData(cache); $('#boot').classList.add('hidden'); switchTab(location.hash === '#cert' ? 'cert' : 'home'); }
 load();
 </script>
 </body>
