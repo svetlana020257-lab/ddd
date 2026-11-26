@@ -144,8 +144,8 @@
   nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;justify-content:center;
     background:rgba(255,255,255,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
     border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
-  nav.bottom .in{display:grid;grid-template-columns:repeat(5,1fr);width:100%;max-width:560px;gap:6px}
-  nav.bottom button{position:relative;padding:8px 2px;border-radius:12px;color:var(--mute);font-size:11px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
+  nav.bottom .in{display:grid;grid-template-columns:repeat(6,1fr);width:100%;max-width:560px;gap:3px}
+  nav.bottom button{position:relative;padding:8px 2px;border-radius:12px;color:var(--mute);font-size:10.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px}
   nav.bottom button .ic{font-size:22px;line-height:1}
   nav.bottom button.on{color:var(--ink);background:#F3EFF7}
 
@@ -218,6 +218,41 @@
   .dadd{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
   .dadd button{padding:10px 4px;border-radius:12px;background:#fff;font-weight:700;font-size:13px;box-shadow:0 1px 0 var(--line)}
   .calwarn{font-size:12px;color:#8A6510;background:#FFF4D6;border-radius:10px;padding:8px 10px;margin-top:10px}
+
+  /* абонементы */
+  .abo{display:block;width:100%;text-align:left;background:#fff;border-radius:16px;padding:14px;margin-bottom:8px;box-shadow:0 1px 0 var(--line)}
+  .abo.warn{box-shadow:inset 3px 0 0 var(--gold),0 1px 0 var(--line)}
+  .abo.red{box-shadow:inset 3px 0 0 var(--exp),0 1px 0 var(--line)}
+  .abo.off{opacity:.6}
+  .abo .r1{display:flex;align-items:center;gap:10px}
+  .abo .nm{flex:1;min-width:0;font-weight:800;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .abo .left{font-weight:800;font-size:15px;white-space:nowrap}
+  .abo .left small{font-weight:600;color:var(--ink2);font-size:12px}
+  .abo .track{height:9px;border-radius:6px;background:#F1ECF5;overflow:hidden;margin:10px 0 8px}
+  .abo .fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--violet),var(--pink))}
+  .abo .r2{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink2);font-weight:600}
+  .abo .r2 .grow{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .visit-btn{padding:9px 13px;border-radius:12px;background:var(--ink);color:#fff;font-weight:800;font-size:13px;white-space:nowrap}
+  .tag{display:inline-block;font-size:11px;font-weight:800;padding:2px 7px;border-radius:7px;background:#F3EFF7;color:var(--ink2)}
+  .tag.red{background:var(--expbg);color:var(--exp)} .tag.amber{background:#FFF4D6;color:#8A6510} .tag.green{background:var(--incbg);color:var(--inc)}
+  .search{width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:#fff;outline:0;font-size:15px;margin-bottom:10px}
+  .search:focus{border-color:var(--violet)}
+  .vrow{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:6px;box-shadow:0 1px 0 var(--line)}
+  .vrow .h{font-weight:800;min-width:46px;color:var(--violet)}
+  .vrow .tx{flex:1;min-width:0;font-size:14px;font-weight:600}
+  .vrow .tx small{display:block;color:var(--ink2);font-weight:500;font-size:12px}
+  .vrow .x{width:32px;height:32px;border-radius:10px;background:#F3EFF7;color:var(--ink2);font-weight:800}
+  .infogrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:12px 0}
+  .infogrid div{background:#fff;border-radius:12px;padding:10px;box-shadow:0 1px 0 var(--line)}
+  .infogrid small{display:block;font-size:11px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.4px}
+  .infogrid b{display:block;font-size:17px;font-weight:800;margin-top:2px}
+  .checkrow{display:flex;align-items:center;gap:10px;margin-top:16px;font-weight:700;font-size:15px;cursor:pointer}
+  .checkrow input{width:22px;height:22px;accent-color:var(--inc)}
+  /* все приложения мастерской */
+  .apps{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .apps a{display:flex;flex-direction:column;gap:3px;padding:12px;border-radius:14px;background:#FAF7FC;color:var(--ink);text-decoration:none;border:1.5px solid var(--line)}
+  .apps a b{font-size:14px;font-weight:800} .apps a small{font-size:12px;color:var(--ink2);font-weight:500;line-height:1.3}
+  .apps a .e{font-size:20px}
 
   /* модальное окно */
   .modal{position:fixed;inset:0;z-index:25;background:rgba(43,36,64,.45);display:flex;align-items:flex-end;justify-content:center}
@@ -333,6 +368,14 @@
       <div id="payList"></div>
     </section>
 
+    <!-- АБОНЕМЕНТЫ -->
+    <section id="tab-sub" class="tab">
+      <div class="head-row"><h2>Абонементы</h2><button class="add-btn" id="subAdd">＋ Абонемент</button></div>
+      <input type="search" class="search hidden" id="subSearch" placeholder="Найти по имени или телефону">
+      <div class="totals" id="subTotals"></div>
+      <div id="subList"></div>
+    </section>
+
     <!-- ДЕЛА -->
     <section id="tab-task" class="tab">
       <div class="head-row"><h2>Дела</h2></div>
@@ -376,11 +419,20 @@
         <table class="year" id="yearTable"></table>
       </div>
       <a id="sheetLink" class="link-btn" target="_blank" href="#">Открыть Google Таблицу ↗</a>
+      <span class="lbl" style="margin-top:22px">Все приложения мастерской</span>
+      <div class="apps">
+        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/index.html" target="_blank"><span class="e">🎁</span><b>Сертификаты</b><small>двусторонний, с PDF и подарочной ссылкой</small></a>
+        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/sertifikat.html" target="_blank"><span class="e">🎫</span><b>Сертификат одной стороной</b><small>как старые макеты</small></a>
+        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/priglasheniya.html" target="_blank"><span class="e">🎂</span><b>Приглашения на ДР</b><small>дата и время — и готово</small></a>
+        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/katalog.html" target="_blank"><span class="e">🧩</span><b>Каталог мастер-классов</b><small>что можно собрать</small></a>
+        <a href="https://svetlana020257-lab.github.io/ddd/art-mosaic/site/" target="_blank"><span class="e">🌐</span><b>Сайт мастерской</b><small>для клиентов</small></a>
+      </div>
     </section>
   </main>
 
   <nav class="bottom"><div class="in">
     <button data-tab="add" class="on"><span class="ic">＋</span>Добавить</button>
+    <button data-tab="sub"><span class="ic">◷</span>Абонем.<span class="badge hidden" id="subBadge"></span></button>
     <button data-tab="log"><span class="ic">☰</span>Журнал</button>
     <button data-tab="pay"><span class="ic">▦</span>Календарь<span class="badge hidden" id="payBadge"></span></button>
     <button data-tab="task"><span class="ic">✓</span>Дела<span class="badge hidden" id="taskBadge"></span></button>
@@ -414,7 +466,7 @@ const store = {
 };
 
 const S = {
-  ops: [], pays: [], tasks: [], cats: {income:[], expense:[], methods:[]}, url: '#',
+  ops: [], pays: [], tasks: [], subs: [], subQuery: '', subShowOld: false, cats: {income:[], expense:[], methods:[]}, url: '#',
   taskDue: '', taskRep: 'Разово', showDone: false,
   calMonth: todayStr().slice(0,7), calDay: todayStr(), events: {}, calOk: true,
   type: 'Доход', cat: '', method: store.get('method',''), date: todayStr(),
@@ -467,10 +519,10 @@ async function load(quiet){
     if (!$$('.tab.active').length) switchTab('add');
   }
 }
-function saveCache(){ store.set('cache', {ops:S.ops, pays:S.pays, tasks:S.tasks, cats:S.cats, url:S.url}); }
+function saveCache(){ store.set('cache', {ops:S.ops, pays:S.pays, tasks:S.tasks, subs:S.subs, cats:S.cats, url:S.url}); }
 function applyData(r){
   S.loadError = '';
-  S.ops = r.ops || S.ops; S.pays = r.pays || S.pays; S.tasks = r.tasks || S.tasks;
+  S.ops = r.ops || S.ops; S.pays = r.pays || S.pays; S.tasks = r.tasks || S.tasks; S.subs = r.subs || S.subs;
   S.cats = r.cats || S.cats; S.url = r.url || S.url;
   $('#sheetLink').href = S.url;
   renderAll();
@@ -498,6 +550,7 @@ function switchTab(name){
   if (name === 'sum') renderSum();
   if (name === 'pay') { renderPays(); renderCal(); loadEvents(S.calMonth); }
   if (name === 'task') renderTasks();
+  if (name === 'sub') renderSubs();
 }
 $$('nav.bottom button').forEach(b => b.onclick = () => switchTab(b.dataset.tab));
 $$('.month button').forEach(b => b.onclick = () => { S.month = shiftMonth(S.month, +b.dataset.step); renderLog(); renderSum(); });
@@ -1135,6 +1188,8 @@ function renderBadges(){
   const pb = $('#payBadge'), tb = $('#taskBadge');
   pb.textContent = urgentPays.length; pb.classList.toggle('hidden', !urgentPays.length);
   tb.textContent = urgentTasks.length; tb.classList.toggle('hidden', !urgentTasks.length);
+  const sb = $('#subBadge'), urgentSubs = S.subs.filter(a => { const st = subState(a); return st.key === 'on' && (st.warn || st.red); });
+  sb.textContent = urgentSubs.length; sb.classList.toggle('hidden', !urgentSubs.length);
 
   const ban = $('#payBanner');
   if (urgentPays.length){
@@ -1146,9 +1201,204 @@ function renderBadges(){
   } else ban.className = 'banner hidden';
 }
 
+/* ---------- абонементы ---------- */
+function hrs(n){ n = Math.round((+n||0)*100)/100; return String(n).replace('.', ','); }
+function hWord(n){ n = Math.abs(n); if (n % 1) return 'ч'; const a = n % 10, b = n % 100;
+  return (a===1&&b!==11)?'час':(a>=2&&a<=4&&(b<12||b>14))?'часа':'часов'; }
+function ruDate(ds){ return ds ? ds.split('-').reverse().join('.') : '—'; }
+function addDaysStr(ds, n){ const d = new Date(ds+'T12:00:00'); d.setDate(d.getDate()+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function addMonthsStr(ds, n){ const d = new Date(ds+'T12:00:00'); d.setMonth(d.getMonth()+n);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+
+// Состояние абонемента: активен / не начался / закончились часы / истёк срок
+function subState(a){
+  const t = todayStr(), daysLeft = daysFromToday(a.end);
+  if (a.left <= 0) return {key:'done', label:'часы закончились', cls:''};
+  if (a.end < t) return {key:'exp', label:'срок истёк '+ruDate(a.end), cls:'red'};
+  if (a.start > t) return {key:'wait', label:'с '+ruDate(a.start), cls:''};
+  const red = daysLeft <= 3, warn = !red && (daysLeft <= 10 || a.left <= 2);
+  return {key:'on', daysLeft, red, warn,
+    label: daysLeft===0 ? 'последний день' : 'до '+dueLabel(a.end)+' · '+daysLeft+' дн.'};
+}
+
+function renderSubs(){
+  const box = $('#subList'); if (!box) return;
+  const q = S.subQuery.trim().toLowerCase();
+  const src = q ? S.subs.filter(a => (a.name+' '+a.phone).toLowerCase().includes(q)) : S.subs;
+  $('#subSearch').classList.toggle('hidden', S.subs.length < 6 && !q);
+  const act = src.filter(a => ['on','wait'].includes(subState(a).key)).sort((x,y) => x.end.localeCompare(y.end));
+  const old = src.filter(a => !['on','wait'].includes(subState(a).key)).sort((x,y) => y.end.localeCompare(x.end));
+  const allAct = S.subs.filter(a => subState(a).key === 'on');
+  $('#subTotals').innerHTML = `
+    <div class="tot"><small>Активных</small><b>${allAct.length}</b></div>
+    <div class="tot"><small>Осталось часов</small><b>${hrs(allAct.reduce((s,a)=>s+a.left,0))}</b></div>
+    <div class="tot"><small>Скоро сгорят</small><b style="color:${allAct.some(a=>subState(a).red||subState(a).warn)?'#B07A0C':'inherit'}">${allAct.filter(a=>subState(a).red||subState(a).warn).length}</b></div>`;
+  const card = a => {
+    const st = subState(a), pct = a.hours ? Math.max(0, Math.min(100, a.left / a.hours * 100)) : 0;
+    const off = !['on','wait'].includes(st.key);
+    const tags = [];
+    if (st.key === 'on' && a.left <= 2) tags.push(`<span class="tag amber">мало часов</span>`);
+    if (st.key === 'on' && st.red) tags.push(`<span class="tag red">срок!</span>`);
+    return `<div class="abo ${st.red?'red':st.warn?'warn':''} ${off?'off':''}" data-sub="${a.id}">
+      <div class="r1"><div class="nm">${esc(a.name)}</div>
+        <div class="left">${hrs(a.left)} <small>из ${hrs(a.hours)} ч</small></div></div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="r2"><span class="grow">${esc(st.label)} ${tags.join(' ')}</span>
+        ${st.key==='on' ? `<button class="visit-btn" data-visit="${a.id}">− занятие</button>` : ''}</div>
+    </div>`;
+  };
+  let html = '';
+  if (!S.subs.length) html = `<div class="empty"><div>◷</div>Абонементов пока нет.<br>Нажмите «＋ Абонемент», когда клиент купит.</div>`;
+  else if (!act.length && !old.length) html = `<div class="empty">Никого не нашлось</div>`;
+  else {
+    html += act.map(card).join('') || `<div class="empty" style="padding:20px">Активных абонементов нет</div>`;
+    if (old.length){
+      html += `<button class="toggle-done" id="subOld">${S.subShowOld ? 'Скрыть' : 'Показать'} закончившиеся · ${old.length}</button>`;
+      if (S.subShowOld) html += '<div style="margin-top:8px">' + old.map(card).join('') + '</div>';
+    }
+  }
+  box.innerHTML = html;
+  box.querySelectorAll('[data-visit]').forEach(b => b.onclick = e => { e.stopPropagation(); visitForm(S.subs.find(a => a.id === b.dataset.visit)); });
+  box.querySelectorAll('[data-sub]').forEach(b => b.onclick = () => subDetail(S.subs.find(a => a.id === b.dataset.sub)));
+  const ob = $('#subOld'); if (ob) ob.onclick = () => { S.subShowOld = !S.subShowOld; renderSubs(); };
+}
+$('#subAdd').onclick = () => subForm();
+$('#subSearch').oninput = e => { S.subQuery = e.target.value; renderSubs(); };
+
+function visitForm(a){
+  if (!a) return;
+  let date = todayStr(), hours = '';
+  openModal(`
+    <h3>Занятие · ${esc(a.name)}</h3>
+    <div class="hint">Сейчас на абонементе ${hrs(a.left)} ${hWord(a.left)} из ${hrs(a.hours)}</div>
+    <label class="lbl" style="margin-top:14px">Сколько часов списать</label>
+    <div class="chips" id="vH">${['1','1,5','2','2,5','3'].map(h => `<button class="chip" data-h="${h}">${h} ч</button>`).join('')}</div>
+    <input class="field big" id="vHours" inputmode="decimal" placeholder="0" style="margin-top:8px">
+    <div class="hint" id="vLeft"></div>
+    <label class="lbl">Дата занятия</label>
+    <div class="dates"><button class="chip on" data-vd="0">Сегодня</button><button class="chip" data-vd="-1">Вчера</button>
+      <input type="date" id="vDate" value="${date}"></div>
+    <label class="lbl">Комментарий</label><input class="field" id="vCom" placeholder="Например: МК «Ваза»">
+    <button class="primary" id="vSave" style="background:var(--violet)">Списать</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="vCancel">Отмена</button></div>`);
+  const upd = () => {
+    const h = parseFloat(($('#vHours').value||'').replace(',', '.')) || 0;
+    const rest = Math.round((a.left - h)*100)/100;
+    $('#vLeft').innerHTML = h ? (rest < 0 ? `<b style="color:var(--exp)">Не хватает ${hrs(-rest)} ч — на абонементе только ${hrs(a.left)}</b>` : `Останется <b>${hrs(rest)} ${hWord(rest)}</b>`) : '';
+    $$('#vH .chip').forEach(c => c.classList.toggle('on', c.dataset.h.replace(',', '.') == String(h)));
+  };
+  $$('#vH .chip').forEach(c => c.onclick = () => { $('#vHours').value = c.dataset.h; upd(); });
+  $('#vHours').oninput = upd;
+  $$('[data-vd]').forEach(c => c.onclick = () => { $('#vDate').value = todayStr(+c.dataset.vd); $$('[data-vd]').forEach(x => x.classList.toggle('on', x === c)); });
+  $('#vDate').onchange = () => $$('[data-vd]').forEach(x => x.classList.remove('on'));
+  $('#vCancel').onclick = closeModal;
+  $('#vSave').onclick = async () => {
+    const h = parseFloat(($('#vHours').value||'').replace(',', '.'));
+    if (!(h > 0)) { toast('Сколько часов списать?', true); return; }
+    if (h > a.left && !confirm('На абонементе только ' + hrs(a.left) + ' ч. Всё равно списать ' + hrs(h) + ' ч?')) return;
+    const rest = Math.round((a.left - h)*100)/100;
+    if (await run('apiVisitAdd', [{subId: a.id, hours: h, date: $('#vDate').value || todayStr(), comment: $('#vCom').value}],
+      'Списано ' + hrs(h) + ' ч · осталось ' + hrs(rest), $('#vSave'))) closeModal();
+  };
+}
+
+function subDetail(a){
+  if (!a) return;
+  const st = subState(a);
+  openModal(`
+    <h3>${esc(a.name)}</h3>
+    <div class="hint">${a.phone ? `<a href="tel:${esc(a.phone.replace(/[^\d+]/g,''))}" style="color:var(--violet);font-weight:700">${esc(a.phone)}</a> · ` : ''}${ruDate(a.start)} — ${ruDate(a.end)}${a.price ? ' · '+money(a.price) : ''}</div>
+    <div class="infogrid">
+      <div><small>Всего</small><b>${hrs(a.hours)} ч</b></div>
+      <div><small>Прошли</small><b>${hrs(a.used)} ч</b></div>
+      <div><small>Осталось</small><b style="color:${a.left<=0?'var(--mute)':'var(--violet)'}">${hrs(a.left)} ч</b></div>
+    </div>
+    <div class="hint" style="margin:0 2px 10px"><span class="tag ${st.cls||(st.key==='on'?'green':'')}">${esc(st.label)}</span>${a.comment ? ' · '+esc(a.comment) : ''}</div>
+    ${st.key==='on' ? '<button class="primary" id="sdVisit" style="background:var(--violet);margin-top:4px">− Отметить занятие</button>' : ''}
+    <span class="lbl">Занятия</span>
+    <div id="sdVis">${a.visits.length ? a.visits.map(v => `<div class="vrow"><span class="h">−${hrs(v.hours)} ч</span>
+      <span class="tx">${ruDate(v.date)}${v.comment ? `<small>${esc(v.comment)}</small>` : ''}</span>
+      <button class="x" data-vdel="${v.id}" title="Удалить">✕</button></div>`).join('') : '<div class="hint">Занятий пока не было</div>'}</div>
+    <div class="edit-row">
+      <button class="ghost" id="sdEdit">Изменить</button>
+      <button class="danger" id="sdDel">Удалить</button>
+    </div>
+    <div class="edit-row" style="grid-template-columns:1fr;margin-top:8px"><button class="ghost" id="sdClose">Закрыть</button></div>`);
+  if ($('#sdVisit')) $('#sdVisit').onclick = () => visitForm(a);
+  $('#sdClose').onclick = closeModal;
+  $('#sdEdit').onclick = () => subForm(a);
+  $('#sdDel').onclick = async () => {
+    if (!confirm('Удалить абонемент «' + a.name + '» вместе со всеми занятиями? Оплата в журнале останется.')) return;
+    if (await run('apiSubDelete', [a.id], 'Абонемент удалён')) closeModal();
+  };
+  $$('[data-vdel]').forEach(b => b.onclick = async () => {
+    if (!confirm('Удалить это занятие? Часы вернутся на абонемент.')) return;
+    if (await run('apiVisitDelete', [b.dataset.vdel], 'Занятие удалено, часы вернулись'))
+      subDetail(S.subs.find(x => x.id === a.id));
+  });
+}
+
+function subForm(a){
+  const isNew = !a;
+  const f = Object.assign({id:'', name:'', phone:'', hours:'', start:todayStr(), end:'', price:'', comment:''}, a || {});
+  let method = S.method || '';
+  openModal(`
+    <h3>${isNew ? 'Новый абонемент' : 'Абонемент'}</h3>
+    <label class="lbl" style="margin-top:12px">Клиент</label>
+    <input class="field" id="aName" value="${esc(f.name)}" placeholder="Имя и фамилия" autocomplete="off">
+    <label class="lbl">Телефон</label>
+    <input class="field" id="aPhone" value="${esc(f.phone)}" inputmode="tel" placeholder="Необязательно">
+    <label class="lbl">На сколько часов</label>
+    <div class="chips" id="aHc">${['4','8','10','12','20'].map(h => `<button class="chip${String(f.hours)===h?' on':''}" data-h="${h}">${h} ч</button>`).join('')}</div>
+    <input class="field" id="aHours" inputmode="decimal" value="${f.hours?hrs(f.hours):''}" placeholder="Часов" style="margin-top:8px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div><label class="lbl">Начало</label><input class="field" id="aStart" type="date" value="${f.start}"></div>
+      <div><label class="lbl">Действует до</label><input class="field" id="aEnd" type="date" value="${f.end}"></div>
+    </div>
+    <div class="chips" id="aDur" style="margin-top:8px">
+      <button class="chip" data-m="1">1 месяц</button><button class="chip" data-w="6">6 недель</button>
+      <button class="chip" data-m="2">2 месяца</button><button class="chip" data-m="3">3 месяца</button></div>
+    <label class="lbl">Стоимость, ₽</label>
+    <input class="field" id="aPrice" inputmode="decimal" value="${f.price?String(f.price).replace('.',','):''}" placeholder="0">
+    ${isNew ? `
+    <label class="checkrow"><input type="checkbox" id="aPay" checked> Записать оплату в доходы</label>
+    <div id="aPayBox"><label class="lbl">Способ оплаты</label><div class="chips" id="aMeth">${chipsHtml(S.cats.methods, method, 'meth')}</div></div>
+    <label class="lbl">Уже израсходовано, ч</label>
+    <input class="field" id="aUsed" inputmode="decimal" placeholder="0 — если абонемент только купили">
+    <div class="hint">Если клиент уже позанимался до того, как абонемент попал в приложение</div>` : ''}
+    <label class="lbl">Комментарий</label><input class="field" id="aCom" value="${esc(f.comment)}" placeholder="Необязательно">
+    <button class="primary" id="aSave" style="background:var(--violet)">Сохранить</button>
+    <div class="edit-row" style="grid-template-columns:1fr"><button class="ghost" id="aCancel">Отмена</button></div>`);
+  $$('#aHc .chip').forEach(c => c.onclick = () => { $('#aHours').value = c.dataset.h; $$('#aHc .chip').forEach(x => x.classList.toggle('on', x === c)); });
+  $('#aHours').oninput = () => $$('#aHc .chip').forEach(x => x.classList.toggle('on', x.dataset.h === $('#aHours').value.trim()));
+  $$('#aDur .chip').forEach(c => c.onclick = () => {
+    const st = $('#aStart').value || todayStr();
+    $('#aEnd').value = c.dataset.m ? addMonthsStr(st, +c.dataset.m) : addDaysStr(st, 7 * +c.dataset.w);
+    $$('#aDur .chip').forEach(x => x.classList.toggle('on', x === c));
+  });
+  if (isNew){
+    bindChips($('#aMeth'), 'meth', v => method = v);
+    $('#aPay').onchange = () => $('#aPayBox').classList.toggle('hidden', !$('#aPay').checked);
+  }
+  $('#aCancel').onclick = () => a ? subDetail(a) : closeModal();
+  $('#aSave').onclick = async () => {
+    const data = { id: f.id, name: $('#aName').value, phone: $('#aPhone').value, hours: $('#aHours').value,
+      start: $('#aStart').value, end: $('#aEnd').value, price: $('#aPrice').value, comment: $('#aCom').value };
+    if (isNew){ data.pay = $('#aPay').checked; data.method = method; data.used = $('#aUsed').value; data.payDate = todayStr(); }
+    if (!data.end) { toast('Укажите, до какого числа действует абонемент', true); return; }
+    if (isNew && data.pay && !(parseFloat(String(data.price).replace(/\s/g,'').replace(',', '.')) > 0)) {
+      if (!confirm('Стоимость не указана — оплата в доходы не запишется. Сохранить так?')) return;
+    }
+    if (await run('apiSubSave', [data], isNew ? 'Абонемент добавлен' : 'Абонемент обновлён', $('#aSave'))) {
+      if (a) subDetail(S.subs.find(x => x.id === a.id)); else closeModal();
+    }
+  };
+}
+
 function renderAll(){
   setType(S.type); renderMethods(); renderToday();
-  renderLog(); renderSum(); renderPays(); renderTasks(); renderBadges(); renderCal();
+  renderLog(); renderSum(); renderPays(); renderTasks(); renderSubs(); renderBadges(); renderCal();
 }
 
 
