@@ -20,7 +20,7 @@ const MONTH_GOAL = 0;           // цель по выручке на месяц,
                                 // (по мере выручки Феня «собирается» из плиток)
 
 const BOT_NAME = 'Феня · Art Mosaic';
-const BOT_ABOUT = 'Птенец феникса из мастерской Art Mosaic. Считаю доходы и расходы, помню про платежи и дела. Всё сложится!';
+const BOT_ABOUT = 'Птенец феникса из мастерской Art Mosaic. Считаю доходы и расходы, помню про платежи, дела, абонементы и сертификаты. Всё сложится!';
 const BOT_DESCRIPTION = 'Чирик! Я Феня 🐣🧩\nПтенец феникса из мозаичной мастерской Art Mosaic.\n\nЗаписываю доходы и расходы, напоминаю о платежах и делах — и всё складываю в таблицу. Нажмите «Старт»!';
 
 // Фразы Фени — выбираются случайно, чтобы не повторяться
@@ -43,7 +43,7 @@ function goalBar_(inc) {
 }
 
 const KB = {
-  keyboard: [['📊 Сегодня', '📈 Месяц'], ['📅 Платежи', '✅ Дела'], ['🗓 Календарь', '❓ Помощь']],
+  keyboard: [['📊 Сегодня', '📈 Месяц'], ['📅 Платежи', '✅ Дела'], ['◷ Абонементы', '🎁 Сертификаты'], ['🗓 Календарь', '❓ Помощь']],
   resize_keyboard: true, is_persistent: true
 };
 
@@ -95,6 +95,10 @@ function onMessage_(m) {
     if (/^\/month|^📈|^месяц$/i.test(text)) return send_(chat, reportMonth_(), KB);
     if (/^\/pays|^📅|^платежи$/i.test(text)) return sendPays_(chat);
     if (/^\/tasks|^✅|^дела$/i.test(text)) return sendTasks_(chat);
+    if (/^\/subs|^◷|^абонемент(ы)?$/i.test(text)) return sendSubs_(chat);
+    if (/^\/certs|^🎁|^сертификат(ы)?$/i.test(text)) return sendCerts_(chat);
+    if (CERT_RE.test(text)) return certCmd_(chat, text);
+    if (visitParse_(text)) return visitCmd_(chat, text);
     send_(chat, 'Чирик? Не поняла 🙈 Вот как со мной можно:\n\n' + HELP_SHORT_, KB);
   } catch (err) {
     console.error(err);
@@ -105,7 +109,9 @@ function onMessage_(m) {
 const HELP_SHORT_ =
   'Доход: <code>+4500 мк карта ваза, 3 чел</code>\n' +
   'Расход: <code>-1800 стекло перевод</code>\n' +
-  'Задача: <code>дело заказать клей завтра</code>';
+  'Задача: <code>дело заказать клей завтра</code>\n' +
+  'Абонемент: <code>Наташа −2</code> (списать 2 часа)\n' +
+  'Сертификат: <code>№13</code> или <code>№13 −2000</code>';
 
 const HELP_ =
   'Чирик! Я <b>Феня</b> 🐣🧩 — птенец феникса из Art Mosaic.\n' +
@@ -122,6 +128,10 @@ const HELP_ =
   '<code>мк ваза 28.11 18:00 2ч</code> (слова: поставка, встреча, мк, праздник, созвон, событие).\n' +
   'Платежи и дела со сроком попадают в календарь сами 🗓\n' +
   'Срок: сегодня, завтра, послезавтра или дата <code>25.11</code>.\n\n' +
+  '<b>Абонементы:</b> <code>Наташа −2</code> или <code>Наташа 1,5ч</code> — спишу часы и скажу, сколько осталось. ' +
+  'Если клиентов с таким именем несколько — предложу выбрать. Список — кнопка «◷ Абонементы».\n' +
+  '<b>Сертификаты:</b> <code>№13</code> — что на сертификате, <code>№13 −2000</code> — списать сумму, ' +
+  'сертификат на мастер-класс гасится кнопкой. Новые сертификаты выписываются в приложении.\n\n' +
   '<b>Кнопки внизу</b> — итоги дня и месяца, платежи (можно отметить оплату) и список дел.\n' +
   'Каждое утро в ' + MORNING_HOUR + ':00 прилетаю со сводкой и напоминаю о платежах ☀️';
 
@@ -445,6 +455,27 @@ function onCallback_(q) {
       answer_(q.id, 'Убрала');
       return edit_(chat, msg, '↩ Убрала из календаря 🪶');
     }
+    if (kind === 'vis') {                                  // vis:<id абонемента>:<часы>
+      const parts = String(q.data).split(':');
+      return visitDo_(chat, parts[1], parseFloat(parts[2]), q, msg);
+    }
+    if (kind === 'vundo') {
+      apiVisitDelete(PIN, val);
+      answer_(q.id, 'Отменено');
+      return edit_(chat, msg, '↩ Отменила списание — часы вернулись на абонемент 🪶');
+    }
+    if (kind === 'red') {                                  // red:<id сертификата>:<сумма|all>
+      const parts = String(q.data).split(':');
+      const c = readCerts_().find(x => x.id === parts[1]);
+      if (!c) { answer_(q.id, 'Сертификат не найден'); return; }
+      return redeemDo_(chat, c, parts[2] === 'all' ? c.left : parseFloat(parts[2]), q, msg);
+    }
+    if (kind === 'rundo') {
+      apiRedeemDelete(PIN, val);
+      answer_(q.id, 'Отменено');
+      return edit_(chat, msg, '↩ Отменила списание — сумма вернулась на сертификат 🪶');
+    }
+    if (kind === 'subs') { answer_(q.id, ''); return sendSubs_(chat); }
     if (kind === 'open') { answer_(q.id, ''); return sendPays_(chat); }
     answer_(q.id, '');
   } catch (err) {
@@ -519,7 +550,11 @@ function botMorning() {
   const evs = calEvents_(today_(), 1).filter(e => !/^(✅|💳|💰|📝|✔)/.test(e.title));   // платежи и дела уже выше
   if (evs.length) txt += '\n🗓 <b>Сегодня в календаре</b>\n' +
     evs.map(e => (e.start ? e.start + ' ' : '• ') + esc_(e.title)).join('\n') + '\n';
-  if (!pays.length && !tasks.length && !evs.length && !t.inc && !t.exp) return; // нечего сообщать
+  const subsW = subsWarn_(), certsW = certsWarn_();
+  if (subsW.length) txt += '\n◷ <b>Абонементы</b>\n' + subsW.map(a => '• ' + esc_(a.name) + ' — ' + hrs_(a.left) + ' ч, ' + subLeftWord_(a)).join('\n') + '\n';
+  if (certsW.length) txt += '\n🎁 <b>Сертификаты скоро истекут</b>\n' + certsW.map(c => '• №' + c.num + ' ' + esc_(c.who) + ' — до ' + dmy_(c.till) +
+    (c.kind === 'Мастер-класс' ? ' (МК)' : ', осталось ' + money_(c.left))).join('\n') + '\n';
+  if (!pays.length && !tasks.length && !evs.length && !t.inc && !t.exp && !subsW.length && !certsW.length) return; // нечего сообщать
   const ym = today_().slice(0, 7);
   txt += goalBar_(totals_(readOps_().filter(o => o.date.slice(0, 7) === ym)).inc);
   txt += '\n\n<i>Хорошего дня! Всё сложится 💗</i>';
@@ -539,6 +574,8 @@ function setupBot() {
     { command: 'month', description: 'Итоги месяца' },
     { command: 'pays', description: 'Платежи' },
     { command: 'tasks', description: 'Дела' },
+    { command: 'subs', description: 'Абонементы' },
+    { command: 'certs', description: 'Сертификаты' },
     { command: 'week', description: 'Календарь на неделю' },
     { command: 'help', description: 'Как пользоваться' }
   ] });
@@ -692,4 +729,151 @@ function reportWeek_() {
     txt += (e.start ? e.start + ' ' : '• ') + esc_(e.title) + '\n';
   });
   return txt;
+}
+
+/* ---------------- Абонементы ---------------- */
+// «Наташа −2», «Наташа -1,5 ч», «Наташа 2ч», «занятие Наташа 2» → списать часы с абонемента
+
+function hrs_(n) { return String(Math.round(n * 100) / 100).replace('.', ','); }
+
+function subActive_(a) { const t = today_(); return a.left > 0 && a.end >= t && a.start <= t; }
+
+function subLeftWord_(a) {
+  const n = daysFrom_(a.end);
+  return n === 0 ? 'последний день' : n === 1 ? 'до завтра' : 'до ' + dmy_(a.end) + ' (' + n + ' дн.)';
+}
+
+function subsWarn_() {
+  return readSubs_().filter(a => subActive_(a) && (a.left <= 2 || daysFrom_(a.end) <= 7));
+}
+
+function visitParse_(text) {
+  const t = String(text).trim().replace(/^(занятие|списать|минус)\s+/i, '');
+  if (/^[+\-−–\d№#]/.test(t)) return null;                                 // это доход/расход или сертификат
+  const m = t.match(/^([^\d+\-−–]+?)\s*[\-−–]\s*(\d+(?:[.,]\d+)?)\s*(ч|час|часа|часов)?\.?$/i) ||
+            t.match(/^([^\d+\-−–]+?)\s+(\d+(?:[.,]\d+)?)\s*(ч|час|часа|часов)\.?$/i) ||
+            (/^(занятие|списать)\s/i.test(text) ? t.match(/^([^\d+\-−–]+?)\s+(\d+(?:[.,]\d+)?)$/) : null);
+  if (!m) return null;
+  const hours = parseFloat(m[2].replace(',', '.'));
+  if (!(hours > 0) || hours > 12) return null;
+  return { who: m[1].trim(), hours: hours };
+}
+
+// все слова запроса — начала слов в имени: «нат миг» → «Наташа Мигулева»
+function nameMatch_(name, q) {
+  const words = norm_(name).split(/\s+/), qs = norm_(q).split(/\s+/).filter(Boolean);
+  return qs.length && qs.every(w => words.some(x => x.indexOf(w) === 0));
+}
+
+function visitCmd_(chat, text) {
+  const p = visitParse_(text);
+  const all = readSubs_();
+  let list = all.filter(a => subActive_(a) && nameMatch_(a.name, p.who));
+  if (!list.length) {
+    const any = all.filter(a => nameMatch_(a.name, p.who));
+    if (any.length) return send_(chat, '◷ У «' + esc_(p.who) + '» нет действующего абонемента: ' +
+      any.map(a => esc_(a.name) + ' — ' + (a.left <= 0 ? 'часы закончились' : 'срок до ' + dmy_(a.end))).join('; '));
+    return send_(chat, '◷ Не нашла абонемент «' + esc_(p.who) + '» 🙈\nСписок — кнопка «◷ Абонементы». Новый абонемент добавляется в приложении.', KB);
+  }
+  if (list.length > 1) {
+    return send_(chat, '◷ Таких абонементов несколько — у кого списать ' + hrs_(p.hours) + ' ч?', { inline_keyboard:
+      list.slice(0, 8).map(a => [{ text: a.name + ' · осталось ' + hrs_(a.left) + ' ч', callback_data: 'vis:' + a.id + ':' + p.hours }]) });
+  }
+  return visitDo_(chat, list[0].id, p.hours);
+}
+
+function visitDo_(chat, subId, hours, q, msgId) {
+  const a = readSubs_().find(x => x.id === subId);
+  if (!a) { if (q) answer_(q.id, 'Абонемент не найден'); return send_(chat, 'Абонемент не найден 🙈'); }
+  if (hours > a.left + 0.001) {
+    const t = '◷ У ' + esc_(a.name) + ' осталось только <b>' + hrs_(a.left) + ' ч</b> — не могу списать ' + hrs_(hours) + '.';
+    if (q) { answer_(q.id, 'Не хватает часов'); return edit_(chat, msgId, t); }
+    return send_(chat, t, a.left > 0 ? { inline_keyboard: [[{ text: 'Списать остаток ' + hrs_(a.left) + ' ч', callback_data: 'vis:' + a.id + ':' + a.left }]] } : KB);
+  }
+  const r = apiVisitAdd(PIN, { subId: a.id, hours: hours, date: today_(), comment: 'через Феню' });
+  const left = r.left;
+  const t = '◷ <b>' + esc_(a.name) + '</b>: −' + hrs_(hours) + ' ч\n' +
+    (left <= 0 ? '🎉 Абонемент закончился — все ' + hrs_(a.hours) + ' ч позади. Пора предложить новый 🪶'
+      : 'Осталось <b>' + hrs_(left) + ' из ' + hrs_(a.hours) + ' ч</b>, ' + subLeftWord_(a) + (left <= 2 ? '\n⚠️ Часов совсем мало' : ''));
+  const kb = { inline_keyboard: [[{ text: '↩ Отменить', callback_data: 'vundo:' + r.id }]] };
+  if (q) { answer_(q.id, 'Списала'); return edit_(chat, msgId, t, kb); }
+  return send_(chat, t, kb);
+}
+
+function sendSubs_(chat) {
+  const list = readSubs_().filter(subActive_).sort((x, y) => x.end.localeCompare(y.end));
+  if (!list.length) return send_(chat, '◷ <b>Абонементы</b>\n\nДействующих абонементов нет. Новый добавляется в приложении 🐣', KB);
+  let txt = '◷ <b>Абонементы</b> · ' + list.length + '\n\n';
+  list.forEach(a => {
+    const warn = a.left <= 2 || daysFrom_(a.end) <= 7;
+    txt += (warn ? '🟡 ' : '• ') + '<b>' + esc_(a.name) + '</b> — ' + hrs_(a.left) + ' из ' + hrs_(a.hours) + ' ч, ' + subLeftWord_(a) + '\n';
+  });
+  txt += '\nСписать: <code>Имя −2</code> или кнопкой ниже (−1 ч)';
+  return send_(chat, txt, { inline_keyboard: list.slice(0, 10).map(a => [
+    { text: a.name.split(' ')[0] + ' −1 ч', callback_data: 'vis:' + a.id + ':1' },
+    { text: '−1,5', callback_data: 'vis:' + a.id + ':1.5' },
+    { text: '−2', callback_data: 'vis:' + a.id + ':2' }]) });
+}
+
+/* ---------------- Сертификаты ---------------- */
+// «№13» — показать, «№13 −2000» / «№13 списать 2000» / «серт 13 2000» — списать, «№13 погасить» — погасить целиком
+
+const CERT_RE = /^(?:№|#|серт(?:ификат)?\s*№?)\s*(\d{1,6})\b\s*(.*)$/i;
+
+function certActive_(c) { return c.left > 0 && c.till >= today_(); }
+
+function certsWarn_() { return readCerts_().filter(c => certActive_(c) && daysFrom_(c.till) <= 14); }
+
+function certInfo_(c) {
+  const st = c.left <= 0 ? '✔ использован' : c.till < today_() ? '⌛ истёк ' + dmy_(c.till) : 'действует до ' + dmy_(c.till) + '.' + c.till.slice(0, 4);
+  return '🎁 <b>Сертификат №' + c.num + '</b>' + (c.kind === 'Мастер-класс' ? ' · на мастер-класс' : '') + '\n' +
+    (c.who ? 'Для кого: <b>' + esc_(c.who) + '</b>\n' : '') + (c.what ? 'На что: ' + esc_(c.what) + '\n' : '') +
+    'Номинал: ' + money_(c.sum) + (c.kind !== 'Мастер-класс' && c.used > 0 ? ' · потрачено ' + money_(c.used) : '') + '\n' +
+    (c.kind !== 'Мастер-класс' && c.left > 0 ? 'Осталось: <b>' + money_(c.left) + '</b>\n' : '') + st;
+}
+
+function certCmd_(chat, text) {
+  const m = text.match(CERT_RE);
+  const n = parseInt(m[1], 10), rest = norm_(m[2] || '');
+  const c = readCerts_().find(x => parseInt(x.num, 10) === n);
+  if (!c) return send_(chat, '🎁 Сертификата №' + m[1] + ' нет в таблице 🙈\nЕсли он выдан на бумаге — запишите его в приложении: Сертификаты → «＋ Записать».', KB);
+  const am = rest.match(/(\d[\d\s]*(?:[.,]\d+)?)/);
+  if (!rest || (!am && !/погас|весь|остат/.test(rest))) {
+    if (!certActive_(c)) return send_(chat, certInfo_(c), KB);
+    const kb = c.kind === 'Мастер-класс' ? [[{ text: '✔ Погасить (мастер-класс)', callback_data: 'red:' + c.id + ':all' }]]
+      : [[{ text: 'Списать весь остаток · ' + money_(c.left), callback_data: 'red:' + c.id + ':all' }]];
+    return send_(chat, certInfo_(c) + (c.kind === 'Мастер-класс' ? '' : '\n\nСписать часть: <code>№' + c.num.replace(/^0+/, '') + ' −2000</code>'), { inline_keyboard: kb });
+  }
+  if (!certActive_(c)) return send_(chat, certInfo_(c) + '\n\nСписать уже нельзя.', KB);
+  const amount = c.kind === 'Мастер-класс' || !am ? c.left : parseFloat(am[1].replace(/\s/g, '').replace(',', '.'));
+  return redeemDo_(chat, c, amount);
+}
+
+function redeemDo_(chat, c, amount, q, msgId) {
+  if (!certActive_(c)) { const t = certInfo_(c) + '\n\nСписать уже нельзя.'; if (q) { answer_(q.id, 'Нельзя'); return edit_(chat, msgId, t); } return send_(chat, t); }
+  if (amount > c.left + 0.001) {
+    const t = '🎁 На №' + c.num + ' осталось только <b>' + money_(c.left) + '</b>. Разницу ' + money_(amount - c.left) + ' клиент доплачивает — её запишите доходом.';
+    return send_(chat, t, { inline_keyboard: [[{ text: 'Списать весь остаток · ' + money_(c.left), callback_data: 'red:' + c.id + ':all' }]] });
+  }
+  const r = apiCertRedeem(PIN, { certId: c.id, amount: amount, date: today_(), comment: 'через Феню' });
+  const t = '🎁 <b>№' + c.num + '</b>' + (c.who ? ' · ' + esc_(c.who) : '') + '\n' +
+    (r.left <= 0 ? (c.kind === 'Мастер-класс' ? '✔ Погашен — мастер-класс использован' : '✔ Погашен полностью: −' + money_(r.amount))
+      : '−' + money_(r.amount) + ', осталось <b>' + money_(r.left) + '</b> до ' + dmy_(c.till));
+  const kb = { inline_keyboard: [[{ text: '↩ Отменить', callback_data: 'rundo:' + r.id }]] };
+  if (q) { answer_(q.id, 'Готово'); return edit_(chat, msgId, t, kb); }
+  return send_(chat, t, kb);
+}
+
+function sendCerts_(chat) {
+  const list = readCerts_().filter(certActive_).sort((x, y) => x.till.localeCompare(y.till));
+  if (!list.length) return send_(chat, '🎁 <b>Сертификаты</b>\n\nДействующих сертификатов нет. Выписать новый — в приложении 🐣', KB);
+  const sum = list.filter(c => c.kind !== 'Мастер-класс').reduce((s, c) => s + c.left, 0);
+  let txt = '🎁 <b>Сертификаты</b> · ' + list.length + (sum ? ' · ждут на ' + money_(sum) : '') + '\n\n';
+  list.slice(0, 30).forEach(c => {
+    txt += (daysFrom_(c.till) <= 14 ? '🟡 ' : '• ') + '№' + c.num + ' ' + esc_(c.who || c.buyer || '') + ' — ' +
+      (c.kind === 'Мастер-класс' ? 'МК' + (c.what ? ' «' + esc_(c.what) + '»' : '') : money_(c.left) + (c.used ? ' из ' + money_(c.sum) : '')) +
+      ', до ' + dmy_(c.till) + '\n';
+  });
+  txt += '\nПогасить: <code>№13 −2000</code> или просто <code>№13</code>';
+  return send_(chat, txt, KB);
 }

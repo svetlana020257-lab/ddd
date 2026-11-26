@@ -299,8 +299,8 @@ function apiVisitAdd(pin, v) {
     const hours = num_(v.hours);
     if (!(hours > 0)) throw new Error('Сколько часов списать?');
     if (!/^\d{4}-\d{2}-\d{2}$/.test(v.date || '')) throw new Error('Укажите дату занятия');
-    addVisit_(sub.id, sub.name, v.date, hours, v.comment);
-    return Math.round((sub.left - hours) * 100) / 100;
+    const id = addVisit_(sub.id, sub.name, v.date, hours, v.comment);
+    return { id: id, left: Math.round((sub.left - hours) * 100) / 100, sub: sub };
   });
 }
 
@@ -313,7 +313,9 @@ function apiVisitDelete(pin, id) {
 }
 
 function addVisit_(subId, name, ds, hours, comment) {
-  sheet_(SH.VIS).appendRow([toDate_(ds), name, hours, String(comment || '').trim(), new Date(), subId, newId_()]);
+  const id = newId_();
+  sheet_(SH.VIS).appendRow([toDate_(ds), name, hours, String(comment || '').trim(), new Date(), subId, id]);
+  return id;
 }
 
 // В таблице «Израсходовано», «Осталось» и «Статус» считаются формулами — их видно и без приложения
@@ -519,7 +521,9 @@ function apiCertRedeem(pin, r) {
     if (!(amount > 0)) throw new Error('Сколько списать с сертификата?');
     if (amount > c.left + 0.001) throw new Error('На сертификате осталось только ' + rub_(c.left));
     const ds = /^\d{4}-\d{2}-\d{2}$/.test(r.date || '') ? r.date : Utilities.formatDate(new Date(), tz_(), 'yyyy-MM-dd');
-    sheet_(SH.RED).appendRow([toDate_(ds), "'" + c.num, c.who, amount, String(r.comment || '').trim(), new Date(), c.id, newId_()]);
+    const id = newId_();
+    sheet_(SH.RED).appendRow([toDate_(ds), "'" + c.num, c.who, amount, String(r.comment || '').trim(), new Date(), c.id, id]);
+    return { id: id, amount: amount, left: Math.round((c.left - amount) * 100) / 100, cert: c };
   });
 }
 
