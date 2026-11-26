@@ -34,6 +34,8 @@ section h2 i b{width:7px;height:7px;border-radius:2px;display:block}
 .card.dim{opacity:.55}
 .sw{height:52px;border-radius:10px;overflow:hidden}
 .sw svg{width:100%;height:100%;display:block}
+.ph{aspect-ratio:1.07;border-radius:10px;overflow:hidden;background:#F6EEF3}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
 .card h3{margin:0;font-size:15.5px;font-weight:800;line-height:1.3}
 .card p{margin:-4px 0 0;font-size:13px;color:var(--muted);font-weight:600;line-height:1.4}
 .price{margin-top:auto;display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
@@ -83,8 +85,8 @@ function swatch(cols,seed){
 }
 let seed=1;
 const html=CATS.map((cat,ci)=>`<section data-c="${ci}"><h2><i><b style="background:${cat.c[0]}"></b><b style="background:${cat.c[1]}"></b><b style="background:${cat.c[2]}"></b><b style="background:${cat.c[3]}"></b></i>${cat.t}</h2><div class="cards">${
-  cat.items.map(it=>`<article class="card" data-p="${it.p||0}" data-h="${it.h||0}"><div class="sw">${swatch(cat.c,seed++)}</div><h3>${it.n}</h3>${it.d?`<p>${it.d}</p>`:''}<div class="price"><strong>${it.h?fmt(it.h)+' ₽/час':(it.from?'от ':'')+fmt(it.p)+' ₽'}</strong><span class="badge" hidden></span></div></article>`).join('')
-}</div></section>`).join('')+`<p class="empty" id="empty" hidden>На эту сумму пока ничего не нашлось — снимите галочку, чтобы увидеть всё. Разницу можно доплатить на месте.</p><p class="note">Цены актуальны на октябрь 2026 года. Точную стоимость и свободные даты подскажем по телефону.</p>`;
+  cat.items.map(it=>`<article class="card" data-p="${it.p||0}" data-h="${it.h||0}">${it.i?`<div class="ph"><img src="img/cat/${it.i}.jpg" alt="" loading="lazy"></div>`:`<div class="sw">${swatch(cat.c,seed++)}</div>`}<h3>${it.n}</h3>${it.d?`<p>${it.d}</p>`:''}<div class="price"><strong>${it.h?fmt(it.h)+' ₽/час':(it.from?'от ':'')+fmt(it.p)+' ₽'}</strong><span class="badge" hidden></span></div></article>`).join('')
+}</div></section>`).join('')+`<p class="empty" id="empty" hidden>На эту сумму пока ничего не нашлось — снимите галочку, чтобы увидеть всё. Разницу можно доплатить на месте.</p><p class="note">Цены актуальны на ноябрь 2026 года. Точную стоимость и свободные даты подскажем по телефону.</p>`;
 $('main').innerHTML=html;
 const q=new URLSearchParams(location.search),s0=parseInt(q.get('s')||'',10);
 if(s0>0){$('sum').value=s0;$('fit').checked=false;$('title').innerHTML=`Что можно выбрать на <b>${fmt(s0)} ₽</b>`;
